@@ -26,6 +26,7 @@ class PropertyResource extends JsonResource
                 'line1' => $this->address_line1,
                 'line2' => $this->address_line2,
                 'city' => $this->city,
+                'area' => $this->area,
                 'state' => $this->state,
                 'postal_code' => $this->postal_code,
                 'country_code' => $this->country_code,
@@ -37,6 +38,16 @@ class PropertyResource extends JsonResource
             'cover_photo_url' => $this->coverPhotoUrl(),
             'buildings_count' => $this->whenCounted('buildings'),
             'units_count' => $this->whenCounted('units'),
+            // Full unit-level detail (with each unit's current tenant, if
+            // any) for a property detail screen - only present when the
+            // controller explicitly eager-loads 'buildings.units', so
+            // every other PropertyResource call site (lists especially)
+            // is unaffected.
+            'buildings' => $this->whenLoaded('buildings', fn () => $this->buildings->map(fn ($building) => [
+                'uuid' => $building->uuid,
+                'name' => $building->name,
+                'units' => $building->relationLoaded('units') ? UnitResource::collection($building->units) : null,
+            ])),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

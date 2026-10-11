@@ -8,15 +8,19 @@ use App\Modules\AuditLogs\Models\ActivityLogEntry;
 use App\Modules\Companies\Models\Company;
 use App\Modules\Properties\Models\Property;
 use App\Modules\Properties\Models\Unit;
+use App\Modules\Sms\Services\SmsManager;
 use App\Modules\Subscriptions\Services\SubscriptionOverviewService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __construct(protected SubscriptionOverviewService $subscriptionOverview)
-    {
+    public function __construct(
+        protected SubscriptionOverviewService $subscriptionOverview,
+        protected SmsManager $smsManager,
+    ) {
     }
 
     public function index(Request $request): View
@@ -50,11 +54,25 @@ class DashboardController extends Controller
             'expiringSoonCount' => $subscriptions['expiringSoonCount'],
             'unpaidInvoicesCount' => $subscriptions['unpaidInvoicesCount'],
             'unpaidInvoicesTotal' => $subscriptions['unpaidInvoicesTotal'],
+            'smsBalance' => $this->platformSmsBalance(),
             'recentActivity' => ActivityLogEntry::with(['causer', 'subject', 'company'])
                 ->latest()
                 ->limit(8)
                 ->get(),
         ];
+    }
+
+    /**
+     * A 60-second cache keeps this "real-time" for a figure that only
+     * moves as messages actually send, without the dashboard's own page
+     * load waiting on a live Beem HTTP round trip on every single visit
+     * (and without hammering Beem if the SaaS owner refreshes rapidly).
+     *
+     * @return array{success: bool, balance: ?float, message: ?string}
+     */
+    protected function platformSmsBalance(): array
+    {
+        return Cache::remember('platform-sms-balance', 60, fn () => $this->smsManager->getPlatformSmsBalance());
     }
 
     protected function companyData(int $companyId): array

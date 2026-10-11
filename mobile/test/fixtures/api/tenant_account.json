@@ -1,0 +1,15 @@
+{
+    "profile": {
+        "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+        "name": "Amina Tenant",
+        "username": "amina.tenant",
+        "email": null,
+        "phone": "0712000333"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

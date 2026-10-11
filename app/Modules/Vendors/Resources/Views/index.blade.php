@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Vendors')
+@section('title', __('Vendors'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Vendors</h1>
+    <h1 class="h4 mb-0">{{ __('Vendors') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Vendors</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Vendors') }}</h1>
             <p class="text-secondary mb-0">{{ $vendors->total() }} {{ Str::plural('vendor', $vendors->total()) }}</p>
         </div>
         @can('create', \App\Modules\Vendors\Models\Vendor::class)
             <a href="{{ route('vendors.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Vendor
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Vendor') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="category" class="form-select" onchange="this.form.submit()">
-                        <option value="">All categories</option>
+                        <option value="">{{ __('All categories') }}</option>
                         @foreach (['plumbing', 'electrical', 'hvac', 'cleaning', 'landscaping', 'pest_control', 'general_contractor', 'utility_provider', 'security', 'other'] as $category)
                             <option value="{{ $category }}" @selected(request('category') === $category)>{{ ucfirst(str_replace('_', ' ', $category)) }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'inactive'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -57,12 +57,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Vendor</th>
-                                <th>Category</th>
-                                <th>Contact</th>
-                                <th>Expenses</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Vendor') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th>{{ __('Contact') }}</th>
+                                <th>{{ __('Expenses') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

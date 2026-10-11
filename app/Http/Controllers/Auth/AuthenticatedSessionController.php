@@ -24,11 +24,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Staff, or a tenant/landlord who used this page - each lands on
+        // their own home (App\Core\Auth\WebSignIn).
+        return $request->authenticateAnyAccount();
     }
 
     /**

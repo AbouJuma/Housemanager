@@ -2,15 +2,28 @@
 
 namespace App\Modules\Invoices\Http\Requests;
 
+use App\Core\Http\Concerns\ResolvesUuidReferences;
 use App\Modules\Invoices\Models\Invoice;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreInvoiceRequest extends FormRequest
 {
+    use ResolvesUuidReferences;
+
     public function authorize(): bool
     {
         return $this->user()->can('create', Invoice::class);
+    }
+
+    /**
+     * See App\Core\Http\Concerns\ResolvesUuidReferences - lease_id
+     * arrives as a numeric id from the web form's <select>, or a uuid
+     * from a JSON client (LeaseResource never exposes the numeric id).
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['lease_id' => $this->resolveUuidReference('leases', $this->input('lease_id'))]);
     }
 
     public function rules(): array

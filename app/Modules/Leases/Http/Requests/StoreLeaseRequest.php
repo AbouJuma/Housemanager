@@ -2,15 +2,34 @@
 
 namespace App\Modules\Leases\Http\Requests;
 
+use App\Core\Http\Concerns\ResolvesUuidReferences;
 use App\Modules\Leases\Models\Lease;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreLeaseRequest extends FormRequest
 {
+    use ResolvesUuidReferences;
+
     public function authorize(): bool
     {
         return $this->user()->can('create', Lease::class);
+    }
+
+    /**
+     * See ResolvesUuidReferences' docblock - the web form submits
+     * tenant_id/unit_id as numeric ids from server-rendered <select>
+     * options; a JSON client (the mobile app) only ever has each
+     * record's uuid, since that's all TenantResource/UnitResource
+     * expose. Translating here keeps rules() below's Rule::exists(...,
+     * 'id') checks and other business constraints identical for both.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'tenant_id' => $this->resolveUuidReference('tenants', $this->input('tenant_id')),
+            'unit_id' => $this->resolveUuidReference('units', $this->input('unit_id')),
+        ]);
     }
 
     public function rules(): array

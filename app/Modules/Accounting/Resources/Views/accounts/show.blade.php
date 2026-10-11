@@ -21,7 +21,7 @@
             </a>
             @can('update', $account)
                 <a href="{{ route('accounts.edit', $account) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -35,7 +35,7 @@
                     <div class="fs-3 fw-semibold">{{ number_format($account->balance(), 2) }}</div>
                     @if ($account->description)
                         <hr>
-                        <div class="text-secondary small mb-1">Description</div>
+                        <div class="text-secondary small mb-1">{{ __('Description') }}</div>
                         <p class="mb-0 small">{{ $account->description }}</p>
                     @endif
                 </div>
@@ -45,7 +45,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Recent Activity</h2>
+                    <h2 class="h6 mb-3">{{ __('Recent Activity') }}</h2>
 
                     @if ($recentLines->isEmpty())
                         <div class="text-center py-4">
@@ -57,11 +57,11 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th class="text-end">Debit</th>
-                                        <th class="text-end">Credit</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Description') }}</th>
+                                        <th class="text-end">{{ __('Debit') }}</th>
+                                        <th class="text-end">{{ __('Credit') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -14,7 +14,7 @@
         <div class="d-flex gap-2">
             @can('update', $buyer)
                 <a href="{{ route('buyers.edit', $buyer) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
             @can('delete', $buyer)
@@ -22,7 +22,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="{{ $buyer->name }}">
-                        <i class="bi bi-trash me-1"></i> Delete
+                        <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                     </button>
                 </form>
             @endcan
@@ -36,27 +36,27 @@
                     <h2 class="h6 mb-3">Buyer Details</h2>
                     <div class="row g-3 small">
                         <div class="col-md-6">
-                            <div class="text-secondary">Name</div>
+                            <div class="text-secondary">{{ __('Name') }}</div>
                             <div class="fw-semibold">{{ $buyer->name }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">Email</div>
+                            <div class="text-secondary">{{ __('Email') }}</div>
                             <div>{{ $buyer->email ?? '—' }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">Phone</div>
+                            <div class="text-secondary">{{ __('Phone') }}</div>
                             <div>{{ $buyer->phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">ID Number</div>
+                            <div class="text-secondary">{{ __('ID Number') }}</div>
                             <div>{{ $buyer->id_number ?? '—' }}</div>
                         </div>
                         <div class="col-12">
-                            <div class="text-secondary">Address</div>
+                            <div class="text-secondary">{{ __('Address') }}</div>
                             <div>{{ $buyer->address ?? '—' }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">Status</div>
+                            <div class="text-secondary">{{ __('Status') }}</div>
                             <div>
                                 <span class="badge text-bg-{{ $buyer->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($buyer->status) }}</span>
                             </div>
@@ -78,12 +78,12 @@
                             <table class="table align-middle small">
                                 <thead>
                                     <tr>
-                                        <th>Unit</th>
-                                        <th>Sale Date</th>
-                                        <th>Total Price</th>
-                                        <th>Paid</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Invoices</th>
+                                        <th>{{ __('Unit') }}</th>
+                                        <th>{{ __('Sale Date') }}</th>
+                                        <th>{{ __('Total Price') }}</th>
+                                        <th>{{ __('Paid') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Invoices') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -119,7 +119,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <h2 class="h6 mb-3">Summary</h2>
                     <div class="row g-3 small">
@@ -134,6 +134,44 @@
                     </div>
                 </div>
             </div>
+
+            @can('update', $buyer)
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h6 mb-3">{{ __('Portal Access') }}</h2>
+
+                        @if (session('portal_password'))
+                            <div class="alert alert-warning small">
+                                <strong>One-time password:</strong> <code>{{ session('portal_password') }}</code>
+                                <div class="mt-1">Share this with the buyer now — it will not be shown again.</div>
+                            </div>
+                        @endif
+
+                        @if ($buyer->hasPortalAccess())
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-success">{{ __('Enabled') }}</span> {{ $buyer->email }} can sign in to the mobile app.</p>
+                            <div class="d-flex gap-2">
+                                <form action="{{ route('buyers.portal-access.enable', $buyer) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('Reset Password') }}</button>
+                                </form>
+                                <form action="{{ route('buyers.portal-access.disable', $buyer) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('Disable Access') }}</button>
+                                </form>
+                            </div>
+                        @else
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-secondary">{{ __('Not Enabled') }}</span> This buyer cannot sign in to the mobile app.</p>
+                            <form action="{{ route('buyers.portal-access.enable', $buyer) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-primary" {{ $buyer->email ? '' : 'disabled' }}>{{ __('Enable Portal Access') }}</button>
+                            </form>
+                            @unless ($buyer->email)
+                                <div class="form-text">Add an email address to this buyer first.</div>
+                            @endunless
+                        @endif
+                    </div>
+                </div>
+            @endcan
         </div>
     </div>
 @endsection

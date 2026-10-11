@@ -14,11 +14,11 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('leases.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-1"></i> All Leases
+                <i class="bi bi-arrow-left me-1"></i> {{ __('All Leases') }}
             </a>
             @can('update', $lease)
                 <a href="{{ route('leases.edit', $lease) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -41,32 +41,32 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Lease Terms</h2>
+                    <h2 class="h6 mb-3">{{ __('Lease Terms') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Start Date</div>
+                            <div class="text-secondary">{{ __('Start Date') }}</div>
                             <div>{{ $lease->start_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">End Date</div>
+                            <div class="text-secondary">{{ __('End Date') }}</div>
                             <div>{{ $lease->end_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Billing Cycle</div>
+                            <div class="text-secondary">{{ __('Billing Cycle') }}</div>
                             <div class="text-capitalize">{{ str_replace('_', ' ', $lease->billing_cycle) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Rent Amount</div>
+                            <div class="text-secondary">{{ __('Rent Amount') }}</div>
                             <div>{{ number_format($lease->rent_amount, 2) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Deposit Amount</div>
+                            <div class="text-secondary">{{ __('Deposit Amount') }}</div>
                             <div>{{ $lease->deposit_amount !== null ? number_format($lease->deposit_amount, 2) : '—' }}</div>
                         </div>
                     </div>
                     @if ($lease->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $lease->notes }}</p>
                     @endif
                 </div>
@@ -74,7 +74,7 @@
 
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Tenant</h2>
+                    <h2 class="h6 mb-3">{{ __('Tenant') }}</h2>
                     <p class="mb-1 fw-semibold">{{ $lease->tenant->name }}</p>
                     <a href="{{ route('tenants.show', $lease->tenant) }}" class="btn btn-sm btn-outline-secondary">
                         <i class="bi bi-eye me-1"></i> View Tenant
@@ -85,26 +85,26 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Invoices</h2>
+                        <h2 class="h6 mb-0">{{ __('Invoices') }}</h2>
                         @can('create', \App\Modules\Invoices\Models\Invoice::class)
                             <a href="{{ route('invoices.create', ['lease_id' => $lease->uuid]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> New Invoice
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('New Invoice') }}
                             </a>
                         @endcan
                     </div>
 
                     @if ($invoices->isEmpty())
-                        <p class="text-secondary small mb-0">No invoices yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No invoices yet.') }}</p>
                     @else
                         <div class="table-responsive">
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Number</th>
-                                        <th>Due</th>
-                                        <th>Total</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Number') }}</th>
+                                        <th>{{ __('Due') }}</th>
+                                        <th>{{ __('Total') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,7 +130,7 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Unit</h2>
+                    <h2 class="h6 mb-3">{{ __('Unit') }}</h2>
                     <p class="mb-1 fw-semibold">{{ $lease->unit->unit_number }}</p>
                     <p class="text-secondary small mb-3">
                         {{ $lease->unit->building->name }}<br>
@@ -145,10 +145,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Documents</h2>
+                        <h2 class="h6 mb-0">{{ __('Documents') }}</h2>
                         @can('create', \App\Modules\Documents\Models\Document::class)
                             <a href="{{ route('documents.create', ['documentable_type' => 'lease', 'documentable_id' => $lease->id]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Add Document
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Add Document') }}
                             </a>
                         @endcan
                     </div>

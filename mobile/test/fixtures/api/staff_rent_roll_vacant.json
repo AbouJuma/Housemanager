@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "property": "Stella Square Complex",
+            "building": "Block sV",
+            "unit": "066W8",
+            "status": "vacant",
+            "tenant": null,
+            "lease_start": null,
+            "lease_end": null,
+            "rent_amount": 300000
+        }
+    ],
+    "statuses": [
+        "vacant",
+        "occupied",
+        "reserved",
+        "under_maintenance"
+    ]
+}

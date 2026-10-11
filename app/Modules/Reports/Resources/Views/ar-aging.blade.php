@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'AR Aging')
+@section('title', __('AR Aging'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">AR Aging</h1>
+    <h1 class="h4 mb-0">{{ __('AR Aging') }}</h1>
 @endsection
 
 @section('content')
@@ -11,10 +11,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <p class="text-secondary mb-0">Total outstanding: {{ number_format($grand_total, 2) }}</p>
-        <div class="d-flex gap-2">
-            <a href="{{ route('reports.ar-aging.export', 'pdf') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</a>
-            <a href="{{ route('reports.ar-aging.export', 'xlsx') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-excel me-1"></i> Excel</a>
-            <a href="{{ route('reports.ar-aging.export', 'csv') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i> CSV</a>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            @include('reports::partials.status-filter')
+            <a href="{{ route('reports.ar-aging.export', ['format' => 'pdf', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</a>
+            <a href="{{ route('reports.ar-aging.export', ['format' => 'xlsx', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-excel me-1"></i> Excel</a>
+            <a href="{{ route('reports.ar-aging.export', ['format' => 'csv', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i> CSV</a>
         </div>
     </div>
 
@@ -40,12 +41,12 @@
                     <table id="arAgingTable" class="table table-striped table-hover table-sm align-middle datatable">
                         <thead>
                             <tr>
-                                <th>Bucket</th>
+                                <th>{{ __('Bucket') }}</th>
                                 <th>Invoice #</th>
-                                <th>Tenant</th>
-                                <th>Due Date</th>
-                                <th class="text-end">Days Overdue</th>
-                                <th class="text-end">Balance</th>
+                                <th>Tenant / Buyer</th>
+                                <th>{{ __('Due Date') }}</th>
+                                <th class="text-end">{{ __('Days Overdue') }}</th>
+                                <th class="text-end">{{ __('Balance') }}</th>
                             </tr>
                         </thead>
                         <tbody>

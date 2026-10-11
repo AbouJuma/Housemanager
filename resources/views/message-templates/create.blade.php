@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Create Message Template')
+@section('title', __('Create Message Template'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Create Message Template</h1>
+    <h1 class="h4 mb-0">{{ __('Create Message Template') }}</h1>
 @endsection
 
 @section('content')
@@ -13,22 +13,33 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="type" class="form-label fw-bold">Template Type</label>
+                    <label for="type" class="form-label fw-bold">{{ __('Template Type') }}</label>
                     <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" required onchange="updateAvailableFields()">
                         <option value="">-- Select Type --</option>
+                        <option value="lease_created_tenant" {{ old('type') === 'lease_created_tenant' ? 'selected' : '' }}>Lease Created (Tenant)</option>
                         <option value="tenant_welcome" {{ old('type') === 'tenant_welcome' ? 'selected' : '' }}>Tenant Welcome</option>
                         <option value="landlord_welcome" {{ old('type') === 'landlord_welcome' ? 'selected' : '' }}>Landlord Welcome</option>
                         <option value="buyer_welcome" {{ old('type') === 'buyer_welcome' ? 'selected' : '' }}>Buyer Welcome</option>
+                        <option value="staff_welcome" {{ old('type') === 'staff_welcome' ? 'selected' : '' }}>Staff Welcome</option>
                         <option value="lease_payment" {{ old('type') === 'lease_payment' ? 'selected' : '' }}>Lease Payment</option>
                         <option value="buyer_invoice" {{ old('type') === 'buyer_invoice' ? 'selected' : '' }}>Buyer Invoice</option>
                         <option value="landlord_payment_notification" {{ old('type') === 'landlord_payment_notification' ? 'selected' : '' }}>Landlord Payment Notification</option>
                         <option value="tenant_payment_notification" {{ old('type') === 'tenant_payment_notification' ? 'selected' : '' }}>Tenant Payment Notification</option>
+                        <option value="lease_landlord_notification" {{ old('type') === 'lease_landlord_notification' ? 'selected' : '' }}>Lease Landlord Notification</option>
+                        <option value="buyer_bill" {{ old('type') === 'buyer_bill' ? 'selected' : '' }}>Buyer Bill (Installment Invoice)</option>
+                        <option value="invoice_due_soon" {{ old('type') === 'invoice_due_soon' ? 'selected' : '' }}>Rent Invoice Due Soon</option>
+                        <option value="invoice_overdue" {{ old('type') === 'invoice_overdue' ? 'selected' : '' }}>Rent Invoice Overdue</option>
+                        <option value="installment_due_soon" {{ old('type') === 'installment_due_soon' ? 'selected' : '' }}>Installment Due Soon</option>
+                        <option value="installment_overdue" {{ old('type') === 'installment_overdue' ? 'selected' : '' }}>Installment Overdue</option>
+                        <option value="sale_created" {{ old('type') === 'sale_created' ? 'selected' : '' }}>Sale Created (Buyer)</option>
+                        <option value="sale_payment_landlord" {{ old('type') === 'sale_payment_landlord' ? 'selected' : '' }}>Sale Payment (Landlord)</option>
+                        <option value="sale_completed" {{ old('type') === 'sale_completed' ? 'selected' : '' }}>Sale Completed</option>
                     </select>
                     @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-4">
-                    <label for="name" class="form-label fw-bold">Template Name</label>
+                    <label for="name" class="form-label fw-bold">{{ __('Template Name') }}</label>
                     <input 
                         type="text" 
                         name="name" 
@@ -41,12 +52,12 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="sms_template" class="form-label fw-bold">SMS Template</label>
+                    <label for="sms_template" class="form-label fw-bold">{{ __('SMS Template') }}</label>
                     <div class="mb-2">
                         <small class="text-muted">Click on a field to insert it into the template:</small>
                     </div>
                     <div class="mb-3" id="sms-fields">
-                        <small class="text-muted">Select a template type to see available fields</small>
+                        <small class="text-muted">{{ __('Select a template type to see available fields') }}</small>
                     </div>
                     <textarea 
                         name="sms_template" 
@@ -59,7 +70,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="email_subject" class="form-label fw-bold">Email Subject</label>
+                    <label for="email_subject" class="form-label fw-bold">{{ __('Email Subject') }}</label>
                     <textarea 
                         name="email_subject" 
                         id="email_subject" 
@@ -71,12 +82,12 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="email_template" class="form-label fw-bold">Email Template (HTML)</label>
+                    <label for="email_template" class="form-label fw-bold">{{ __('Email Template (HTML)') }}</label>
                     <div class="mb-2">
                         <small class="text-muted">Click on a field to insert it into the template:</small>
                     </div>
                     <div class="mb-3" id="email-fields">
-                        <small class="text-muted">Select a template type to see available fields</small>
+                        <small class="text-muted">{{ __('Select a template type to see available fields') }}</small>
                     </div>
                     <textarea 
                         name="email_template" 
@@ -99,29 +110,21 @@
                             {{ old('is_active', true) ? 'checked' : '' }}
                         >
                         <label class="form-check-label" for="is_active">
-                            <strong>Enable this template</strong> - Messages will only be sent if this template is enabled
+                            <strong>{{ __('Enable this template') }}</strong> - Messages will only be sent if this template is enabled
                         </label>
                     </div>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create Template</button>
-                    <a href="{{ route('message-templates.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Create Template') }}</button>
+                    <a href="{{ route('message-templates.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        const fieldsByType = {
-            'tenant_welcome': ['tenant_name', 'company_name', 'phone', 'control_number', 'bank_name', 'account_number', 'rent_amount', 'property_name', 'unit_number'],
-            'landlord_welcome': ['landlord_name', 'company_name', 'property_names'],
-            'buyer_welcome': ['buyer_name', 'company_name', 'unit_number', 'property_name', 'amount', 'control_number', 'bank_name', 'account_number'],
-            'lease_payment': ['amount', 'lease_duration', 'balance', 'lease_number', 'tenant_name', 'property_name', 'unit_number'],
-            'buyer_invoice': ['amount', 'balance', 'payment_terms', 'invoice_number', 'buyer_name', 'property_name', 'unit_number'],
-            'landlord_payment_notification': ['amount', 'tenant_name', 'unit_number', 'property_name', 'payment_date'],
-            'tenant_payment_notification': ['amount', 'unit_number', 'property_name', 'payment_date', 'balance'],
-        };
+        const fieldsByType = @json(\App\Models\MessageTemplate::PLACEHOLDERS);
 
         function updateAvailableFields() {
             const type = document.getElementById('type').value;
@@ -131,8 +134,8 @@
             const emailFieldsContainer = document.getElementById('email-fields');
             
             if (fields.length === 0) {
-                smsFieldsContainer.innerHTML = '<small class="text-muted">Select a template type to see available fields</small>';
-                emailFieldsContainer.innerHTML = '<small class="text-muted">Select a template type to see available fields</small>';
+                smsFieldsContainer.innerHTML = '<small class="text-muted">{{ __('Select a template type to see available fields') }}</small>';
+                emailFieldsContainer.innerHTML = '<small class="text-muted">{{ __('Select a template type to see available fields') }}</small>';
                 return;
             }
             

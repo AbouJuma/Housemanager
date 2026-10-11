@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Unit')
+@section('title', __('New Unit'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Unit</h1>
+    <h1 class="h4 mb-0">{{ __('New Unit') }}</h1>
 @endsection
 
 @section('content')
@@ -20,7 +20,7 @@
                     <a href="{{ route('units.create_multiple', $building) }}" class="btn btn-outline-primary">
                         <i class="bi bi-plus-lg"></i> Create Multiple
                     </a>
-                    <a href="{{ route('buildings.show', $building) }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('buildings.show', $building) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

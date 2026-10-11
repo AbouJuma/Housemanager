@@ -3,6 +3,8 @@
 namespace App\Modules\Users\Services;
 
 use App\Core\Tenancy\PermissionsTeam;
+use App\Models\User;
+use App\Modules\Users\Notifications\AccessChanged;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -46,8 +48,20 @@ class RoleService
     public function update(Role $role, array $attributes): Role
     {
         return PermissionsTeam::runAs($role->company_id, fn () => DB::transaction(function () use ($role, $attributes) {
+            $before = $role->permissions->pluck('name')->all();
+
             $role->update(['name' => $attributes['name']]);
             $role->syncPermissions($attributes['permissions'] ?? []);
+
+            $after = $role->fresh()->permissions->pluck('name')->all();
+            $granted = array_values(array_diff($after, $before));
+            $revoked = array_values(array_diff($before, $after));
+
+            if ($granted || $revoked) {
+                foreach (User::query()->role($role->name)->where('company_id', $role->company_id)->get() as $user) {
+                    $user->notify(new AccessChanged($granted, $revoked, $user->getRoleNames()->all()));
+                }
+            }
 
             return $role->fresh();
         }));

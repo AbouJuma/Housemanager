@@ -16,26 +16,26 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-1"></i> All Invoices
+                <i class="bi bi-arrow-left me-1"></i> {{ __('All Invoices') }}
             </a>
             <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-outline-primary btn-sm" target="_blank">
-                <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+                <i class="bi bi-file-earmark-pdf me-1"></i> {{ __('Download PDF') }}
             </a>
             @can('update', $invoice)
                 @if ($invoice->isEditable())
                     <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-pencil me-1"></i> Edit
+                        <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                     </a>
                     <form action="{{ route('invoices.send', $invoice) }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-send me-1"></i> Send Invoice</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-send me-1"></i> {{ __('Send Invoice') }}</button>
                     </form>
                 @endif
                 @if (! in_array($invoice->status, ['paid', 'cancelled']))
                     <form action="{{ route('invoices.cancel', $invoice) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="this invoice" data-text="Cancelling this invoice cannot be undone.">
-                            <i class="bi bi-x-lg me-1"></i> Cancel
+                            <i class="bi bi-x-lg me-1"></i> {{ __('Cancel') }}
                         </button>
                     </form>
                 @endif
@@ -46,7 +46,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="{{ $invoice->invoice_number }}">
-                            <i class="bi bi-trash me-1"></i> Delete
+                            <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                         </button>
                     </form>
                 @endif
@@ -58,47 +58,47 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Details</h2>
+                    <h2 class="h6 mb-3">{{ __('Details') }}</h2>
                     <div class="row g-3 small">
                         @if($invoice->lease)
                             <div class="col-md-4">
-                                <div class="text-secondary">Tenant</div>
+                                <div class="text-secondary">{{ __('Tenant') }}</div>
                                 <div><a href="{{ route('tenants.show', $invoice->lease->tenant) }}">{{ $invoice->lease->tenant->name }}</a></div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Unit</div>
+                                <div class="text-secondary">{{ __('Unit') }}</div>
                                 <div><a href="{{ route('units.show', $invoice->lease->unit) }}">{{ $invoice->lease->unit->unit_number }}</a> &middot; {{ $invoice->lease->unit->building->property->name }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Lease</div>
-                                <div><a href="{{ route('leases.show', $invoice->lease) }}">View Lease</a></div>
+                                <div class="text-secondary">{{ __('Lease') }}</div>
+                                <div><a href="{{ route('leases.show', $invoice->lease) }}">{{ __('View Lease') }}</a></div>
                             </div>
                         @elseif($invoice->sale)
                             <div class="col-md-4">
-                                <div class="text-secondary">Buyer</div>
+                                <div class="text-secondary">{{ __('Buyer') }}</div>
                                 <div><a href="{{ route('buyers.show', $invoice->sale->buyer) }}">{{ $invoice->sale->buyer->name }}</a></div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Unit</div>
+                                <div class="text-secondary">{{ __('Unit') }}</div>
                                 <div><a href="{{ route('units.show', $invoice->sale->unit) }}">{{ $invoice->sale->unit->unit_number }}</a> &middot; {{ $invoice->sale->unit->building->property->name }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Sale</div>
-                                <div><a href="{{ route('sales.show', $invoice->sale) }}">View Sale</a></div>
+                                <div class="text-secondary">{{ __('Sale') }}</div>
+                                <div><a href="{{ route('sales.show', $invoice->sale) }}">{{ __('View Sale') }}</a></div>
                             </div>
                         @endif
                         <div class="col-md-4">
-                            <div class="text-secondary">Issue Date</div>
+                            <div class="text-secondary">{{ __('Issue Date') }}</div>
                             <div>{{ $invoice->issue_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Due Date</div>
+                            <div class="text-secondary">{{ __('Due Date') }}</div>
                             <div>{{ $invoice->due_date->toFormattedDateString() }}</div>
                         </div>
                     </div>
                     @if ($invoice->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $invoice->notes }}</p>
                     @endif
                 </div>
@@ -106,15 +106,15 @@
 
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Line Items</h2>
+                    <h2 class="h6 mb-3">{{ __('Line Items') }}</h2>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
-                                    <th class="text-end">Qty</th>
-                                    <th class="text-end">Unit Price</th>
-                                    <th class="text-end">Amount</th>
+                                    <th>{{ __('Description') }}</th>
+                                    <th class="text-end">{{ __('Qty') }}</th>
+                                    <th class="text-end">{{ __('Unit Price') }}</th>
+                                    <th class="text-end">{{ __('Amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -129,15 +129,15 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="3" class="text-end">Total</th>
+                                    <th colspan="3" class="text-end">{{ __('Total') }}</th>
                                     <th class="text-end">{{ number_format($invoice->total_amount, 2) }}</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="text-end">Paid</th>
+                                    <th colspan="3" class="text-end">{{ __('Paid') }}</th>
                                     <th class="text-end">{{ number_format($invoice->amount_paid, 2) }}</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="text-end">Balance Due</th>
+                                    <th colspan="3" class="text-end">{{ __('Balance Due') }}</th>
                                     <th class="text-end">{{ number_format($invoice->balanceDue(), 2) }}</th>
                                 </tr>
                             </tfoot>
@@ -148,20 +148,20 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Payments</h2>
+                    <h2 class="h6 mb-3">{{ __('Payments') }}</h2>
 
                     @if ($invoice->payments->isEmpty())
-                        <p class="text-secondary small mb-0">No payments recorded yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No payments recorded yet.') }}</p>
                     @else
                         <div class="table-responsive mb-3">
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Method</th>
-                                        <th>Reference</th>
-                                        <th class="text-end">Amount</th>
-                                        <th>Recorded By</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Method') }}</th>
+                                        <th>{{ __('Reference') }}</th>
+                                        <th class="text-end">{{ __('Amount') }}</th>
+                                        <th>{{ __('Recorded By') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -182,22 +182,22 @@
                     @can('update', $invoice)
                         @if (in_array($invoice->status, ['sent', 'partially_paid', 'overdue']))
                             <hr>
-                            <h3 class="h6 mb-3">Record a Payment</h3>
+                            <h3 class="h6 mb-3">{{ __('Record a Payment') }}</h3>
                             <form method="POST" action="{{ route('invoices.payments.store', $invoice) }}">
                                 @csrf
                                 <div class="row g-3">
                                     <div class="col-md-3">
-                                        <label class="form-label">Amount</label>
+                                        <label class="form-label">{{ __('Amount') }}</label>
                                         <input type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount') }}" class="form-control @error('amount') is-invalid @enderror" required>
                                         @error('amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Paid On</label>
+                                        <label class="form-label">{{ __('Paid On') }}</label>
                                         <input type="date" name="paid_on" value="{{ old('paid_on', now()->toDateString()) }}" class="form-control @error('paid_on') is-invalid @enderror" required>
                                         @error('paid_on') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Method</label>
+                                        <label class="form-label">{{ __('Method') }}</label>
                                         <select name="method" class="form-select @error('method') is-invalid @enderror">
                                             @foreach (['cash', 'bank_transfer', 'mobile_money', 'cheque', 'other'] as $method)
                                                 <option value="{{ $method }}" @selected(old('method') === $method)>{{ ucfirst(str_replace('_', ' ', $method)) }}</option>
@@ -206,17 +206,17 @@
                                         @error('method') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Reference <span class="text-secondary fw-normal">(optional)</span></label>
+                                        <label class="form-label">{{ __('Reference') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                                         <input type="text" name="reference" value="{{ old('reference') }}" class="form-control @error('reference') is-invalid @enderror">
                                         @error('reference') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Notes <span class="text-secondary fw-normal">(optional)</span></label>
+                                        <label class="form-label">{{ __('Notes') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                                         <input type="text" name="notes" value="{{ old('notes') }}" class="form-control @error('notes') is-invalid @enderror">
                                         @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-sm mt-3">Record Payment</button>
+                                <button type="submit" class="btn btn-primary btn-sm mt-3">{{ __('Record Payment') }}</button>
                             </form>
                         @endif
                     @endcan
@@ -226,18 +226,18 @@
             @if ($invoice->paymentAttempts->isNotEmpty() || ($hasActivePaymentProvider && in_array($invoice->status, ['sent', 'partially_paid', 'overdue'])))
                 <div class="card border-0 shadow-sm mt-4">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Online Payment</h2>
+                        <h2 class="h6 mb-3">{{ __('Online Payment') }}</h2>
 
                         @if ($invoice->paymentAttempts->isNotEmpty())
                             <div class="table-responsive mb-3">
                                 <table class="table align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
+                                            <th>{{ __('Date') }}</th>
                                             <th>Provider</th>
-                                            <th class="text-end">Amount</th>
-                                            <th>Status</th>
-                                            <th class="text-end">Actions</th>
+                                            <th class="text-end">{{ __('Amount') }}</th>
+                                            <th>{{ __('Status') }}</th>
+                                            <th class="text-end">{{ __('Actions') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

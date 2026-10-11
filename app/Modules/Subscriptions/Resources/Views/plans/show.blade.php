@@ -18,7 +18,7 @@
             </a>
             @can('update', $plan)
                 <a href="{{ route('subscription-plans.edit', $plan) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -31,18 +31,18 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-4 text-secondary fw-normal">Slug</dt>
                         <dd class="col-sm-8">{{ $plan->slug }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Price</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Price') }}</dt>
                         <dd class="col-sm-8">{{ number_format($plan->price, 2) }} / {{ $plan->billing_cycle }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Max Properties</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Max Properties') }}</dt>
                         <dd class="col-sm-8">{{ $plan->limitLabel($plan->max_properties) }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Max Units</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Max Units') }}</dt>
                         <dd class="col-sm-8">{{ $plan->limitLabel($plan->max_units) }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Max Users</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Max Users') }}</dt>
                         <dd class="col-sm-8">{{ $plan->limitLabel($plan->max_users) }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Sort Order</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Sort Order') }}</dt>
                         <dd class="col-sm-8">{{ $plan->sort_order }}</dd>
                         @if ($plan->description)
-                            <dt class="col-sm-4 text-secondary fw-normal">Description</dt>
+                            <dt class="col-sm-4 text-secondary fw-normal">{{ __('Description') }}</dt>
                             <dd class="col-sm-8">{{ $plan->description }}</dd>
                         @endif
                     </dl>

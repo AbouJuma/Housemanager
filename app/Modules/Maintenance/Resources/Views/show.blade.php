@@ -21,7 +21,7 @@
             </a>
             @can('update', $maintenanceRequest)
                 <a href="{{ route('maintenance-requests.edit', $maintenanceRequest) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
             @can('delete', $maintenanceRequest)
@@ -29,7 +29,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="this maintenance request">
-                        <i class="bi bi-trash me-1"></i> Delete
+                        <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                     </button>
                 </form>
             @endcan
@@ -40,14 +40,14 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Details</h2>
+                    <h2 class="h6 mb-3">{{ __('Details') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Property</div>
+                            <div class="text-secondary">{{ __('Property') }}</div>
                             <div><a href="{{ route('properties.show', $maintenanceRequest->property) }}">{{ $maintenanceRequest->property->name }}</a></div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Unit</div>
+                            <div class="text-secondary">{{ __('Unit') }}</div>
                             <div>
                                 @if ($maintenanceRequest->unit)
                                     <a href="{{ route('units.show', $maintenanceRequest->unit) }}">{{ $maintenanceRequest->unit->unit_number }}</a>
@@ -67,11 +67,11 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Category</div>
+                            <div class="text-secondary">{{ __('Category') }}</div>
                             <div class="text-capitalize">{{ str_replace('_', ' ', $maintenanceRequest->category) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Vendor</div>
+                            <div class="text-secondary">{{ __('Vendor') }}</div>
                             <div>
                                 @if ($maintenanceRequest->vendor)
                                     <a href="{{ route('vendors.show', $maintenanceRequest->vendor) }}">{{ $maintenanceRequest->vendor->name }}</a>
@@ -81,11 +81,11 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Reported Date</div>
+                            <div class="text-secondary">{{ __('Reported Date') }}</div>
                             <div>{{ $maintenanceRequest->reported_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Scheduled Date</div>
+                            <div class="text-secondary">{{ __('Scheduled Date') }}</div>
                             <div>{{ $maintenanceRequest->scheduled_date?->toFormattedDateString() ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
@@ -93,18 +93,18 @@
                             <div>{{ $maintenanceRequest->completed_date?->toFormattedDateString() ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Estimated Cost</div>
+                            <div class="text-secondary">{{ __('Estimated Cost') }}</div>
                             <div>{{ $maintenanceRequest->estimated_cost !== null ? number_format($maintenanceRequest->estimated_cost, 2) : '—' }}</div>
                         </div>
                     </div>
                     @if ($maintenanceRequest->description)
                         <hr>
-                        <div class="text-secondary small mb-1">Description</div>
+                        <div class="text-secondary small mb-1">{{ __('Description') }}</div>
                         <p class="mb-0">{{ $maintenanceRequest->description }}</p>
                     @endif
                     @if ($maintenanceRequest->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $maintenanceRequest->notes }}</p>
                     @endif
                 </div>
@@ -119,8 +119,8 @@
                                 <thead>
                                     <tr>
                                         <th>Item</th>
-                                        <th>Quantity</th>
-                                        <th>Date</th>
+                                        <th>{{ __('Quantity') }}</th>
+                                        <th>{{ __('Date') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,7 +157,7 @@
                             <form method="POST" action="{{ route('maintenance-requests.record-expense', $maintenanceRequest) }}">
                                 @csrf
                                 <div class="mb-2">
-                                    <label class="form-label small">Category</label>
+                                    <label class="form-label small">{{ __('Category') }}</label>
                                     <select name="account_id" class="form-select form-select-sm @error('account_id') is-invalid @enderror" required>
                                         @foreach ($expenseAccounts as $account)
                                             <option value="{{ $account->id }}">{{ $account->code }} &middot; {{ $account->name }}</option>
@@ -166,25 +166,25 @@
                                     @error('account_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small">Amount</label>
+                                    <label class="form-label small">{{ __('Amount') }}</label>
                                     <input type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount', $maintenanceRequest->estimated_cost) }}" class="form-control form-control-sm @error('amount') is-invalid @enderror" required>
                                     @error('amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small">Expense Date</label>
+                                    <label class="form-label small">{{ __('Expense Date') }}</label>
                                     <input type="date" name="expense_date" value="{{ old('expense_date', now()->toDateString()) }}" class="form-control form-control-sm @error('expense_date') is-invalid @enderror" required>
                                     @error('expense_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small">Payment Status</label>
+                                    <label class="form-label small">{{ __('Payment Status') }}</label>
                                     <select name="payment_status" id="maintenancePaymentStatus" class="form-select form-select-sm @error('payment_status') is-invalid @enderror" required>
-                                        <option value="unpaid">Unpaid (bill owed)</option>
-                                        <option value="paid">Paid now</option>
+                                        <option value="unpaid">{{ __('Unpaid (bill owed)') }}</option>
+                                        <option value="paid">{{ __('Paid now') }}</option>
                                     </select>
                                     @error('payment_status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-2" id="maintenancePaymentMethodField">
-                                    <label class="form-label small">Payment Method</label>
+                                    <label class="form-label small">{{ __('Payment Method') }}</label>
                                     <select name="payment_method" class="form-select form-select-sm @error('payment_method') is-invalid @enderror">
                                         @foreach (['cash', 'bank_transfer', 'cheque', 'mobile_money', 'other'] as $method)
                                             <option value="{{ $method }}">{{ ucfirst(str_replace('_', ' ', $method)) }}</option>
@@ -193,11 +193,11 @@
                                     @error('payment_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="mb-3" id="maintenancePaidOnField">
-                                    <label class="form-label small">Paid On</label>
+                                    <label class="form-label small">{{ __('Paid On') }}</label>
                                     <input type="date" name="paid_on" value="{{ old('paid_on', now()->toDateString()) }}" class="form-control form-control-sm @error('paid_on') is-invalid @enderror">
                                     @error('paid_on') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-sm">Record Expense</button>
+                                <button type="submit" class="btn btn-primary btn-sm">{{ __('Record Expense') }}</button>
                             </form>
 
                             <script>

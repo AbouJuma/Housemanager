@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'System Settings')
+@section('title', __('System Settings'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">System Settings</h1>
+    <h1 class="h4 mb-0">{{ __('System Settings') }}</h1>
 @endsection
 
 @section('content')
@@ -27,7 +27,7 @@
                     @error('default_currency_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
             </form>
         </div>
     </div>

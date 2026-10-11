@@ -10,7 +10,7 @@ class UpdateSaleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('update', Sale::class);
+        return $this->user()->can('update', $this->route('sale'));
     }
 
     public function rules(): array

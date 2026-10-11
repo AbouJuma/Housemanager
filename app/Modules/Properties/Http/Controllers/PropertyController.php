@@ -27,9 +27,14 @@ class PropertyController extends Controller
             $request->string('search')->toString() ?: null,
             $request->string('type')->toString() ?: null,
             $request->string('status')->toString() ?: null,
+            region: $request->string('region')->toString() ?: null,
+            district: $request->string('district')->toString() ?: null,
         );
 
-        return view('properties::properties.index', compact('properties'));
+        return view('properties::properties.index', [
+            'properties' => $properties,
+            'regions' => config('tanzania.regions'),
+        ]);
     }
 
     public function create(): View

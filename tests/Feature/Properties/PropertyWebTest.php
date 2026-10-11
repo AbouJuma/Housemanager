@@ -47,6 +47,33 @@ class PropertyWebTest extends TestCase
         $response->assertViewHas('properties', fn ($properties) => $properties->total() === 2);
     }
 
+    /**
+     * The "Add New" landlord button/modal on this form only appears for a
+     * user who can actually create a landlord (@can('create', Landlord::class)
+     * in properties::properties._form) - this admin has properties.* only.
+     */
+    public function test_the_create_form_hides_the_add_landlord_button_without_landlord_permission(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $this->actingAs($admin)->get(route('properties.create'))
+            ->assertOk()
+            ->assertDontSee('id="landlordModal"', false);
+    }
+
+    public function test_the_create_form_shows_the_add_landlord_button_with_landlord_permission(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+        PermissionsTeam::runAs($company->id, fn () => $admin->givePermissionTo('landlords.create'));
+
+        $this->actingAs($admin)->get(route('properties.create'))
+            ->assertOk()
+            ->assertSee('id="landlordModal"', false)
+            ->assertSee(route('landlords.store'));
+    }
+
     public function test_a_company_admin_can_create_a_property(): void
     {
         $company = Company::factory()->create();
@@ -97,5 +124,52 @@ class PropertyWebTest extends TestCase
 
         $response->assertRedirect(route('properties.index'));
         $this->assertSoftDeleted('properties', ['id' => $property->id]);
+    }
+    public function test_the_add_landlord_modal_is_rendered_outside_the_property_form(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+        PermissionsTeam::runAs($company->id, fn () => Role::findByName("Admin", "web")->givePermissionTo("landlords.create"));
+        $admin->unsetRelation("roles")->unsetRelation("permissions");
+
+        $html = $this->actingAs($admin)->get(route("properties.create"))->assertOk()->getContent();
+
+        // The modal has its own `required` inputs - nested inside the
+        // property form they silently blocked every submit.
+        $formEnd = strpos($html, "</form>", strpos($html, route("properties.store")));
+        $this->assertNotFalse(strpos($html, "id=\"landlordModal\""));
+        $this->assertGreaterThan($formEnd, strpos($html, "id=\"landlordModal\""));
+    }
+    public function test_a_property_saves_its_tanzanian_region_district_and_area(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $this->actingAs($admin)->post(route('properties.store'), [
+            'name' => 'Masaki Heights',
+            'type' => 'residential',
+            'state' => 'Dar es Salaam',
+            'city' => 'Kinondoni',
+            'area' => 'Masaki',
+            'country_code' => 'TZ',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('properties', ['name' => 'Masaki Heights', 'state' => 'Dar es Salaam', 'city' => 'Kinondoni', 'area' => 'Masaki']);
+    }
+
+    public function test_the_property_list_filters_by_region_and_district(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+        Property::factory()->create(['company_id' => $company->id, 'name' => 'Masaki Heights', 'state' => 'Dar es Salaam', 'city' => 'Kinondoni']);
+        Property::factory()->create(['company_id' => $company->id, 'name' => 'Kariakoo Plaza', 'state' => 'Dar es Salaam', 'city' => 'Ilala']);
+        Property::factory()->create(['company_id' => $company->id, 'name' => 'Njiro Villas', 'state' => 'Arusha', 'city' => 'Arusha City']);
+
+        $this->actingAs($admin)->get(route('properties.index', ['region' => 'Dar es Salaam']))
+            ->assertViewHas('properties', fn ($properties) => $properties->total() === 2);
+
+        $this->actingAs($admin)->get(route('properties.index', ['region' => 'Dar es Salaam', 'district' => 'Ilala']))
+            ->assertOk()
+            ->assertViewHas('properties', fn ($properties) => $properties->pluck('name')->all() === ['Kariakoo Plaza']);
     }
 }

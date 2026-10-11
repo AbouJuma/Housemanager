@@ -16,16 +16,17 @@ class InstallmentController extends Controller
     {
     }
 
-    public function show(Sale $sale, string $installment): View
+    /**
+     * There is no separate installment page (the view never existed) -
+     * installments are listed and paid on their sale's page.
+     */
+    public function show(Sale $sale, string $installment): RedirectResponse
     {
         $this->authorize('view', $sale);
 
-        $installment = Installment::where('uuid', $installment)->where('sale_id', $sale->id)->firstOrFail();
+        Installment::where('uuid', $installment)->where('sale_id', $sale->id)->firstOrFail();
 
-        return view('sales::installments.show', [
-            'sale' => $sale,
-            'installment' => $installment,
-        ]);
+        return redirect()->route('sales.show', $sale);
     }
 
     public function recordPayment(RecordPaymentRequest $request, Sale $sale, string $installment): RedirectResponse

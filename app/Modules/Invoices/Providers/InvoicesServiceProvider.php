@@ -4,11 +4,14 @@ namespace App\Modules\Invoices\Providers;
 
 use App\Core\Foundation\ModuleServiceProvider;
 use App\Modules\Invoices\Console\Commands\MarkOverdueInvoices;
+use App\Modules\Invoices\Events\InvoiceSent;
+use App\Modules\Invoices\Listeners\NotifyCustomerOfInvoiceSent;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Invoices\Policies\InvoicePolicy;
 use App\Modules\Invoices\Repositories\EloquentInvoiceRepository;
 use App\Modules\Invoices\Repositories\InvoiceRepositoryInterface;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 
 class InvoicesServiceProvider extends ModuleServiceProvider
@@ -23,6 +26,8 @@ class InvoicesServiceProvider extends ModuleServiceProvider
         parent::boot();
 
         Gate::policy(Invoice::class, InvoicePolicy::class);
+
+        Event::listen(InvoiceSent::class, NotifyCustomerOfInvoiceSent::class);
 
         $this->commands([MarkOverdueInvoices::class]);
 

@@ -59,7 +59,7 @@ class UnitController extends Controller
 
     public function destroy(Unit $unit): RedirectResponse
     {
-        $this->authorize('delete', Unit::class);
+        $this->authorize('delete', $unit);
 
         $building = $unit->building;
         $this->service->delete($unit);

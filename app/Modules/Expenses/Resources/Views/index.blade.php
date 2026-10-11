@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Expenses')
+@section('title', __('Expenses'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Expenses</h1>
+    <h1 class="h4 mb-0">{{ __('Expenses') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Expenses</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Expenses') }}</h1>
             <p class="text-secondary mb-0">{{ $expenses->total() }} {{ Str::plural('expense', $expenses->total()) }}</p>
         </div>
         @can('create', \App\Modules\Expenses\Models\Expense::class)
             <a href="{{ route('expenses.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Expense
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Expense') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="property_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">All properties</option>
+                        <option value="">{{ __('All properties') }}</option>
                         @foreach ($properties as $property)
                             <option value="{{ $property->id }}" @selected((string) request('property_id') === (string) $property->id)>{{ $property->name }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="payment_status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['unpaid', 'paid'] as $status)
                             <option value="{{ $status }}" @selected(request('payment_status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -49,21 +49,21 @@
             @if ($expenses->isEmpty())
                 <div class="text-center py-5">
                     <i class="bi bi-cash-stack display-4 text-secondary"></i>
-                    <p class="mt-3 mb-1 fw-semibold">No expenses yet</p>
-                    <p class="text-secondary">Expenses you record will show up here.</p>
+                    <p class="mt-3 mb-1 fw-semibold">{{ __('No expenses yet') }}</p>
+                    <p class="text-secondary">{{ __('Expenses you record will show up here.') }}</p>
                 </div>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Property</th>
-                                <th class="text-end">Amount</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Date') }}</th>
+                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th>{{ __('Property') }}</th>
+                                <th class="text-end">{{ __('Amount') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,7 +76,7 @@
                                     <td class="text-end">{{ number_format($expense->amount, 2) }}</td>
                                     <td>
                                         @if ($expense->isVoided())
-                                            <span class="badge text-bg-secondary">Voided</span>
+                                            <span class="badge text-bg-secondary">{{ __('Voided') }}</span>
                                         @else
                                             <span class="badge text-bg-{{ $expense->isPaid() ? 'success' : 'warning' }} text-capitalize">{{ $expense->payment_status }}</span>
                                         @endif

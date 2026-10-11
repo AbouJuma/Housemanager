@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Tenants')
+@section('title', __('Tenants'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Tenants</h1>
+    <h1 class="h4 mb-0">{{ __('Tenants') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Tenants</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Tenants') }}</h1>
             <p class="text-secondary mb-0">{{ $tenants->total() }} {{ Str::plural('tenant', $tenants->total()) }}</p>
         </div>
         @can('create', \App\Modules\Tenants\Models\Tenant::class)
             <a href="{{ route('tenants.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Tenant
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Tenant') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="type" class="form-select" onchange="this.form.submit()">
-                        <option value="">All types</option>
+                        <option value="">{{ __('All types') }}</option>
                         @foreach (['individual', 'company'] as $type)
                             <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst($type) }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'inactive', 'blacklisted'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -57,11 +57,11 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Tenant</th>
-                                <th>Type</th>
-                                <th>Contact</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Tenant') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Contact') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

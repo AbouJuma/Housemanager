@@ -1,9 +1,9 @@
 @extends('landlord-portal::layout')
 
-@section('title', 'Expenses')
+@section('title', __('Expenses'))
 
 @section('content')
-    <h1 class="h4 mb-4">Expenses</h1>
+    <h1 class="h4 mb-4">{{ __('Expenses') }}</h1>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -14,12 +14,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Property</th>
-                                <th>Category</th>
-                                <th class="text-end">Amount</th>
-                                <th>Status</th>
+                                <th>{{ __('Date') }}</th>
+                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th class="text-end">{{ __('Amount') }}</th>
+                                <th>{{ __('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>

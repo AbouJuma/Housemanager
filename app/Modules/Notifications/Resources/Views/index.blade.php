@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Notifications')
+@section('title', __('Notifications'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Notifications</h1>
+    <h1 class="h4 mb-0">{{ __('Notifications') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Notifications</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Notifications') }}</h1>
             <p class="text-secondary mb-0">{{ $notifications->total() }} {{ Str::plural('notification', $notifications->total()) }}</p>
         </div>
         @if ($notifications->isNotEmpty())

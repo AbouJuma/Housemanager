@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\RentCollection;
 
+use App\Models\MessageTemplate;
 use App\Modules\Companies\Models\Company;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Leases\Models\Lease;
@@ -16,6 +17,25 @@ use Tests\TestCase;
 class InvoiceDueSoonTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Content only renders once a real MessageTemplate row exists for
+     * this type (App\Notifications\TemplatedNotification::toCompanySms/
+     * toCompanyMail return '' otherwise, by design - see its docblock),
+     * matching what MessageTemplateSeeder creates in a real environment.
+     */
+    protected function seedTemplate(): void
+    {
+        MessageTemplate::create([
+            'company_id' => null,
+            'type' => 'invoice_due_soon',
+            'name' => 'Rent Invoice Due Soon',
+            'sms_template' => 'Reminder: Invoice {invoice_number} for Tsh {amount} is due {due_date}.',
+            'email_subject' => 'Rent due {due_date} - Invoice {invoice_number}',
+            'email_template' => "Hi {tenant_name},\n\nInvoice {invoice_number} for Tsh {amount} is due on {due_date}.",
+            'is_active' => true,
+        ]);
+    }
 
     protected function makeInvoice(): Invoice
     {
@@ -54,6 +74,7 @@ class InvoiceDueSoonTest extends TestCase
 
     public function test_to_company_mail_addresses_the_tenant_by_name(): void
     {
+        $this->seedTemplate();
         $invoice = $this->makeInvoice();
         $tenant = $invoice->lease->tenant;
 
@@ -65,10 +86,20 @@ class InvoiceDueSoonTest extends TestCase
 
     public function test_to_company_sms_is_short_and_mentions_the_invoice(): void
     {
+        $this->seedTemplate();
         $invoice = $this->makeInvoice();
 
         $sms = (new InvoiceDueSoon($invoice))->toCompanySms($invoice->lease->tenant);
 
         $this->assertStringContainsString('INV-000001', $sms);
+    }
+
+    public function test_to_company_sms_is_empty_without_a_configured_template(): void
+    {
+        $invoice = $this->makeInvoice();
+
+        $sms = (new InvoiceDueSoon($invoice))->toCompanySms($invoice->lease->tenant);
+
+        $this->assertSame('', $sms);
     }
 }

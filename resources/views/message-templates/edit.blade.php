@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Message Template')
+@section('title', __('Edit Message Template'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Edit Message Template</h1>
+    <h1 class="h4 mb-0">{{ __('Edit Message Template') }}</h1>
 @endsection
 
 @section('content')
@@ -14,7 +14,7 @@
                 @method('PUT')
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Template Type</label>
+                    <label class="form-label fw-bold">{{ __('Template Type') }}</label>
                     <div class="form-control-plaintext">
                         <span class="badge bg-primary">
                             {{ Str::title(str_replace('_', ' ', $template->type)) }}
@@ -23,27 +23,25 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Template Name</label>
+                    <label class="form-label fw-bold">{{ __('Template Name') }}</label>
                     <div class="form-control-plaintext">{{ $template->name }}</div>
                 </div>
 
+                @if ($usage = \App\Models\MessageTemplate::usage($template->type))
+                    <div class="alert alert-info">
+                        <strong>Where this is sent:</strong> {{ $usage['module'] }} &rarr; to {{ $usage['recipient'] }}.<br>
+                        {{ $usage['when'] }}
+                    </div>
+                @endif
+
                 <div class="mb-4">
-                    <label for="sms_template" class="form-label fw-bold">SMS Template</label>
+                    <label for="sms_template" class="form-label fw-bold">{{ __('SMS Template') }}</label>
                     <div class="mb-2">
                         <small class="text-muted">Click on a field to insert it into the template:</small>
                     </div>
                     <div class="mb-3">
                         @php
-                            $availableFields = match($template->type) {
-                                'tenant_welcome' => ['tenant_name', 'company_name', 'phone', 'control_number', 'bank_name', 'account_number', 'rent_amount', 'property_name', 'unit_number'],
-                                'landlord_welcome' => ['landlord_name', 'company_name', 'property_names'],
-                                'buyer_welcome' => ['buyer_name', 'company_name', 'unit_number', 'property_name', 'amount', 'control_number', 'bank_name', 'account_number'],
-                                'lease_payment' => ['amount', 'lease_duration', 'balance', 'lease_number', 'tenant_name', 'property_name', 'unit_number'],
-                                'buyer_invoice' => ['amount', 'balance', 'payment_terms', 'invoice_number', 'buyer_name', 'property_name', 'unit_number'],
-                                'landlord_payment_notification' => ['amount', 'tenant_name', 'unit_number', 'property_name', 'payment_date'],
-                                'tenant_payment_notification' => ['amount', 'unit_number', 'property_name', 'payment_date', 'balance'],
-                                default => [],
-                            };
+                            $availableFields = \App\Models\MessageTemplate::placeholders($template->type);
                         @endphp
                         @foreach($availableFields as $field)
                             <button type="button" class="btn btn-sm btn-outline-primary me-1 mb-1 field-picker" data-field="{{ $field }}">
@@ -62,7 +60,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="email_subject" class="form-label fw-bold">Email Subject</label>
+                    <label for="email_subject" class="form-label fw-bold">{{ __('Email Subject') }}</label>
                     <textarea 
                         name="email_subject" 
                         id="email_subject" 
@@ -74,7 +72,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="email_template" class="form-label fw-bold">Email Template (HTML)</label>
+                    <label for="email_template" class="form-label fw-bold">{{ __('Email Template (HTML)') }}</label>
                     <div class="mb-2">
                         <small class="text-muted">Click on a field to insert it into the template:</small>
                     </div>
@@ -106,14 +104,14 @@
                             {{ old('is_active', $template->is_active) ? 'checked' : '' }}
                         >
                         <label class="form-check-label" for="is_active">
-                            <strong>Enable this template</strong> - Messages will only be sent if this template is enabled
+                            <strong>{{ __('Enable this template') }}</strong> - Messages will only be sent if this template is enabled
                         </label>
                     </div>
                 </div>
 
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Update Template</button>
-                    <a href="{{ route('message-templates.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('message-templates.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

@@ -26,6 +26,8 @@ class LeaseController extends Controller
             $this->service->paginate(
                 $request->string('search')->toString() ?: null,
                 $request->string('status')->toString() ?: null,
+                from: $request->string('from')->toString() ?: null,
+                to: $request->string('to')->toString() ?: null,
             )
         );
     }

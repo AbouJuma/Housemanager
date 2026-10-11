@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Landlords')
+@section('title', __('Landlords'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Landlords</h1>
+    <h1 class="h4 mb-0">{{ __('Landlords') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Landlords</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Landlords') }}</h1>
             <p class="text-secondary mb-0">{{ $landlords->total() }} {{ Str::plural('landlord', $landlords->total()) }}</p>
         </div>
         @can('create', \App\Modules\Landlords\Models\Landlord::class)
             <a href="{{ route('landlords.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Landlord
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Landlord') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="type" class="form-select" onchange="this.form.submit()">
-                        <option value="">All types</option>
+                        <option value="">{{ __('All types') }}</option>
                         @foreach (['individual', 'company'] as $type)
                             <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst($type) }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'inactive'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -57,12 +57,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Landlord</th>
-                                <th>Type</th>
-                                <th>Contact</th>
-                                <th>Properties</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Landlord') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Contact') }}</th>
+                                <th>{{ __('Properties') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Integrations')
+@section('title', __('Integrations'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Integrations</h1>
+    <h1 class="h4 mb-0">{{ __('Integrations') }}</h1>
 @endsection
 
 @section('content')
-    <h1 class="h4 mb-3 d-lg-none">Integrations</h1>
+    <h1 class="h4 mb-3 d-lg-none">{{ __('Integrations') }}</h1>
 
     @foreach ($types as $typeKey => $type)
         <div class="card border-0 shadow-sm mb-4">
@@ -22,11 +22,11 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <span class="fw-semibold">{{ $providerLabel }}</span>
                                         @if ($integration && $integration->is_active)
-                                            <span class="badge text-bg-success">Enabled</span>
+                                            <span class="badge text-bg-success">{{ __('Enabled') }}</span>
                                         @elseif ($integration)
-                                            <span class="badge text-bg-secondary">Disabled</span>
+                                            <span class="badge text-bg-secondary">{{ __('Disabled') }}</span>
                                         @else
-                                            <span class="badge text-bg-light text-secondary border">Not Configured</span>
+                                            <span class="badge text-bg-light text-secondary border">{{ __('Not Configured') }}</span>
                                         @endif
                                     </div>
                                     @if ($integration)

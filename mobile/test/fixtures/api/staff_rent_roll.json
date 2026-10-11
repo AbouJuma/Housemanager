@@ -1,0 +1,40 @@
+{
+    "data": [
+        {
+            "property": "Stella Square Complex",
+            "building": "Block sV",
+            "unit": "066W8",
+            "status": "vacant",
+            "tenant": null,
+            "lease_start": null,
+            "lease_end": null,
+            "rent_amount": 300000
+        },
+        {
+            "property": "Stella Square Complex",
+            "building": "Block sV",
+            "unit": "697E4",
+            "status": "occupied",
+            "tenant": "Amina Tenant",
+            "lease_start": "2026-10-11",
+            "lease_end": "2027-10-11",
+            "rent_amount": 450000
+        },
+        {
+            "property": "Stella Square Complex",
+            "building": "Block sV",
+            "unit": "699D9",
+            "status": "vacant",
+            "tenant": null,
+            "lease_start": null,
+            "lease_end": null,
+            "rent_amount": 500000
+        }
+    ],
+    "statuses": [
+        "vacant",
+        "occupied",
+        "reserved",
+        "under_maintenance"
+    ]
+}

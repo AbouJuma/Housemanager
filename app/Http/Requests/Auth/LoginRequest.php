@@ -2,9 +2,13 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Core\Auth\LoginIdentity;
+use App\Core\Auth\WebSignIn;
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -28,7 +32,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            // Email, username or phone number - see App\Core\Auth\LoginIdentity.
+            'email' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
         ];
     }
@@ -42,7 +47,34 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $user = LoginIdentity::attempt(User::class, (string) $this->input('email'), (string) $this->input('password'));
+
+        if (! $user) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        Auth::login($user, $this->boolean('remember'));
+
+        RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Staff first, then tenant and landlord accounts - so anyone can use
+     * this page and lands on their own home screen (App\Core\Auth\WebSignIn).
+     *
+     * @throws ValidationException
+     */
+    public function authenticateAnyAccount(): RedirectResponse
+    {
+        $this->ensureIsNotRateLimited();
+
+        $redirect = WebSignIn::attempt($this, 'staff', (string) $this->input('email'), (string) $this->input('password'));
+
+        if (! $redirect) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -51,6 +83,8 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        return $redirect;
     }
 
     /**

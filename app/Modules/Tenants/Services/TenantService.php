@@ -2,12 +2,13 @@
 
 namespace App\Modules\Tenants\Services;
 
+use App\Core\Auth\AccountProvisioner;
 use App\Core\Services\BaseService;
-use App\Mail\TenantWelcomeMail;
+use App\Modules\Tenants\Models\Tenant;
+use App\Modules\Tenants\Notifications\TenantWelcome;
 use App\Modules\Tenants\Repositories\TenantRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * @property TenantRepositoryInterface $repository see App\Modules\Companies\Services\CompanyService
@@ -15,12 +16,9 @@ use Illuminate\Support\Facades\Mail;
  */
 class TenantService extends BaseService
 {
-    protected BeemsSmsService $smsService;
-
-    public function __construct(TenantRepositoryInterface $repository, BeemsSmsService $smsService)
+    public function __construct(TenantRepositoryInterface $repository)
     {
         parent::__construct($repository);
-        $this->smsService = $smsService;
     }
 
     public function paginate(?string $search, ?string $type, ?string $status, int $perPage = 15): LengthAwarePaginator
@@ -38,6 +36,8 @@ class TenantService extends BaseService
             ->withQueryString();
     }
 
+    protected ?string $issuedPassword = null;
+
     public function create(array $attributes): Model
     {
         // Generate control number if not provided
@@ -48,8 +48,10 @@ class TenantService extends BaseService
 
         $tenant = parent::create($attributes);
 
-        // Send welcome SMS and email
-        $this->sendWelcomeMessage($tenant);
+        // Straight into the portal/app: username + phone-number password.
+        $this->issuedPassword = app(AccountProvisioner::class)->grantAccess($tenant);
+
+        $tenant->notify(new TenantWelcome($this->welcomeData($tenant, $this->issuedPassword)));
 
         return $tenant;
     }
@@ -58,139 +60,42 @@ class TenantService extends BaseService
     {
         $maxAttempts = 100;
         $attempts = 0;
-        
+
         do {
             // Generate random 10-digit number starting with 9
             $controlNumber = '9' . str_pad((string) rand(0, 999999999), 9, '0', STR_PAD_LEFT);
-            
+
             // Check if this control number already exists (including soft-deleted)
-            $exists = \App\Modules\Tenants\Models\Tenant::withTrashed()
+            $exists = Tenant::withTrashed()
                 ->where('control_number', $controlNumber)
                 ->exists();
-            
+
             $attempts++;
         } while ($exists && $attempts < $maxAttempts);
-        
+
         return $controlNumber;
     }
 
-    protected function sendWelcomeMessage(\App\Modules\Tenants\Models\Tenant $tenant): void
+    /**
+     * @return array<string, mixed> placeholders for the tenant_welcome template
+     */
+    protected function welcomeData(Tenant $tenant, string $password): array
     {
-        try {
-            $company = $tenant->company;
-
-            // Get the most recent lease for rent amount and landlord bank details
-            $lease = $tenant->leases()->with('unit.building.property.landlord')->latest()->first();
-            $rentAmount = $lease ? $lease->monthly_rent : 0;
-
-            // Get bank details from landlord
-            $bankName = 'N/A';
-            $accountNumber = 'N/A';
-            $propertyName = 'N/A';
-            $unitNumber = 'N/A';
-
-            if ($lease && $lease->unit && $lease->unit->building && $lease->unit->building->property && $lease->unit->building->property->landlord) {
-                $landlord = $lease->unit->building->property->landlord;
-                $bankDetails = $landlord->bank_details ?? [];
-                $bankName = $bankDetails['bank_name'] ?? 'N/A';
-                $accountNumber = $bankDetails['account_number'] ?? 'N/A';
-                $propertyName = $lease->unit->building->property->name ?? 'N/A';
-                $unitNumber = $lease->unit->unit_number ?? 'N/A';
-            }
-
-            $data = [
-                'tenant_name' => $tenant->name,
-                'company_name' => $company->name,
-                'phone' => $tenant->phone,
-                'control_number' => $tenant->control_number,
-                'bank_name' => $bankName,
-                'account_number' => $accountNumber,
-                'rent_amount' => number_format($rentAmount, 0),
-                'property_name' => $propertyName,
-                'unit_number' => $unitNumber,
-            ];
-
-            // Get message template (try shared templates first, then company-specific)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'tenant_welcome')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $tenant->company_id)
-                    ->where('type', 'tenant_welcome')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active tenant_welcome template found', [
-                    'company_id' => $tenant->company_id,
-                    'shared_template_count' => \App\Models\MessageTemplate::whereNull('company_id')->where('type', 'tenant_welcome')->where('is_active', true)->count(),
-                    'company_template_count' => \App\Models\MessageTemplate::where('company_id', $tenant->company_id)->where('type', 'tenant_welcome')->where('is_active', true)->count(),
-                ]);
-                return;
-            }
-
-            // Send SMS
-            if ($tenant->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending SMS to tenant', ['phone' => $tenant->phone, 'message' => $smsMessage]);
-                $this->smsService->send($tenant->phone, $smsMessage);
-            } else {
-                \Log::warning('Tenant has no phone number', ['tenant_id' => $tenant->id]);
-            }
-
-            // Send Email
-            if ($tenant->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                $mailData = array_merge($data, [
-                    'email_subject' => $emailSubject,
-                    'email_body' => $emailBody,
-                ]);
-                
-                \Log::info('Sending email to tenant', ['email' => $tenant->email]);
-                Mail::to($tenant->email)->send(new TenantWelcomeMail($mailData));
-            } else {
-                \Log::warning('Tenant has no email', ['tenant_id' => $tenant->id]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending tenant welcome message', [
-                'tenant_id' => $tenant->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
+        return [
+            'tenant_name' => $tenant->name,
+            'company_name' => $tenant->company->name,
+            'phone' => $tenant->phone,
+            'control_number' => $tenant->control_number,
+            ...app(AccountProvisioner::class)->credentials($tenant, $password, AccountProvisioner::loginUrlFor('tenant')),
+        ];
     }
 
     /**
-     * Build welcome message in Swahili (fallback if no template)
+     * The plain password the last create() issued - shown once to staff
+     * so they can pass it on, never stored.
      */
-    protected function buildWelcomeMessage(array $data): string
+    public function issuedPassword(): ?string
     {
-        return sprintf(
-            "karibu %s kwenye Apartment %s login kwa www.apartments.ecofieldgroup.com phone:%s utapata otp\nLipia kodi yako kupitia control namba yako ni %s bank %s a/c no.%s kwaajili ya malipo kiasi cha kulipia ni Tsh %s\nplease pay your rent via Control number %s Bank %s",
-            $data['tenant_name'],
-            $data['company_name'],
-            $data['phone'],
-            $data['control_number'],
-            $data['bank_name'],
-            $data['account_number'],
-            $data['rent_amount'],
-            $data['control_number'],
-            $data['bank_name']
-        );
-    }
-
-    /**
-     * Build email body (fallback if no template)
-     */
-    protected function buildEmailBody(array $data): string
-    {
-        return "Welcome to " . $data['company_name'];
+        return $this->issuedPassword;
     }
 }

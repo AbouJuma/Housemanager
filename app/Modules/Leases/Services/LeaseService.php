@@ -3,13 +3,18 @@
 namespace App\Modules\Leases\Services;
 
 use App\Core\Services\BaseService;
+use App\Modules\Invoices\Models\Invoice;
+use App\Modules\Invoices\Services\InvoiceService;
 use App\Modules\Leases\Models\Lease;
+use App\Modules\Leases\Notifications\LeaseCreatedLandlordNotice;
+use App\Modules\Leases\Notifications\LeaseCreatedTenantNotice;
 use App\Modules\Leases\Repositories\LeaseRepositoryInterface;
-use App\Modules\Tenants\Services\BeemsSmsService;
+use App\Modules\RentCollection\Services\RentInvoiceGenerator;
+use App\Modules\Settings\Services\PaymentDetails;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * @property LeaseRepositoryInterface $repository see App\Modules\Companies\Services\CompanyService
@@ -17,16 +22,22 @@ use Illuminate\Support\Facades\Mail;
  */
 class LeaseService extends BaseService
 {
-    protected BeemsSmsService $smsService;
-
-    public function __construct(LeaseRepositoryInterface $repository, BeemsSmsService $smsService)
-    {
+    public function __construct(
+        LeaseRepositoryInterface $repository,
+        protected RentInvoiceGenerator $invoiceGenerator,
+        protected InvoiceService $invoiceService,
+        protected PaymentDetails $paymentDetails,
+    ) {
         parent::__construct($repository);
-        $this->smsService = $smsService;
     }
 
-    public function paginate(?string $search, ?string $status, int $perPage = 15): LengthAwarePaginator
-    {
+    public function paginate(
+        ?string $search,
+        ?string $status,
+        int $perPage = 15,
+        ?string $from = null,
+        ?string $to = null,
+    ): LengthAwarePaginator {
         return $this->repository->query()
             ->with(['tenant', 'unit.building.property'])
             ->when($search, fn ($query) => $query->where(function ($query) use ($search): void {
@@ -34,6 +45,8 @@ class LeaseService extends BaseService
                     ->orWhereHas('unit', fn ($q) => $q->where('unit_number', 'like', "%{$search}%"));
             }))
             ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($from, fn ($query) => $query->whereDate('start_date', '>=', $from))
+            ->when($to, fn ($query) => $query->whereDate('start_date', '<=', $to))
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
@@ -45,8 +58,17 @@ class LeaseService extends BaseService
             $lease = $this->repository->create($attributes);
             $this->syncUnitStatus($lease);
 
-            // Send lease creation message to tenant
-            $this->sendLeaseCreationMessage($lease);
+            $this->sendLeaseCreationMessages($lease);
+
+            // The first invoice exists immediately, not whenever
+            // GenerateRentInvoices' daily lead-time window happens to
+            // open - a lease starting a month out shouldn't leave the
+            // tenant with nothing to owe until days before move-in.
+            $invoice = $this->invoiceGenerator->generateNextInvoiceForLease($lease, ignoreLeadTime: true);
+
+            if ($invoice) {
+                $this->applyDepositToInvoice($lease, $invoice);
+            }
 
             return $lease;
         });
@@ -101,162 +123,74 @@ class LeaseService extends BaseService
     }
 
     /**
-     * Send lease creation message to tenant
+     * Notifies the tenant (lease welcome) and, if the unit's property
+     * has a landlord on file, the landlord (new-tenant notice) - see
+     * App\Modules\Leases\Notifications\LeaseCreatedTenantNotice/
+     * LeaseCreatedLandlordNotice.
      */
-    protected function sendLeaseCreationMessage(Lease $lease): void
+    protected function sendLeaseCreationMessages(Lease $lease): void
     {
-        try {
-            $tenant = $lease->tenant;
-            $unit = $lease->unit;
-            $property = $unit->building->property;
-            $landlord = $property->landlord;
+        $tenant = $lease->tenant;
+        $unit = $lease->unit;
+        $property = $unit->building->property;
+        $landlord = $property->landlord;
 
-            // Get bank details from landlord
-            $bankName = 'N/A';
-            $accountNumber = 'N/A';
-            
-            if ($landlord) {
-                $bankDetails = $landlord->bank_details ?? [];
-                $bankName = $bankDetails['bank_name'] ?? 'N/A';
-                $accountNumber = $bankDetails['account_number'] ?? 'N/A';
-            }
+        // Where the tenant should pay - the company or the landlord's own
+        // account, per the company's Settings choice.
+        $company = $tenant->company;
+        $payTo = $this->paymentDetails->resolve($company, $landlord);
 
-            $data = [
-                'tenant_name' => $tenant->name,
-                'property_name' => $property->name,
-                'unit_number' => $unit->unit_number,
-                'rent_amount' => number_format($lease->monthly_rent, 0),
-                'start_date' => $lease->start_date,
-                'end_date' => $lease->end_date,
-                'bank_name' => $bankName,
-                'account_number' => $accountNumber,
-                'control_number' => $tenant->control_number,
-            ];
+        $tenant->notify(new LeaseCreatedTenantNotice([
+            'tenant_name' => $tenant->name,
+            'company_name' => $company->name,
+            'deposit_amount' => number_format((float) $lease->deposit_amount, 0),
+            'property_name' => $property->name,
+            'unit_number' => $unit->unit_number,
+            'rent_amount' => number_format($lease->rent_amount, 0),
+            'start_date' => $lease->start_date->format('M j, Y'),
+            'end_date' => $lease->end_date->format('M j, Y'),
+            'bank_name' => $payTo['bank_name'],
+            'account_name' => $payTo['account_name'],
+            'account_number' => $payTo['account_number'],
+            'control_number' => $tenant->control_number,
+        ]));
 
-            // Get message template (shared templates for all companies)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'tenant_welcome')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $lease->company_id)
-                    ->where('type', 'tenant_welcome')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active tenant_welcome template found for lease creation', [
-                    'company_id' => $lease->company_id,
-                ]);
-                return;
-            }
-
-            // Send SMS to tenant
-            if ($tenant->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending lease creation SMS to tenant', ['phone' => $tenant->phone, 'message' => $smsMessage]);
-                $this->smsService->send($tenant->phone, $smsMessage);
-            } else {
-                \Log::warning('Tenant has no phone number', ['tenant_id' => $tenant->id]);
-            }
-
-            // Send Email to tenant
-            if ($tenant->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                \Log::info('Sending lease creation email to tenant', ['email' => $tenant->email]);
-                Mail::raw($emailBody, function ($message) use ($tenant, $emailSubject) {
-                    $message->to($tenant->email)
-                        ->subject($emailSubject);
-                });
-            } else {
-                \Log::warning('Tenant has no email', ['tenant_id' => $tenant->id]);
-            }
-
-            // Send message to landlord
-            if ($landlord) {
-                $this->sendLeaseCreationToLandlord($lease, $tenant, $unit, $property, $landlord);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending lease creation message', [
-                'lease_id' => $lease->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
-    }
-
-    /**
-     * Send lease creation message to landlord
-     */
-    protected function sendLeaseCreationToLandlord(Lease $lease, $tenant, $unit, $property, $landlord): void
-    {
-        try {
-            $data = [
+        if ($landlord) {
+            $landlord->notify(new LeaseCreatedLandlordNotice([
                 'landlord_name' => $landlord->name,
                 'property_name' => $property->name,
                 'unit_number' => $unit->unit_number,
                 'tenant_name' => $tenant->name,
                 'tenant_phone' => $tenant->phone,
-                'start_date' => $lease->start_date,
-                'end_date' => $lease->end_date,
-                'rent_amount' => number_format($lease->monthly_rent, 0),
-            ];
-
-            // Get message template (shared templates for all companies)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'lease_landlord_notification')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $lease->company_id)
-                    ->where('type', 'lease_landlord_notification')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active lease_landlord_notification template found for lease creation', [
-                    'company_id' => $lease->company_id,
-                ]);
-                return;
-            }
-
-            // Send SMS to landlord
-            if ($landlord->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending lease creation SMS to landlord', ['phone' => $landlord->phone, 'message' => $smsMessage]);
-                $this->smsService->send($landlord->phone, $smsMessage);
-            } else {
-                \Log::warning('Landlord has no phone number', ['landlord_id' => $landlord->id]);
-            }
-
-            // Send Email to landlord
-            if ($landlord->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                \Log::info('Sending lease creation email to landlord', ['email' => $landlord->email]);
-                Mail::raw($emailBody, function ($message) use ($landlord, $emailSubject) {
-                    $message->to($landlord->email)
-                        ->subject($emailSubject);
-                });
-            } else {
-                \Log::warning('Landlord has no email', ['landlord_id' => $landlord->id]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending lease creation message to landlord', [
-                'lease_id' => $lease->id,
-                'error' => $e->getMessage()
-            ]);
+                'start_date' => $lease->start_date->format('M j, Y'),
+                'end_date' => $lease->end_date->format('M j, Y'),
+                'rent_amount' => number_format($lease->rent_amount, 0),
+            ]));
         }
+    }
+
+    /**
+     * A deposit entered on the lease form is money already collected at
+     * signing, so it is recorded as a real payment against the lease's
+     * first invoice (capped at that invoice's total): the invoice's
+     * paid/balance/status reflect it, and InvoiceService::recordPayment()
+     * sends the tenant and landlord payment confirmations through their
+     * templates. A zero/empty deposit records nothing and sends nothing.
+     */
+    protected function applyDepositToInvoice(Lease $lease, Invoice $invoice): void
+    {
+        $deposit = (float) $lease->deposit_amount;
+
+        if ($deposit <= 0) {
+            return;
+        }
+
+        $this->invoiceService->recordPayment($invoice, [
+            'amount' => min($deposit, (float) $invoice->total_amount),
+            'paid_on' => now()->toDateString(),
+            'method' => 'cash',
+            'notes' => 'Deposit received at lease signing.',
+            'recorded_by_id' => Auth::id(),
+        ]);
     }
 }

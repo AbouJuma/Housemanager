@@ -4,7 +4,7 @@
 <div class="row g-3">
     @if (! $invoice)
         <div class="col-md-6">
-            <label class="form-label">Lease</label>
+            <label class="form-label">{{ __('Lease') }}</label>
             <select name="lease_id" class="form-select @error('lease_id') is-invalid @enderror" required>
                 <option value="">&mdash; Select a lease &mdash;</option>
                 @foreach ($leases as $lease)
@@ -17,33 +17,33 @@
         </div>
     @else
         <div class="col-md-6">
-            <label class="form-label">Lease</label>
+            <label class="form-label">{{ __('Lease') }}</label>
             <input type="text" value="{{ $invoice->lease->tenant->name }} · {{ $invoice->lease->unit->unit_number }}" class="form-control" disabled>
         </div>
     @endif
 
     <div class="col-md-3">
-        <label class="form-label">Issue Date</label>
+        <label class="form-label">{{ __('Issue Date') }}</label>
         <input type="date" name="issue_date" value="{{ old('issue_date', $invoice?->issue_date?->toDateString() ?? now()->toDateString()) }}" class="form-control @error('issue_date') is-invalid @enderror" required>
         @error('issue_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-3">
-        <label class="form-label">Due Date</label>
+        <label class="form-label">{{ __('Due Date') }}</label>
         <input type="date" name="due_date" value="{{ old('due_date', $invoice?->due_date?->toDateString() ?? now()->addDays(14)->toDateString()) }}" class="form-control @error('due_date') is-invalid @enderror" required>
         @error('due_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-12">
         <hr>
-        <h2 class="h6 mb-3">Line Items</h2>
+        <h2 class="h6 mb-3">{{ __('Line Items') }}</h2>
         <div class="table-responsive">
             <table class="table table-sm align-middle">
                 <thead>
                     <tr>
-                        <th>Description</th>
-                        <th style="width: 110px;">Qty</th>
-                        <th style="width: 140px;">Unit Price</th>
-                        <th style="width: 120px;">Amount</th>
+                        <th>{{ __('Description') }}</th>
+                        <th style="width: 110px;">{{ __('Qty') }}</th>
+                        <th style="width: 140px;">{{ __('Unit Price') }}</th>
+                        <th style="width: 120px;">{{ __('Amount') }}</th>
                         <th style="width: 40px;"></th>
                     </tr>
                 </thead>
@@ -62,13 +62,13 @@
         </div>
         @error('items') <div class="text-danger small mb-2">{{ $message }}</div> @enderror
         <button type="button" id="addInvoiceItemBtn" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-plus-lg me-1"></i> Add Item
+            <i class="bi bi-plus-lg me-1"></i> {{ __('Add Item') }}
         </button>
         <div class="text-end fw-semibold mt-2">Total: <span id="invoiceItemsTotal">0.00</span></div>
     </div>
 
     <div class="col-12">
-        <label class="form-label">Notes</label>
+        <label class="form-label">{{ __('Notes') }}</label>
         <textarea name="notes" rows="3" class="form-control @error('notes') is-invalid @enderror">{{ old('notes', $invoice?->notes) }}</textarea>
         @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>

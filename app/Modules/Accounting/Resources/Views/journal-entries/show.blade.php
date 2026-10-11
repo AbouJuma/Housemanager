@@ -3,13 +3,13 @@
 @section('title', $entry->description)
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Journal Entry</h1>
+    <h1 class="h4 mb-0">{{ __('Journal Entry') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Journal Entry</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Journal Entry') }}</h1>
             <p class="text-secondary mb-0">
                 {{ $entry->entry_date->toFormattedDateString() }} &middot;
                 <span class="badge text-bg-{{ $entry->status === 'posted' ? 'success' : 'secondary' }} text-capitalize">{{ $entry->status }}</span>
@@ -24,7 +24,7 @@
                     <form action="{{ route('journal-entries.void', $entry) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="this journal entry" data-text="This posts a reversing entry and cannot be undone.">
-                            <i class="bi bi-x-lg me-1"></i> Void
+                            <i class="bi bi-x-lg me-1"></i> {{ __('Void') }}
                         </button>
                     </form>
                 @endif
@@ -36,11 +36,11 @@
         <div class="card-body">
             <div class="row g-3 small">
                 <div class="col-md-6">
-                    <div class="text-secondary">Description</div>
+                    <div class="text-secondary">{{ __('Description') }}</div>
                     <div>{{ $entry->description }}</div>
                 </div>
                 <div class="col-md-3">
-                    <div class="text-secondary">Reference</div>
+                    <div class="text-secondary">{{ __('Reference') }}</div>
                     <div>{{ $entry->reference ?? '—' }}</div>
                 </div>
                 <div class="col-md-3">
@@ -49,12 +49,12 @@
                 </div>
                 @if ($entry->source instanceof \App\Modules\Invoices\Models\Invoice)
                     <div class="col-md-6">
-                        <div class="text-secondary">Source</div>
+                        <div class="text-secondary">{{ __('Source') }}</div>
                         <div><a href="{{ route('invoices.show', $entry->source) }}">Invoice {{ $entry->source->invoice_number }}</a></div>
                     </div>
                 @elseif ($entry->source instanceof \App\Modules\Invoices\Models\InvoicePayment)
                     <div class="col-md-6">
-                        <div class="text-secondary">Source</div>
+                        <div class="text-secondary">{{ __('Source') }}</div>
                         <div><a href="{{ route('invoices.show', $entry->source->invoice) }}">Payment on Invoice {{ $entry->source->invoice->invoice_number }}</a></div>
                     </div>
                 @endif
@@ -64,15 +64,15 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h2 class="h6 mb-3">Lines</h2>
+            <h2 class="h6 mb-3">{{ __('Lines') }}</h2>
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead>
                         <tr>
-                            <th>Account</th>
-                            <th>Memo</th>
-                            <th class="text-end">Debit</th>
-                            <th class="text-end">Credit</th>
+                            <th>{{ __('Account') }}</th>
+                            <th>{{ __('Memo') }}</th>
+                            <th class="text-end">{{ __('Debit') }}</th>
+                            <th class="text-end">{{ __('Credit') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +87,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="2" class="text-end">Total</th>
+                            <th colspan="2" class="text-end">{{ __('Total') }}</th>
                             <th class="text-end">{{ number_format($entry->lines->sum('debit'), 2) }}</th>
                             <th class="text-end">{{ number_format($entry->lines->sum('credit'), 2) }}</th>
                         </tr>

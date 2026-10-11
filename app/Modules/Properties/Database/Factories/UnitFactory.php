@@ -17,7 +17,9 @@ class UnitFactory extends Factory
     {
         return [
             'building_id' => Building::factory(),
-            'unit_number' => strtoupper(fake()->bothify('##?')),
+            // unique() over a wide range - '##?' alone (2,600 values) collided
+            // often enough to flake tests that create many units in a building.
+            'unit_number' => strtoupper(fake()->unique()->bothify('###?#')),
             'type' => fake()->randomElement(['apartment', 'studio', 'office', 'shop', 'warehouse_space', 'room', 'other']),
             'status' => 'vacant',
             'bedrooms' => fake()->numberBetween(0, 4),

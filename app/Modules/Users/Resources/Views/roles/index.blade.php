@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Roles')
+@section('title', __('Roles'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Roles</h1>
+    <h1 class="h4 mb-0">{{ __('Roles') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Roles</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Roles') }}</h1>
             <p class="text-secondary mb-0">{{ $roles->total() }} {{ Str::plural('role', $roles->total()) }}</p>
         </div>
         @can('create', Spatie\Permission\Models\Role::class)
             <a href="{{ route('roles.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Role
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Role') }}
             </a>
         @endcan
     </div>
@@ -40,7 +40,7 @@
                             <tr>
                                 <th>Role</th>
                                 <th>Permissions</th>
-                                <th class="text-end">Actions</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

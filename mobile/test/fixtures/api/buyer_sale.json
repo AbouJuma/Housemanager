@@ -1,0 +1,75 @@
+{
+    "data": {
+        "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+        "sale_date": "2026-10-11",
+        "total_price": 30000000,
+        "down_payment": 6000000,
+        "installment_period": 4,
+        "installment_amount": 6000000,
+        "status": "active",
+        "total_paid": 12000000,
+        "remaining_balance": 18000000,
+        "completion_percentage": 40,
+        "notes": null,
+        "unit": {
+            "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+            "unit_number": "066W8",
+            "building": {
+                "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
+                "name": "Block sV",
+                "property": {
+                    "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
+                    "name": "Stella Square Complex"
+                }
+            }
+        },
+        "installments": [
+            {
+                "uuid": "4c89eb33-7afe-462e-bb56-d036051d3d0a",
+                "installment_number": 1,
+                "due_date": "2026-11-11",
+                "amount": 6000000,
+                "paid_amount": 6000000,
+                "remaining_amount": 0,
+                "status": "paid",
+                "paid_date": "2026-10-11",
+                "notes": null
+            },
+            {
+                "uuid": "43e5b43a-f25b-4b96-accb-fc0a41838a4f",
+                "installment_number": 2,
+                "due_date": "2026-12-11",
+                "amount": 6000000,
+                "paid_amount": 0,
+                "remaining_amount": 6000000,
+                "status": "pending",
+                "paid_date": null,
+                "notes": null
+            },
+            {
+                "uuid": "8d05cfcc-b2b7-47ef-a5df-e35e947a6ad4",
+                "installment_number": 3,
+                "due_date": "2027-01-11",
+                "amount": 6000000,
+                "paid_amount": 0,
+                "remaining_amount": 6000000,
+                "status": "pending",
+                "paid_date": null,
+                "notes": null
+            },
+            {
+                "uuid": "cbcc8e33-8a0f-454f-bcd8-bb88587f5227",
+                "installment_number": 4,
+                "due_date": "2027-02-11",
+                "amount": 6000000,
+                "paid_amount": 0,
+                "remaining_amount": 6000000,
+                "status": "pending",
+                "paid_date": null,
+                "notes": null
+            }
+        ],
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    }
+}

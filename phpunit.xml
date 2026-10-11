@@ -27,6 +27,17 @@
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
+        <!-- Force empty regardless of the developer's real .env - the
+             platform SMS fallback (App\Modules\Sms\Services\SmsManager)
+             must never make a genuine outbound call during automated
+             tests. Without this, PHPUnit falls back to whatever real
+             BEEMS_API_KEY/SECRET is in .env, which is exactly what
+             happened once real platform credentials were configured
+             for live verification: SmsManagerTest started actually
+             hitting Beem's API instead of testing the "no provider
+             configured" failure path. -->
+        <env name="BEEMS_API_KEY" value=""/>
+        <env name="BEEMS_SECRET_KEY" value=""/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>

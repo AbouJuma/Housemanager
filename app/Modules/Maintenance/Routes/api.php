@@ -8,4 +8,8 @@ Route::middleware('api-tenant')->group(function (): void {
 
     Route::post('maintenance-requests/{maintenance_request}/record-expense', [MaintenanceRequestController::class, 'recordExpense'])
         ->name('api.v1.maintenance-requests.record-expense');
+
+    // Status only - the mobile app's quick update for caretakers/cleaners.
+    Route::patch('maintenance-requests/{maintenance_request}/status', [MaintenanceRequestController::class, 'updateStatus'])
+        ->name('api.v1.maintenance-requests.status');
 });

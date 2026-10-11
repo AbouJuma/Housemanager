@@ -1,0 +1,65 @@
+{
+    "data": [
+        {
+            "uuid": "68629f37-8a67-494b-8a9f-e8e68ae50275",
+            "status": "active",
+            "start_date": "2026-10-11",
+            "end_date": "2027-10-11",
+            "billing_cycle": "monthly",
+            "rent_amount": 450000,
+            "deposit_amount": 450000,
+            "terminated_at": null,
+            "termination_reason": null,
+            "notes": null,
+            "unit": {
+                "uuid": "f36e853b-c521-4fd4-92ed-7d1a96a9f1bc",
+                "unit_number": "697E4",
+                "building": {
+                    "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
+                    "name": "Block sV",
+                    "property": {
+                        "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
+                        "name": "Stella Square Complex"
+                    }
+                }
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/v1/portal/tenant/leases?page=1",
+        "last": "http://localhost/api/v1/portal/tenant/leases?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/v1/portal/tenant/leases?page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/v1/portal/tenant/leases",
+        "per_page": 15,
+        "to": 1,
+        "total": 1
+    }
+}

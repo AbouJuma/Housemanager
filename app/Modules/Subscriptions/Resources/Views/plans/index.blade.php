@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Subscription Plans')
+@section('title', __('Subscription Plans'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Subscription Plans</h1>
+    <h1 class="h4 mb-0">{{ __('Subscription Plans') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Subscription Plans</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Subscription Plans') }}</h1>
             <p class="text-secondary mb-0">{{ $plans->total() }} {{ Str::plural('plan', $plans->total()) }}</p>
         </div>
         @can('create', \App\Modules\Subscriptions\Models\SubscriptionPlan::class)
@@ -39,14 +39,14 @@
     @if ($overview['expiringSoonCount'] > 0)
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
-                <h2 class="h6 mb-3">Expiring Soon <span class="text-secondary fw-normal">(next 14 days)</span></h2>
+                <h2 class="h6 mb-3">{{ __('Expiring Soon') }} <span class="text-secondary fw-normal">(next 14 days)</span></h2>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Company</th>
-                                <th>Plan</th>
-                                <th>Status</th>
+                                <th>{{ __('Company') }}</th>
+                                <th>{{ __('Plan') }}</th>
+                                <th>{{ __('Status') }}</th>
                                 <th>Ends</th>
                             </tr>
                         </thead>
@@ -96,12 +96,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Plan</th>
-                                <th>Price</th>
+                                <th>{{ __('Plan') }}</th>
+                                <th>{{ __('Price') }}</th>
                                 <th>Limits</th>
                                 <th>Subscribers</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

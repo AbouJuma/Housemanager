@@ -7,6 +7,7 @@ use App\Core\Concerns\HasUuid;
 use App\Modules\Leases\Models\Lease;
 use App\Modules\Properties\Database\Factories\UnitFactory;
 use App\Modules\Sales\Models\Sale;
+use App\Modules\Tenants\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -62,6 +63,23 @@ class Unit extends Model
         return $this->leases()->where('status', 'active')->first();
     }
 
+    /**
+     * The tenant currently occupying this unit, if any - used by
+     * UnitResource so a landlord/staff list of units can show who's
+     * renting each one. Reads from an already-eager-loaded `leases`
+     * relation when the caller did `->with('leases.tenant')` (avoids
+     * N+1 across a list of units); falls back to currentLease()'s own
+     * query for a single unit fetched on its own.
+     */
+    public function currentTenant(): ?Tenant
+    {
+        if ($this->relationLoaded('leases')) {
+            return $this->leases->firstWhere('status', 'active')?->tenant;
+        }
+
+        return $this->currentLease()?->tenant;
+    }
+
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
@@ -70,6 +88,21 @@ class Unit extends Model
     public function activeSale(): ?Sale
     {
         return $this->sales()->whereIn('status', ['active', 'completed'])->first();
+    }
+
+    /**
+     * The sale this unit was bought under, if any - same eager-load-aware
+     * shape as currentTenant(), used by UnitResource so a landlord can
+     * see the buyer and payment progress (including a partial payment)
+     * for a sold unit, not just a leased one.
+     */
+    public function currentSale(): ?Sale
+    {
+        if ($this->relationLoaded('sales')) {
+            return $this->sales->firstWhere(fn (Sale $sale) => in_array($sale->status, ['active', 'completed'], true));
+        }
+
+        return $this->activeSale();
     }
 
     public function isVacant(): bool

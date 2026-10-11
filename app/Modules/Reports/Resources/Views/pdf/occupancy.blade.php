@@ -12,16 +12,16 @@
     </style>
 </head>
 <body>
-    <h1>Occupancy</h1>
+    <h1>{{ __('Occupancy') }}</h1>
     <p>Generated {{ now()->toFormattedDateString() }}</p>
     <table>
         <thead>
             <tr>
-                <th>Property</th>
-                <th class="text-end">Total Units</th>
-                <th class="text-end">Occupied</th>
-                <th class="text-end">Vacant</th>
-                <th class="text-end">Occupancy Rate</th>
+                <th>{{ __('Property') }}</th>
+                <th class="text-end">{{ __('Total Units') }}</th>
+                <th class="text-end">{{ __('Occupied') }}</th>
+                <th class="text-end">{{ __('Vacant') }}</th>
+                <th class="text-end">{{ __('Occupancy Rate') }}</th>
             </tr>
         </thead>
         <tbody>

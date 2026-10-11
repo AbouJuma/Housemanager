@@ -88,14 +88,16 @@ class InvoiceServiceTest extends TestCase
     {
         $company = Company::factory()->create();
         $lease = $this->makeLease($company);
-        $lease->tenant->update(['name' => 'Jane Doe']);
+        // A name the factory's random names can't contain ("Jane" collided with
+        // e.g. "Janet", making this test flaky).
+        $lease->tenant->update(['name' => 'Zqxwyv Testcase']);
         $invoice = $this->service->create($this->invoiceAttributes($company, $lease));
         $this->service->send($invoice);
 
         $otherLease = $this->makeLease($company);
         $this->service->create($this->invoiceAttributes($company, $otherLease));
 
-        $this->assertSame(1, $this->service->paginate('Jane', null)->total());
+        $this->assertSame(1, $this->service->paginate('Zqxwyv', null)->total());
         $this->assertSame(1, $this->service->paginate(null, 'sent')->total());
         $this->assertSame(2, $this->service->paginate(null, null)->total());
     }

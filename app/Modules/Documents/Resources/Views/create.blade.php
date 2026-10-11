@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Document')
+@section('title', __('New Document'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Document</h1>
+    <h1 class="h4 mb-0">{{ __('New Document') }}</h1>
 @endsection
 
 @section('content')
@@ -27,8 +27,8 @@
                 @include('documents::_form')
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Upload Document</button>
-                    <a href="{{ route('documents.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Upload Document') }}</button>
+                    <a href="{{ route('documents.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

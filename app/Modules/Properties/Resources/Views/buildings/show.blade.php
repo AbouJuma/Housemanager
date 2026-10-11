@@ -23,7 +23,7 @@
         <div class="d-flex gap-2">
             @can('update', $building)
                 <a href="{{ route('buildings.edit', $building) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
             @can('delete', $building)
@@ -31,7 +31,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="{{ $building->name }}">
-                        <i class="bi bi-trash me-1"></i> Delete
+                        <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                     </button>
                 </form>
             @endcan
@@ -42,11 +42,11 @@
         <div class="card-body">
             <div class="row g-3 small">
                 <div class="col-md-4">
-                    <div class="text-secondary">Floors</div>
+                    <div class="text-secondary">{{ __('Floors') }}</div>
                     <div>{{ $building->floor_count ?? '—' }}</div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Status</div>
+                    <div class="text-secondary">{{ __('Status') }}</div>
                     <div class="text-capitalize">{{ str_replace('_', ' ', $building->status) }}</div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="h6 mb-0">Units</h2>
+                <h2 class="h6 mb-0">{{ __('Units') }}</h2>
                 @can('create', [\App\Modules\Properties\Models\Unit::class, $building])
                     <a href="{{ route('units.create', $building) }}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-lg me-1"></i> Add Unit
@@ -77,11 +77,11 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Unit</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Rent</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Unit') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Rent') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

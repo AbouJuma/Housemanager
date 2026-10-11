@@ -3,45 +3,48 @@
 namespace App\Modules\Sales\Notifications;
 
 use App\Modules\Sales\Models\Sale;
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
+use App\Notifications\TemplatedNotification;
 
-class SaleCompleted extends Notification
+/**
+ * Sent to both the buyer and the unit's landlord once every installment
+ * on a sale is paid off - see
+ * App\Modules\Sales\Console\Commands\SendPaymentReminders. Text comes
+ * from the `sale_completed` MessageTemplate (via the
+ * TemplatedNotification base) rather than being hardcoded - the
+ * wording is deliberately recipient-neutral (names the buyer rather
+ * than addressing them directly) since the exact same rendered message
+ * goes to both the buyer and their landlord.
+ */
+class SaleCompleted extends TemplatedNotification
 {
-    use Queueable;
-
     public function __construct(protected Sale $sale)
     {
+        // Same figures every other sale message uses (paid comes from the
+        // sale's invoices), so this text never disagrees with the
+        // per-payment messages that came before it.
+        parent::__construct('sale_completed', $sale->messagePlaceholders());
     }
 
-    public function via($notifiable): array
-    {
-        return ['database', 'mail'];
-    }
-
-    public function toMail($notifiable)
-    {
-        $unitInfo = $this->sale->unit->unit_number . ' · ' . $this->sale->unit->building->name;
-        
-        return (new \Illuminate\Notifications\Messages\MailMessage)
-            ->subject('Sale Completed - ' . $unitInfo)
-            ->greeting('Congratulations!')
-            ->line('The sale has been completed successfully.')
-            ->line('Unit: ' . $unitInfo)
-            ->line('Total Price: ' . number_format($this->sale->total_price, 2))
-            ->line('Total Paid: ' . number_format($this->sale->total_paid, 2))
-            ->line('All installments have been paid.')
-            ->action('View Sale Details', url('/sales/' . $this->sale->uuid))
-            ->line('Thank you for your business!');
-    }
-
-    public function toArray($notifiable): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(mixed $notifiable): array
     {
         return [
-            'title' => 'Sale Completed',
-            'message' => "Sale for unit {$this->sale->unit->unit_number} has been completed. Total paid: " . number_format($this->sale->total_paid, 2),
-            'url' => url('/sales/' . $this->sale->uuid),
+            'title' => $this->title(),
+            'message' => $this->summary($notifiable),
+            'url' => url('/sales/'.$this->sale->uuid),
             'sale_id' => $this->sale->id,
         ];
+    }
+
+    protected function title(): string
+    {
+        return 'Sale completed';
+    }
+
+    protected function summary(mixed $notifiable): string
+    {
+        return "Sale for unit {$this->sale->unit->unit_number} has been completed. Total paid: ".number_format($this->sale->total_paid, 2);
     }
 }

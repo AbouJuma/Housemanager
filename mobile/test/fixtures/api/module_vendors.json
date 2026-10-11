@@ -1,0 +1,70 @@
+{
+    "data": [
+        {
+            "uuid": "be60c2ff-663f-4d24-a8f2-a68da8d861d0",
+            "name": "Prof. Derrick Goodwin DVM",
+            "type": "individual",
+            "category": "hvac",
+            "status": "active",
+            "email": "lowe.alexandria@example.com",
+            "phone": "951.818.7749",
+            "secondary_phone": null,
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "Hermanport",
+                "state": null,
+                "postal_code": null,
+                "country_code": "WF"
+            },
+            "tax_id": "TIN-79600974",
+            "bank_details": {
+                "bank_name": null,
+                "account_name": null,
+                "account_number": null,
+                "branch": null,
+                "swift_code": null
+            },
+            "notes": null,
+            "photo_url": null,
+            "expenses_count": 0,
+            "created_at": "2026-10-11T19:05:42+00:00",
+            "updated_at": "2026-10-11T19:05:42+00:00"
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/v1/vendors?page=1",
+        "last": "http://localhost/api/v1/vendors?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/v1/vendors?page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/v1/vendors",
+        "per_page": 15,
+        "to": 1,
+        "total": 1
+    }
+}

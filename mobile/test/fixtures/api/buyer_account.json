@@ -1,0 +1,15 @@
+{
+    "profile": {
+        "uuid": "d679366c-f296-4c54-b8dc-6d9bb69d5eaf",
+        "name": "Asha Buyer",
+        "username": "asha.buyer",
+        "email": null,
+        "phone": "0788000444"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

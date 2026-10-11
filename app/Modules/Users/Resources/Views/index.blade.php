@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Users')
+@section('title', __('Users'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Users</h1>
+    <h1 class="h4 mb-0">{{ __('Users') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Users</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Users') }}</h1>
             <p class="text-secondary mb-0">{{ $users->total() }} {{ Str::plural('user', $users->total()) }}</p>
         </div>
         @can('create', App\Models\User::class)
             <a href="{{ route('users.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New User
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New User') }}
             </a>
         @endcan
     </div>
@@ -40,11 +40,11 @@
                             <tr>
                                 <th>User</th>
                                 @if (auth()->user()->isSaasOwner())
-                                    <th>Company</th>
+                                    <th>{{ __('Company') }}</th>
                                 @endif
-                                <th>Roles</th>
-                                <th>Joined</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Roles') }}</th>
+                                <th>{{ __('Joined') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

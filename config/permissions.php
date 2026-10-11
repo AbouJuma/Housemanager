@@ -168,4 +168,12 @@ return [
         'buyers.delete' => 'Delete buyers',
     ],
 
+    'message-logs' => [
+        'message-logs.view' => 'View the outbound SMS/email delivery log',
+    ],
+
+    'reminder-rules' => [
+        'reminder-rules.manage' => 'Configure dynamic rent and installment payment reminder rules',
+    ],
+
 ];

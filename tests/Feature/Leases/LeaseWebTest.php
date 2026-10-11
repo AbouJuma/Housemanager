@@ -166,4 +166,15 @@ class LeaseWebTest extends TestCase
         $response->assertRedirect(route('leases.index'));
         $this->assertSoftDeleted('leases', ['id' => $lease->id]);
     }
+    public function test_the_create_page_exposes_each_vacant_units_rent_for_prefilling(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+        $unit = $this->makeUnit($company);
+
+        $response = $this->actingAs($admin)->get(route("leases.create"));
+
+        $response->assertOk();
+        $response->assertSee("value=\"{$unit->id}\" data-rent-amount=\"500.00\"", false);
+    }
 }

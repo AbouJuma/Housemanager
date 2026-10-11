@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h4 mb-0">Invoice {{ $invoice->invoice_number }}</h1>
         <a href="{{ route('portal.invoices.index') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> All Invoices
+            <i class="bi bi-arrow-left me-1"></i> {{ __('All Invoices') }}
         </a>
     </div>
 
@@ -14,30 +14,30 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Details</h2>
+                    <h2 class="h6 mb-3">{{ __('Details') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Property</div>
+                            <div class="text-secondary">{{ __('Property') }}</div>
                             <div>{{ $invoice->lease->unit->building->property->name }} &middot; {{ $invoice->lease->unit->unit_number }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Issue Date</div>
+                            <div class="text-secondary">{{ __('Issue Date') }}</div>
                             <div>{{ $invoice->issue_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Due Date</div>
+                            <div class="text-secondary">{{ __('Due Date') }}</div>
                             <div>{{ $invoice->due_date->toFormattedDateString() }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Total</div>
+                            <div class="text-secondary">{{ __('Total') }}</div>
                             <div>{{ number_format($invoice->total_amount, 2) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Paid</div>
+                            <div class="text-secondary">{{ __('Paid') }}</div>
                             <div>{{ number_format($invoice->amount_paid, 2) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Balance Due</div>
+                            <div class="text-secondary">{{ __('Balance Due') }}</div>
                             <div class="fw-semibold">{{ number_format($invoice->balanceDue(), 2) }}</div>
                         </div>
                     </div>
@@ -46,13 +46,13 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Line Items</h2>
+                    <h2 class="h6 mb-3">{{ __('Line Items') }}</h2>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
-                                    <th class="text-end">Amount</th>
+                                    <th>{{ __('Description') }}</th>
+                                    <th class="text-end">{{ __('Amount') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,7 +77,7 @@
                         <form method="POST" action="{{ route('portal.invoices.pay', $invoice) }}">
                             @csrf
                             <div class="mb-3">
-                                <label class="form-label small">Amount</label>
+                                <label class="form-label small">{{ __('Amount') }}</label>
                                 <input type="number" step="0.01" min="0.01" max="{{ $invoice->balanceDue() }}" name="amount" value="{{ old('amount', $invoice->balanceDue()) }}" class="form-control @error('amount') is-invalid @enderror" required>
                                 @error('amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>

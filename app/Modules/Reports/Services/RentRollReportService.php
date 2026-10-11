@@ -15,9 +15,13 @@ use Illuminate\Support\Collection;
  */
 class RentRollReportService
 {
-    public function generate(): Collection
+    /** Unit statuses the report can be filtered by. */
+    public const STATUSES = ['vacant', 'occupied', 'reserved', 'under_maintenance'];
+
+    public function generate(?string $status = null): Collection
     {
         return Unit::query()
+            ->when(in_array($status, self::STATUSES, true), fn ($query) => $query->where('units.status', $status))
             ->with(['building.property', 'leases' => fn ($query) => $query->where('leases.status', 'active')->with('tenant')])
             ->join('buildings', 'buildings.id', '=', 'units.building_id')
             ->orderBy('buildings.name')

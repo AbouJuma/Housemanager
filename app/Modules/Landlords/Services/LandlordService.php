@@ -2,12 +2,12 @@
 
 namespace App\Modules\Landlords\Services;
 
+use App\Core\Auth\AccountProvisioner;
 use App\Core\Services\BaseService;
+use App\Modules\Landlords\Notifications\LandlordWelcome;
 use App\Modules\Landlords\Repositories\LandlordRepositoryInterface;
-use App\Modules\Tenants\Services\BeemsSmsService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * @property LandlordRepositoryInterface $repository see App\Modules\Companies\Services\CompanyService
@@ -17,12 +17,9 @@ class LandlordService extends BaseService
 {
     protected const BANK_DETAIL_FIELDS = ['bank_name', 'bank_account_name', 'bank_account_number', 'bank_branch', 'bank_swift_code'];
 
-    protected BeemsSmsService $smsService;
-
-    public function __construct(LandlordRepositoryInterface $repository, BeemsSmsService $smsService)
+    public function __construct(LandlordRepositoryInterface $repository)
     {
         parent::__construct($repository);
-        $this->smsService = $smsService;
     }
 
     public function paginate(?string $search, ?string $type, ?string $status, int $perPage = 15): LengthAwarePaginator
@@ -41,13 +38,17 @@ class LandlordService extends BaseService
             ->withQueryString();
     }
 
+    protected ?string $issuedPassword = null;
+
     public function create(array $attributes): Model
     {
         $landlord = parent::create($this->withAssembledBankDetails($attributes));
-        
-        // Send welcome message
-        $this->sendWelcomeMessage($landlord);
-        
+
+        // Straight into the portal/app: username + phone-number password.
+        $this->issuedPassword = app(AccountProvisioner::class)->grantAccess($landlord);
+
+        $landlord->notify(new LandlordWelcome($this->welcomeData($landlord, $this->issuedPassword)));
+
         return $landlord;
     }
 
@@ -57,73 +58,28 @@ class LandlordService extends BaseService
     }
 
     /**
-     * Send welcome message to landlord
+     * @return array<string, mixed> placeholders for the landlord_welcome template
      */
-    protected function sendWelcomeMessage(Model $landlord): void
+    protected function welcomeData(Model $landlord, string $password): array
     {
-        try {
-            $company = $landlord->company;
-            
-            // Get property names
-            $propertyNames = $landlord->properties->pluck('name')->implode(', ') ?: 'No properties yet';
+        $company = $landlord->company;
+        $propertyNames = $landlord->properties->pluck('name')->implode(', ') ?: 'No properties yet';
 
-            $data = [
-                'landlord_name' => $landlord->name,
-                'company_name' => $company->name,
-                'property_names' => $propertyNames,
-            ];
+        return [
+            'landlord_name' => $landlord->name,
+            'company_name' => $company->name,
+            'property_names' => $propertyNames,
+            ...app(AccountProvisioner::class)->credentials($landlord, $password, AccountProvisioner::loginUrlFor('landlord')),
+        ];
+    }
 
-            // Get message template (shared templates for all companies)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'landlord_welcome')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $landlord->company_id)
-                    ->where('type', 'landlord_welcome')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active landlord_welcome template found', [
-                    'company_id' => $landlord->company_id,
-                ]);
-                return;
-            }
-
-            // Send SMS
-            if ($landlord->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending SMS to landlord', ['phone' => $landlord->phone, 'message' => $smsMessage]);
-                $this->smsService->send($landlord->phone, $smsMessage);
-            } else {
-                \Log::warning('Landlord has no phone number', ['landlord_id' => $landlord->id]);
-            }
-
-            // Send Email
-            if ($landlord->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                \Log::info('Sending email to landlord', ['email' => $landlord->email]);
-                Mail::raw($emailBody, function ($message) use ($landlord, $emailSubject) {
-                    $message->to($landlord->email)
-                        ->subject($emailSubject);
-                });
-            } else {
-                \Log::warning('Landlord has no email', ['landlord_id' => $landlord->id]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending landlord welcome message', [
-                'landlord_id' => $landlord->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
+    /**
+     * The plain password the last create() issued - shown once to staff
+     * so they can pass it on, never stored.
+     */
+    public function issuedPassword(): ?string
+    {
+        return $this->issuedPassword;
     }
 
     /**

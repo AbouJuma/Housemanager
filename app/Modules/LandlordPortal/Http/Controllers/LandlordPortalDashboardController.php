@@ -4,7 +4,6 @@ namespace App\Modules\LandlordPortal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Invoices\Models\Invoice;
-use App\Modules\Maintenance\Models\MaintenanceRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 

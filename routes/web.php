@@ -3,7 +3,8 @@
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
 use App\Mail\TenantWelcomeMail;
-use App\Modules\Tenants\Services\BeemsSmsService;
+use App\Modules\Companies\Models\Company;
+use App\Modules\Sms\Services\SmsManager;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -11,15 +12,22 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
-// Test route for SMS and email - remove in production
+// Test route for SMS and email - remove in production. Goes through the
+// same App\Modules\Sms\Services\SmsManager every real notification uses
+// (falling back to the platform Beem account per BEEMS_* env vars if
+// the first company has no SMS integration configured), not the old
+// standalone BeemsSmsService (removed - see the messaging
+// consolidation work).
 Route::get('/test-sms', function () {
-    $smsService = app(BeemsSmsService::class);
+    $company = Company::query()->first();
 
     // Test SMS to user's phone
-    $testPhone = '255682676819';
+    $testPhone = '0682676819';
     $testMessage = 'Test message from House Managers - SMS is working!';
 
-    $smsResult = $smsService->send($testPhone, $testMessage);
+    $smsResult = $company
+        ? app(SmsManager::class)->send($company, $testPhone, $testMessage)
+        : ['success' => false, 'message' => 'No company found to send from.'];
 
     // Test email to user's email
     $testEmail = 'kisiakiabou@gmail.com';
@@ -58,3 +66,12 @@ Route::middleware('auth')->group(function (): void {
 });
 
 require __DIR__.'/auth.php';
+
+// Live username availability for <x-username-field> on the staff,
+// tenant, landlord and buyer forms.
+Route::get('/username-check', \App\Http\Controllers\UsernameAvailabilityController::class)
+    ->middleware(['auth', 'throttle:60,1'])
+    ->name('username.check');
+
+// Language switcher - English / Kiswahili (see App\Http\Middleware\SetLocale).
+Route::post('/locale/{locale}', \App\Http\Controllers\LocaleController::class)->name('locale.switch');

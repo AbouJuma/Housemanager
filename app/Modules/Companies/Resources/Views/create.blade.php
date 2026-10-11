@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Company')
+@section('title', __('New Company'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Company</h1>
+    <h1 class="h4 mb-0">{{ __('New Company') }}</h1>
 @endsection
 
 @section('content')
@@ -14,8 +14,8 @@
                 @include('companies::_form')
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create Company</button>
-                    <a href="{{ route('companies.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Create Company') }}</button>
+                    <a href="{{ route('companies.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

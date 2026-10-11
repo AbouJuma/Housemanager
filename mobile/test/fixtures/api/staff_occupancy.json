@@ -1,0 +1,17 @@
+{
+    "data": [
+        {
+            "property": "Stella Square Complex",
+            "total_units": 3,
+            "occupied": 1,
+            "vacant": 2,
+            "occupancy_rate": 33.3
+        }
+    ],
+    "statuses": [
+        "active",
+        "inactive",
+        "under_maintenance",
+        "archived"
+    ]
+}

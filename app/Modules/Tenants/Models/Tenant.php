@@ -2,6 +2,7 @@
 
 namespace App\Modules\Tenants\Models;
 
+use App\Core\Auth\HasLoginIdentity;
 use App\Core\Concerns\BelongsToCompany;
 use App\Core\Concerns\HasUuid;
 use App\Modules\Documents\Models\Document;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
@@ -39,6 +41,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Tenant extends Authenticatable implements HasMedia
 {
     use BelongsToCompany;
+    use HasLoginIdentity;
+    use HasApiTokens;
     use HasFactory;
     use HasUuid;
     use InteractsWithMedia;
@@ -49,6 +53,7 @@ class Tenant extends Authenticatable implements HasMedia
     protected $fillable = [
         'company_id',
         'name',
+        'username',
         'type',
         'email',
         'phone',

@@ -12,19 +12,19 @@
     </style>
 </head>
 <body>
-    <h1>Rent Roll</h1>
+    <h1>{{ __('Rent Roll') }}</h1>
     <p>Generated {{ now()->toFormattedDateString() }}</p>
     <table>
         <thead>
             <tr>
-                <th>Property</th>
-                <th>Building</th>
-                <th>Unit</th>
-                <th>Status</th>
-                <th>Tenant</th>
-                <th>Lease Start</th>
-                <th>Lease End</th>
-                <th class="text-end">Rent</th>
+                <th>{{ __('Property') }}</th>
+                <th>{{ __('Building') }}</th>
+                <th>{{ __('Unit') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Tenant') }}</th>
+                <th>{{ __('Lease Start') }}</th>
+                <th>{{ __('Lease End') }}</th>
+                <th class="text-end">{{ __('Rent') }}</th>
             </tr>
         </thead>
         <tbody>

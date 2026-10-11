@@ -3,8 +3,8 @@
 namespace App\Modules\LandlordPortal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Landlords\Models\Landlord;
 use App\Modules\LandlordPortal\Services\LandlordPortalService;
+use App\Modules\Landlords\Models\Landlord;
 use Illuminate\Http\RedirectResponse;
 
 /**
@@ -15,9 +15,7 @@ use Illuminate\Http\RedirectResponse;
  */
 class LandlordPortalAccessController extends Controller
 {
-    public function __construct(protected LandlordPortalService $service)
-    {
-    }
+    public function __construct(protected LandlordPortalService $service) {}
 
     public function enable(Landlord $landlord): RedirectResponse
     {

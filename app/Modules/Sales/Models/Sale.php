@@ -97,6 +97,43 @@ class Sale extends Model
         return max(0, $this->total_price - $this->total_paid);
     }
 
+    /**
+     * Placeholders shared by every sale message (sale created, installment
+     * paid - buyer and landlord). Paid/remaining are worked out from the
+     * sale's own invoices rather than installments.paid_amount so the
+     * numbers are right whichever way a payment was recorded (the
+     * installment "pay" button, or the invoice screen directly).
+     *
+     * @return array<string, string|int>
+     */
+    public function messagePlaceholders(): array
+    {
+        $this->loadMissing('buyer', 'unit.building.property');
+
+        $installments = $this->installments()->with('invoice')->orderBy('installment_number')->get();
+        $isPaid = fn (Installment $i) => $i->status === 'paid' || $i->invoice?->status === 'paid';
+        $unpaid = $installments->reject($isPaid);
+
+        $totalPaid = (float) $this->down_payment + (float) $this->invoices()->sum('amount_paid');
+        $date = fn ($value) => $value ? $value->format('M j, Y') : 'N/A';
+
+        return [
+            'buyer_name' => $this->buyer->name,
+            'unit_number' => $this->unit->unit_number,
+            'property_name' => $this->unit->building->property->name,
+            'total_price' => number_format($this->total_price, 0),
+            'down_payment' => number_format($this->down_payment, 0),
+            'total_paid' => number_format($totalPaid, 0),
+            'balance' => number_format(max(0, (float) $this->total_price - $totalPaid), 0),
+            'installments_total' => $installments->count(),
+            'installments_paid' => $installments->count() - $unpaid->count(),
+            'installments_remaining' => $unpaid->count(),
+            'installment_amount' => number_format((float) ($installments->first()?->amount ?? 0), 0),
+            'first_due_date' => $date($installments->first()?->due_date),
+            'last_due_date' => $date($installments->last()?->due_date),
+        ];
+    }
+
     public function getCompletionPercentageAttribute(): int
     {
         if ($this->total_price == 0) {

@@ -3,27 +3,36 @@
 namespace App\Modules\RentCollection\Notifications;
 
 use App\Modules\Invoices\Models\Invoice;
-use Illuminate\Notifications\Notification;
+use App\Modules\PaymentReminders\Models\PaymentReminderRule;
+use App\Notifications\TemplatedNotification;
 
 /**
- * Sent once a tenant's invoice has been marked overdue (see
- * App\Modules\Invoices\Console\Commands\MarkOverdueInvoices, which
- * runs first in the schedule, and
+ * Sent once a tenant's invoice has been marked overdue, per a company's
+ * own configured App\Modules\PaymentReminders\Models\
+ * PaymentReminderRule (see App\Modules\Invoices\Console\Commands\
+ * MarkOverdueInvoices, which runs first in the schedule, and
  * App\Modules\RentCollection\Console\Commands\SendRentReminders, which
- * dispatches this against invoices already in that status).
+ * dispatches this against invoices already in that status). Text comes
+ * from the `invoice_overdue` MessageTemplate - see InvoiceDueSoon's
+ * docblock for why this extends TemplatedNotification instead of the
+ * bare Notification class it used to.
  */
-class InvoiceOverdue extends Notification
+class InvoiceOverdue extends TemplatedNotification
 {
-    public function __construct(protected Invoice $invoice)
+    public function __construct(protected Invoice $invoice, protected ?PaymentReminderRule $rule = null)
     {
-    }
+        $lease = $invoice->lease;
+        $unit = $lease->unit;
+        $property = $unit->building->property;
 
-    /**
-     * @return array<int, string>
-     */
-    public function via(mixed $notifiable): array
-    {
-        return ['database', 'company-mail', 'company-sms'];
+        parent::__construct('invoice_overdue', [
+            'tenant_name' => $lease->tenant->name,
+            'invoice_number' => $invoice->invoice_number,
+            'amount' => number_format($invoice->balanceDue(), 0),
+            'due_date' => $invoice->due_date->format('M j, Y'),
+            'unit_number' => $unit->unit_number,
+            'property_name' => $property->name,
+        ]);
     }
 
     /**
@@ -33,30 +42,20 @@ class InvoiceOverdue extends Notification
     {
         return [
             'invoice_id' => $this->invoice->id,
+            'rule_id' => $this->rule?->id,
             'due_date' => $this->invoice->due_date->toDateString(),
-            'title' => 'Rent overdue',
-            'message' => "Invoice {$this->invoice->invoice_number} for ".number_format($this->invoice->balanceDue(), 2)." was due on {$this->invoice->due_date->format('M j, Y')} and is now overdue.",
+            'title' => $this->title(),
+            'message' => $this->summary($notifiable),
         ];
     }
 
-    /**
-     * @return array{subject: string, body: string}
-     */
-    public function toCompanyMail(mixed $notifiable): array
+    protected function title(): string
     {
-        $due = $this->invoice->due_date->format('M j, Y');
-
-        return [
-            'subject' => "Overdue — Invoice {$this->invoice->invoice_number}",
-            'body' => "Hi {$notifiable->name},\n\n"
-                ."Invoice {$this->invoice->invoice_number} for "
-                .number_format($this->invoice->balanceDue(), 2)." was due on {$due} and remains unpaid.\n\n"
-                .'Please arrange payment as soon as possible.',
-        ];
+        return 'Rent overdue';
     }
 
-    public function toCompanySms(mixed $notifiable): string
+    protected function summary(mixed $notifiable): string
     {
-        return "Overdue: Invoice {$this->invoice->invoice_number} for ".number_format($this->invoice->balanceDue(), 2)." was due {$this->invoice->due_date->format('M j')}.";
+        return "Invoice {$this->invoice->invoice_number} for ".number_format($this->invoice->balanceDue(), 2)." was due on {$this->invoice->due_date->format('M j, Y')} and is now overdue.";
     }
 }

@@ -1,0 +1,19 @@
+{
+    "unread_count": 1,
+    "data": [
+        {
+            "id": "3106962f-25f8-4ade-86af-5f9d94ac954b",
+            "kind": "general",
+            "title": "Welcome message sent",
+            "message": "Welcome message sent to Amina Tenant.",
+            "read": false,
+            "created_at": "2026-10-11T19:05:42+00:00",
+            "created_ago": "0 seconds ago"
+        }
+    ],
+    "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "total": 1
+    }
+}

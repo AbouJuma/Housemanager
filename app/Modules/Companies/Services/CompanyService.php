@@ -87,6 +87,30 @@ class CompanyService extends BaseService
         });
     }
 
+    /**
+     * Back to the app's default palette (BrandTheme::DEFAULT_*), and
+     * optionally the default logo mark too.
+     */
+    public function resetBranding(Company $company, bool $removeLogo = false): Company
+    {
+        return DB::transaction(function () use ($company, $removeLogo) {
+            $company->forceFill(['primary_color' => null, 'secondary_color' => null])->save();
+
+            if ($removeLogo) {
+                $company->clearMediaCollection('logo');
+            }
+
+            return $company;
+        });
+    }
+
+    public function removeLogo(Company $company): Company
+    {
+        $company->clearMediaCollection('logo');
+
+        return $company;
+    }
+
     protected function uniqueSlug(string $source, ?int $exceptId = null): string
     {
         $base = Str::slug($source);

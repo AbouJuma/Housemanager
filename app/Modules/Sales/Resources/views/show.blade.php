@@ -19,7 +19,7 @@
         <div class="d-flex gap-2">
             @can('update', $sale)
                 <a href="{{ route('sales.edit', $sale) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
             @can('delete', $sale)
@@ -27,7 +27,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="Sale #{{ $sale->id }}">
-                        <i class="bi bi-trash me-1"></i> Delete
+                        <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                     </button>
                 </form>
             @endcan
@@ -41,11 +41,11 @@
                     <h2 class="h6 mb-3">Sale Details</h2>
                     <div class="row g-3 small">
                         <div class="col-md-6">
-                            <div class="text-secondary">Unit</div>
+                            <div class="text-secondary">{{ __('Unit') }}</div>
                             <div class="fw-semibold">{{ $sale->unit->unit_number }} · {{ $sale->unit->building->name }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">Buyer</div>
+                            <div class="text-secondary">{{ __('Buyer') }}</div>
                             <div>
                                 @if ($sale->new_buyer_id)
                                     {{ $sale->buyer->name ?? '—' }}
@@ -55,15 +55,15 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Sale Date</div>
+                            <div class="text-secondary">{{ __('Sale Date') }}</div>
                             <div>{{ $sale->sale_date->format('M j, Y') }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Total Price</div>
+                            <div class="text-secondary">{{ __('Total Price') }}</div>
                             <div class="fw-semibold">{{ number_format($sale->total_price, 2) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Down Payment</div>
+                            <div class="text-secondary">{{ __('Down Payment') }}</div>
                             <div>{{ number_format($sale->down_payment, 2) }}</div>
                         </div>
                         <div class="col-md-4">
@@ -71,11 +71,11 @@
                             <div>{{ $sale->installment_period }} months</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Installment Amount</div>
+                            <div class="text-secondary">{{ __('Installment Amount') }}</div>
                             <div>{{ number_format($sale->installment_amount, 2) }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Status</div>
+                            <div class="text-secondary">{{ __('Status') }}</div>
                             <div>
                                 <span class="badge text-bg-{{ $sale->status === 'pending' ? 'secondary' : ($sale->status === 'active' ? 'primary' : ($sale->status === 'completed' ? 'success' : ($sale->status === 'cancelled' ? 'danger' : 'secondary'))) }}">{{ ucfirst($sale->status) }}</span>
                             </div>
@@ -127,11 +127,11 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Due Date</th>
-                                        <th>Amount</th>
-                                        <th>Paid</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Due Date') }}</th>
+                                        <th>{{ __('Amount') }}</th>
+                                        <th>{{ __('Paid') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -164,7 +164,7 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Recorded By</h2>
+                    <h2 class="h6 mb-3">{{ __('Recorded By') }}</h2>
                     <div class="text-secondary">
                         @if ($sale->recordedBy)
                             {{ $sale->recordedBy->name }}
@@ -182,7 +182,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Record Payment</h5>
+                    <h5 class="modal-title">{{ __('Record Payment') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -196,8 +196,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitPayment">Record Payment</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="submitPayment">{{ __('Record Payment') }}</button>
                 </div>
             </div>
         </div>
@@ -215,8 +215,8 @@
                 const installmentUuid = button.dataset.installmentId;
                 const remainingAmount = parseFloat(button.dataset.amount);
 
-                document.getElementById('paymentAmount').value = remainingAmount.toFixed(2);
-                document.getElementById('remainingAmount').textContent = remainingAmount.toFixed(2);
+                window.setMoneyValue(document.getElementById('paymentAmount'), remainingAmount.toFixed(2));
+                document.getElementById('remainingAmount').textContent = remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 const baseUrl = '{{ route('sales.installments.payment', [$sale, 'INSTALLMENT_UUID']) }}';
                 paymentForm.action = baseUrl.replace('INSTALLMENT_UUID', installmentUuid);
             });

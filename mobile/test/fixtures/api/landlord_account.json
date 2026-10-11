@@ -1,0 +1,15 @@
+{
+    "profile": {
+        "uuid": "9437ea05-0fab-4513-8875-97d877ce8cbd",
+        "name": "Juma Landlord",
+        "username": "juma.landlord",
+        "email": null,
+        "phone": "0754000222"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

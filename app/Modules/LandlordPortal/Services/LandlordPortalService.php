@@ -2,8 +2,8 @@
 
 namespace App\Modules\LandlordPortal\Services;
 
+use App\Core\Auth\LoginIdentity;
 use App\Modules\Landlords\Models\Landlord;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -16,11 +16,8 @@ class LandlordPortalService
 {
     public function enableAccess(Landlord $landlord): string
     {
-        if (! $landlord->email) {
-            throw ValidationException::withMessages(['email' => 'This landlord needs an email address before portal access can be enabled.']);
-        }
 
-        $emailTaken = Landlord::withoutGlobalScope('company')
+        $emailTaken = $landlord->email && Landlord::withoutGlobalScope('company')
             ->whereNotNull('password')
             ->where('email', $landlord->email)
             ->where('id', '!=', $landlord->id)
@@ -30,7 +27,9 @@ class LandlordPortalService
             throw ValidationException::withMessages(['email' => 'Another landlord with portal access already uses this email address.']);
         }
 
-        $plainPassword = Str::password(12);
+        // Same starting password a new account gets: their phone number
+        // (random when there's no usable phone) - see LoginIdentity.
+        $plainPassword = LoginIdentity::defaultPassword($landlord->phone);
 
         $landlord->forceFill(['password' => $plainPassword])->save();
 

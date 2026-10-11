@@ -18,22 +18,51 @@ window.Chart = Chart;
 window.$ = $;
 window.jQuery = $;
 
+// Text this script writes itself, in the page language (<html lang>,
+// set by App\Http\Middleware\SetLocale). Everything else is translated
+// server-side.
+const SW = document.documentElement.lang === 'sw';
+const t = (en, sw) => (SW ? sw : en);
+
 const THEME_STORAGE_KEY = 'app-theme';
+
+// Chart text/grid colors follow the theme; re-applied on every toggle so
+// charts already on screen recolor instead of keeping the old theme.
+function applyChartTheme() {
+    const styles = getComputedStyle(document.documentElement);
+    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+    Chart.defaults.color = styles.getPropertyValue('--bs-secondary-color').trim() || '#475467';
+    Chart.defaults.borderColor = styles.getPropertyValue('--bs-border-color-translucent').trim() || 'rgba(0,0,0,.1)';
+
+    Object.values(Chart.instances).forEach((chart) => chart.update('none'));
+}
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-bs-theme', theme);
+    applyChartTheme();
 }
 
 function initTheme() {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    // partials/head.blade.php already set data-bs-theme before first paint;
+    // this only covers pages rendered without that partial.
+    let stored = null;
+    try {
+        stored = localStorage.getItem(THEME_STORAGE_KEY);
+    } catch (e) {
+        // Storage blocked (private mode etc.) - fall back to the OS setting.
+    }
     const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    applyTheme(stored ?? preferred);
+    applyTheme(stored === 'light' || stored === 'dark' ? stored : preferred);
 }
 
 window.toggleTheme = function toggleTheme() {
     const current = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
     const next = current === 'dark' ? 'light' : 'dark';
-    localStorage.setItem(THEME_STORAGE_KEY, next);
+    try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch (e) {
+        // Not persisted - still switch for this page view.
+    }
     applyTheme(next);
 };
 
@@ -49,21 +78,150 @@ function isDarkMode() {
 // doesn't pick up data-bs-theme on its own).
 window.confirmDelete = function confirmDelete(name, form, text) {
     Swal.fire({
-        title: `Delete ${name}?`,
-        text: text ?? 'This action cannot be undone.',
+        title: t(`Delete ${name}?`, `Futa ${name}?`),
+        text: text ?? t('This action cannot be undone.', 'Kitendo hiki hakiwezi kurudishwa.'),
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Delete',
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        background: isDarkMode() ? '#1a1d23' : undefined,
-        color: isDarkMode() ? '#e9ecef' : undefined,
+        confirmButtonText: t('Delete', 'Futa'),
+        cancelButtonText: t('Cancel', 'Ghairi'),
+        confirmButtonColor: '#F04438',
+        cancelButtonColor: '#667085',
+        background: isDarkMode() ? '#10213A' : undefined,
+        color: isDarkMode() ? '#E4E7EC' : undefined,
     }).then((result) => {
         if (result.isConfirmed) {
             form.submit();
         }
     });
 };
+
+// Toast notifications - success/error/info/warning, top-right, theme
+// aware. Layouts hand session flashes and validation errors over via
+// window.__flashToasts (resources/views/partials/flash-toasts.blade.php);
+// page scripts call window.showToast() directly for AJAX results.
+window.showToast = function showToast(type, message) {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type === 'danger' ? 'error' : type,
+        title: message,
+        showConfirmButton: false,
+        showCloseButton: true,
+        // Errors stay up longer - they usually need reading and acting on.
+        timer: type === 'error' || type === 'danger' ? 7000 : 4000,
+        timerProgressBar: true,
+        background: isDarkMode() ? '#18304F' : '#FFFFFF',
+        color: isDarkMode() ? '#E4E7EC' : '#101828',
+        customClass: { popup: 'app-toast' },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // SweetAlert shows one toast at a time - queue them.
+    (window.__flashToasts || []).reduce(
+        (previous, toast) => previous.then(() => new Promise((resolve) => {
+            window.showToast(toast.type, toast.message);
+            setTimeout(resolve, 1200);
+        })),
+        Promise.resolve(),
+    );
+
+    // Scroll to and focus the first invalid field after a failed submit.
+    const firstInvalid = document.querySelector('.is-invalid');
+    if (firstInvalid) {
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof firstInvalid.focus === 'function') {
+            firstInvalid.focus({ preventScroll: true });
+        }
+    }
+});
+
+// ---------------------------------------------------------------------
+// Money inputs: thousand separators while typing ("1,250,000.50").
+// Any <input> named like an amount/price/rent/... (or marked
+// data-money) is switched from type=number to a text input that shows
+// grouped digits; the separators are stripped again on submit (and by
+// App\Http\Middleware\NormalizeMoneyInput server-side, as a backstop).
+// ---------------------------------------------------------------------
+const MONEY_NAME = /(amount|price|rent|deposit|cost|fee|total|paid|balance|salary|budget|value|debit|credit)/i;
+
+function formatMoneyValue(raw) {
+    const cleaned = String(raw ?? '').replace(/[^\d.-]/g, '');
+    if (cleaned === '' || cleaned === '-') return cleaned;
+
+    const negative = cleaned.startsWith('-');
+    const [whole, ...decimals] = cleaned.replace(/-/g, '').split('.');
+    const grouped = (whole.replace(/^0+(?=\d)/, '') || '0').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const decimal = decimals.length ? '.' + decimals.join('').slice(0, 2) : '';
+
+    return (negative ? '-' : '') + grouped + decimal;
+}
+
+const formatAmount = (number) => number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+window.unformatMoney = (value) => String(value ?? '').replace(/,/g, '');
+
+function enhanceMoneyInput(input) {
+    if (input.dataset.moneyReady) return;
+    input.dataset.moneyReady = '1';
+    input.type = 'text';
+    input.inputMode = 'decimal';
+    input.autocomplete = 'off';
+    input.classList.add('money-input');
+    input.removeAttribute('step');
+    input.value = formatMoneyValue(input.value);
+
+    input.addEventListener('input', () => {
+        // Keep the caret in place relative to the digits typed so far.
+        const digitsBeforeCaret = input.value.slice(0, input.selectionStart).replace(/[^\d.]/g, '').length;
+        input.value = formatMoneyValue(input.value);
+        let position = 0;
+        let seen = 0;
+        while (position < input.value.length && seen < digitsBeforeCaret) {
+            if (/[\d.]/.test(input.value[position])) seen++;
+            position++;
+        }
+        input.setSelectionRange(position, position);
+    });
+}
+
+// Lets page scripts set a money field programmatically (e.g. the lease
+// form prefilling rent from the selected unit) and keep the formatting.
+window.setMoneyValue = function setMoneyValue(input, value) {
+    input.value = input.dataset.moneyReady ? formatMoneyValue(value) : value;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
+function enhanceMoneyInputs(root = document) {
+    root.querySelectorAll('input[type="number"], input[data-money]').forEach((input) => {
+        if (input.dataset.money !== undefined || MONEY_NAME.test(input.name || '')) {
+            enhanceMoneyInput(input);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    enhanceMoneyInputs();
+
+    // Rows added later (invoice line items, journal lines) get it too.
+    new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) enhanceMoneyInputs(node.parentNode || node);
+        }));
+    }).observe(document.body, { childList: true, subtree: true });
+
+    // Strip separators right before any form posts (capture phase, so it
+    // runs ahead of other submit handlers and FormData snapshots).
+    document.addEventListener('submit', (event) => {
+        event.target.querySelectorAll('input.money-input').forEach((input) => {
+            input.value = window.unformatMoney(input.value);
+        });
+    }, true);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.js-confirm-delete').forEach((button) => {
@@ -110,7 +268,7 @@ function initCommandPalette() {
                 .then((response) => response.json())
                 .then(renderCommandPaletteResults)
                 .catch(() => {
-                    results.innerHTML = '<div class="list-group-item text-danger small">Search failed.</div>';
+                    results.innerHTML = `<div class="list-group-item text-danger small">${t('Search failed.', 'Utafutaji umeshindwa.')}</div>`;
                 });
         }, 250);
     });
@@ -119,7 +277,7 @@ function initCommandPalette() {
         const groups = (data.groups || []).filter((group) => group.items.length > 0);
 
         if (groups.length === 0) {
-            results.innerHTML = '<div class="list-group-item text-secondary small">No results</div>';
+            results.innerHTML = `<div class="list-group-item text-secondary small">${t('No results', 'Hakuna matokeo')}</div>`;
             return;
         }
 
@@ -171,7 +329,7 @@ function initNotificationBell() {
 
     function renderNotifications(notifications) {
         if (notifications.length === 0) {
-            list.innerHTML = '<div class="list-group-item text-secondary small">No notifications yet</div>';
+            list.innerHTML = `<div class="list-group-item text-secondary small">${t('No notifications yet', 'Bado hakuna arifa')}</div>`;
             return;
         }
 
@@ -249,10 +407,10 @@ function initInvoiceLineItems() {
     let nextIndex = body.querySelectorAll('.invoice-item-row').length;
 
     function rowAmount(row) {
-        const qty = parseFloat(row.querySelector('.js-item-qty')?.value) || 0;
-        const price = parseFloat(row.querySelector('.js-item-price')?.value) || 0;
+        const qty = parseFloat(window.unformatMoney(row.querySelector('.js-item-qty')?.value)) || 0;
+        const price = parseFloat(window.unformatMoney(row.querySelector('.js-item-price')?.value)) || 0;
         const amount = qty * price;
-        row.querySelector('.js-item-amount').textContent = amount.toFixed(2);
+        row.querySelector('.js-item-amount').textContent = formatAmount(amount);
         return amount;
     }
 
@@ -261,7 +419,7 @@ function initInvoiceLineItems() {
         body.querySelectorAll('.invoice-item-row').forEach((row) => {
             total += rowAmount(row);
         });
-        totalEl.textContent = total.toFixed(2);
+        totalEl.textContent = formatAmount(total);
     }
 
     addButton.addEventListener('click', () => {
@@ -318,12 +476,12 @@ function initJournalEntryLines() {
         let totalCredits = 0;
 
         body.querySelectorAll('.journal-line-row').forEach((row) => {
-            totalDebits += parseFloat(row.querySelector('.js-line-debit')?.value) || 0;
-            totalCredits += parseFloat(row.querySelector('.js-line-credit')?.value) || 0;
+            totalDebits += parseFloat(window.unformatMoney(row.querySelector('.js-line-debit')?.value)) || 0;
+            totalCredits += parseFloat(window.unformatMoney(row.querySelector('.js-line-credit')?.value)) || 0;
         });
 
-        debitsEl.textContent = totalDebits.toFixed(2);
-        creditsEl.textContent = totalCredits.toFixed(2);
+        debitsEl.textContent = formatAmount(totalDebits);
+        creditsEl.textContent = formatAmount(totalCredits);
 
         const balanced = totalDebits > 0 && Math.abs(totalDebits - totalCredits) < 0.005;
         statusEl.textContent = balanced ? 'Balanced' : 'Not balanced';
@@ -382,10 +540,16 @@ function initDataTables() {
             dom: 'lfrtip',
             language: {
                 search: '_INPUT_',
-                searchPlaceholder: 'Search…',
+                searchPlaceholder: t('Search…', 'Tafuta…'),
+                lengthMenu: t('_MENU_ per page', '_MENU_ kwa ukurasa'),
+                info: t('Showing _START_ to _END_ of _TOTAL_', 'Inaonyesha _START_ hadi _END_ kati ya _TOTAL_'),
+                infoEmpty: t('Nothing to show', 'Hakuna cha kuonyesha'),
+                infoFiltered: t('(filtered from _MAX_)', '(kati ya _MAX_)'),
+                zeroRecords: t('No matching records', 'Hakuna kinacholingana'),
+                emptyTable: t('No data yet', 'Bado hakuna data'),
                 paginate: {
-                    previous: 'Prev',
-                    next: 'Next',
+                    previous: t('Prev', 'Nyuma'),
+                    next: t('Next', 'Mbele'),
                 },
             },
         });

@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Maintenance')
+@section('title', __('Maintenance'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Maintenance</h1>
+    <h1 class="h4 mb-0">{{ __('Maintenance') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Maintenance</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Maintenance') }}</h1>
             <p class="text-secondary mb-0">{{ $requests->total() }} {{ Str::plural('request', $requests->total()) }}</p>
         </div>
         @can('create', \App\Modules\Maintenance\Models\MaintenanceRequest::class)
             <a href="{{ route('maintenance-requests.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Request
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Request') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="property_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">All properties</option>
+                        <option value="">{{ __('All properties') }}</option>
                         @foreach ($properties as $property)
                             <option value="{{ $property->id }}" @selected((string) request('property_id') === (string) $property->id)>{{ $property->name }}</option>
                         @endforeach
@@ -38,9 +38,9 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['open', 'in_progress', 'completed', 'cancelled'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst(str_replace('_', ' ', $status))) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -65,12 +65,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Property / Unit</th>
-                                <th>Vendor</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Title') }}</th>
+                                <th>{{ __('Property / Unit') }}</th>
+                                <th>{{ __('Vendor') }}</th>
+                                <th>{{ __('Priority') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

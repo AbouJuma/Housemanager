@@ -2,7 +2,6 @@
 
 namespace App\Modules\Users\Http\Controllers;
 
-use App\Core\Tenancy\PermissionsTeam;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\Companies\Models\Company;
@@ -17,9 +16,7 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function __construct(protected UserService $service)
-    {
-    }
+    public function __construct(protected UserService $service) {}
 
     public function index(Request $request): View
     {
@@ -60,7 +57,7 @@ class UserController extends Controller
 
         $user = $this->service->create($attributes);
 
-        return redirect()->route('users.show', $user)->with('success', "User \"{$user->name}\" created.");
+        return redirect()->route('users.show', $user)->with('success', __('User ":name" created. Login - username: :username, password: :password', ['name' => $user->name, 'username' => $user->username, 'password' => $this->service->issuedPassword()]));
     }
 
     public function show(User $user): View

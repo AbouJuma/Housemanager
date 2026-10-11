@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Visitors')
+@section('title', __('Visitors'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Visitors</h1>
+    <h1 class="h4 mb-0">{{ __('Visitors') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Visitors</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Visitors') }}</h1>
             <p class="text-secondary mb-0">{{ $visitors->total() }} {{ Str::plural('visit', $visitors->total()) }}</p>
         </div>
         @can('create', \App\Modules\VisitorManagement\Models\Visitor::class)
             <a href="{{ route('visitors.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> Check In Visitor
+                <i class="bi bi-plus-lg me-1"></i> {{ __('Check In Visitor') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="property_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">All properties</option>
+                        <option value="">{{ __('All properties') }}</option>
                         @foreach ($properties as $property)
                             <option value="{{ $property->id }}" @selected((string) request('property_id') === (string) $property->id)>{{ $property->name }}</option>
                         @endforeach
@@ -39,8 +39,8 @@
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">All visits</option>
-                        <option value="checked_in" @selected(request('status') === 'checked_in')>Checked In</option>
-                        <option value="checked_out" @selected(request('status') === 'checked_out')>Checked Out</option>
+                        <option value="checked_in" @selected(request('status') === 'checked_in')>{{ __('Checked In') }}</option>
+                        <option value="checked_out" @selected(request('status') === 'checked_out')>{{ __('Checked Out') }}</option>
                     </select>
                 </div>
                 <div class="col-auto">
@@ -64,12 +64,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Visitor</th>
-                                <th>Property / Unit</th>
-                                <th>Visiting</th>
-                                <th>Check In</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Visitor') }}</th>
+                                <th>{{ __('Property / Unit') }}</th>
+                                <th>{{ __('Visiting') }}</th>
+                                <th>{{ __('Check In') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,9 +84,9 @@
                                     <td class="small">{{ $item->check_in_at->format('M j, Y g:i A') }}</td>
                                     <td>
                                         @if ($item->isCheckedIn())
-                                            <span class="badge text-bg-success">Checked In</span>
+                                            <span class="badge text-bg-success">{{ __('Checked In') }}</span>
                                         @else
-                                            <span class="badge text-bg-secondary">Checked Out</span>
+                                            <span class="badge text-bg-secondary">{{ __('Checked Out') }}</span>
                                         @endif
                                     </td>
                                     <td class="text-end">

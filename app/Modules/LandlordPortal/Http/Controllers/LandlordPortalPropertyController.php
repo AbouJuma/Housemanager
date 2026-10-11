@@ -24,7 +24,7 @@ class LandlordPortalPropertyController extends Controller
         abort_unless($property->landlord_id === $landlord->id, 403);
 
         return view('landlord-portal::properties.show', [
-            'property' => $property->load('buildings.units'),
+            'property' => $property->load('buildings.units.leases.tenant', 'buildings.units.sales.buyer'),
         ]);
     }
 }

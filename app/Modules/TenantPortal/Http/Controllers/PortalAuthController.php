@@ -2,8 +2,8 @@
 
 namespace App\Modules\TenantPortal\Http\Controllers;
 
+use App\Core\Auth\WebSignIn;
 use App\Http\Controllers\Controller;
-use App\Modules\Tenants\Models\Tenant;
 use App\Modules\TenantPortal\Http\Requests\PortalLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,19 +38,16 @@ class PortalAuthController extends Controller
     {
         $credentials = $request->validated();
 
-        $tenant = Tenant::withoutGlobalScope('company')
-            ->whereNotNull('password')
-            ->where('email', $credentials['email'])
-            ->first();
+        // Email, username or phone - and if these are a staff member's or
+        // another portal's details, sign them in there instead
+        // (App\Core\Auth\WebSignIn).
+        $redirect = WebSignIn::attempt($request, 'tenant', $credentials['email'], $credentials['password']);
 
-        if (! $tenant || ! Hash::check($credentials['password'], $tenant->password)) {
-            throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
+        if (! $redirect) {
+            throw ValidationException::withMessages(['email' => __('These credentials do not match our records.')]);
         }
 
-        Auth::guard('tenant')->login($tenant, $request->boolean('remember'));
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('portal.dashboard'));
+        return $redirect;
     }
 
     public function logout(Request $request): RedirectResponse

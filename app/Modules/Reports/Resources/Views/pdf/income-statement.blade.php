@@ -14,10 +14,10 @@
     </style>
 </head>
 <body>
-    <h1>Income Statement</h1>
+    <h1>{{ __('Income Statement') }}</h1>
     <p>{{ $start_date->toFormattedDateString() }} &ndash; {{ $end_date->toFormattedDateString() }}</p>
 
-    <h2>Income</h2>
+    <h2>{{ __('Income') }}</h2>
     <table>
         <tbody>
             @foreach ($income as $account)
@@ -27,13 +27,13 @@
                 </tr>
             @endforeach
             <tr class="total-row">
-                <td>Total Income</td>
+                <td>{{ __('Total Income') }}</td>
                 <td class="text-end">{{ number_format($total_income, 2) }}</td>
             </tr>
         </tbody>
     </table>
 
-    <h2>Expenses</h2>
+    <h2>{{ __('Expenses') }}</h2>
     <table>
         <tbody>
             @foreach ($expenses as $account)
@@ -43,7 +43,7 @@
                 </tr>
             @endforeach
             <tr class="total-row">
-                <td>Total Expenses</td>
+                <td>{{ __('Total Expenses') }}</td>
                 <td class="text-end">{{ number_format($total_expenses, 2) }}</td>
             </tr>
         </tbody>
@@ -51,7 +51,7 @@
 
     <table class="net">
         <tr>
-            <td>Net Income</td>
+            <td>{{ __('Net Income') }}</td>
             <td class="text-end">{{ number_format($net_income, 2) }}</td>
         </tr>
     </table>

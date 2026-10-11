@@ -1,0 +1,48 @@
+{
+    "data": {
+        "uuid": "d8fc1ab7-cc3b-4204-a5f7-1c1d725fc1ef",
+        "invoice_number": "INV-000002",
+        "status": "paid",
+        "issue_date": "2026-10-11",
+        "due_date": "2026-11-11",
+        "total_amount": 6000000,
+        "amount_paid": 6000000,
+        "balance_due": 0,
+        "notes": null,
+        "sale": {
+            "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+            "unit": {
+                "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+                "unit_number": "066W8",
+                "building": {
+                    "name": "Block sV",
+                    "property": {
+                        "name": "Stella Square Complex"
+                    }
+                }
+            }
+        },
+        "items": [
+            {
+                "uuid": "ee3dc47c-065e-4dfb-af7c-d390eaf5ba42",
+                "description": "Installment #1 - Unit 066W8",
+                "quantity": 1,
+                "unit_price": 6000000,
+                "amount": 6000000
+            }
+        ],
+        "payments": [
+            {
+                "uuid": "a871cdef-e507-4819-8e6b-00caa263b517",
+                "amount": 6000000,
+                "paid_on": "2026-10-11",
+                "method": "cash",
+                "reference": null,
+                "notes": null
+            }
+        ],
+        "payment_attempts": [],
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    }
+}

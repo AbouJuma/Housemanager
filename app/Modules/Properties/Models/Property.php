@@ -41,6 +41,7 @@ class Property extends Model implements HasMedia
         'address_line1',
         'address_line2',
         'city',
+        'area',
         'state',
         'postal_code',
         'country_code',

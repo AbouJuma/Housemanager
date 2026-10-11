@@ -35,14 +35,16 @@ class LandlordPortalServiceTest extends TestCase
         $this->assertTrue(Hash::check($plainPassword, $landlord->fresh()->password));
     }
 
-    public function test_enable_access_requires_an_email_address(): void
+    public function test_enable_access_works_without_an_email_and_starts_with_the_phone_number(): void
     {
+        // Username or phone number are enough to sign in - no email needed.
         $company = Company::factory()->create();
-        $landlord = Landlord::factory()->create(['company_id' => $company->id, 'email' => null]);
+        $landlord = Landlord::factory()->create(['company_id' => $company->id, 'email' => null, 'phone' => '0712 345 678']);
 
-        $this->expectException(ValidationException::class);
+        $password = $this->service->enableAccess($landlord);
 
-        $this->service->enableAccess($landlord);
+        $this->assertSame('0712345678', $password);
+        $this->assertNotNull(\App\Core\Auth\LoginIdentity::attempt(Landlord::class, $landlord->fresh()->username, '0712345678'));
     }
 
     public function test_enable_access_rejects_an_email_already_used_by_another_portal_enabled_landlord(): void

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MessageTemplate;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -39,7 +40,7 @@ class MessageTemplateController extends Controller
         $this->authorize('create', MessageTemplate::class);
 
         $validated = $request->validate([
-            'type' => 'required|in:tenant_welcome,landlord_welcome,buyer_welcome,lease_payment,buyer_invoice,landlord_payment_notification,tenant_payment_notification',
+            'type' => 'required|in:tenant_welcome,landlord_welcome,buyer_welcome,staff_welcome,lease_payment,buyer_bill,buyer_invoice,landlord_payment_notification,tenant_payment_notification,lease_landlord_notification,invoice_due_soon,invoice_overdue,installment_due_soon,installment_overdue,sale_completed,sale_created,sale_payment_landlord,lease_created_tenant',
             'name' => 'required|string|max:255',
             'sms_template' => 'nullable|string',
             'email_subject' => 'nullable|string|max:255',
@@ -59,6 +60,14 @@ class MessageTemplateController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    /**
+     * Templates have no read-only page - opening one goes to its editor.
+     */
+    public function show($id): RedirectResponse
+    {
+        return redirect()->route('message-templates.edit', $id);
+    }
+
     public function edit($id): View
     {
         $template = MessageTemplate::findOrFail($id);

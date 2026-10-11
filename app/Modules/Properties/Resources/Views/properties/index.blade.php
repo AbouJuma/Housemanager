@@ -1,20 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Properties')
+@section('title', __('Properties'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Properties</h1>
+    <h1 class="h4 mb-0">{{ __('Properties') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Properties</h1>
             <p class="text-secondary mb-0">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }}</p>
         </div>
         @can('create', \App\Modules\Properties\Models\Property::class)
             <a href="{{ route('properties.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Property
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Property') }}
             </a>
         @endcan
     </div>
@@ -30,17 +29,33 @@
                 </div>
                 <div class="col-auto">
                     <select name="type" class="form-select" onchange="this.form.submit()">
-                        <option value="">All types</option>
+                        <option value="">{{ __('All types') }}</option>
                         @foreach (['residential', 'commercial', 'mixed_use', 'warehouse', 'retail', 'hotel', 'hostel', 'industrial', 'land', 'other'] as $type)
-                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst(str_replace('_', ' ', $type)) }}</option>
+                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ __(ucfirst(str_replace('_', ' ', $type))) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto" style="min-width: 200px;">
+                    <select name="region" id="regionFilter" class="form-select" data-placeholder="All regions">
+                        <option value="">All regions</option>
+                        @foreach (array_keys($regions) as $region)
+                            <option value="{{ $region }}" @selected(request('region') === $region)>{{ $region }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto" style="min-width: 200px;">
+                    <select name="district" id="districtFilter" class="form-select" data-placeholder="All districts">
+                        <option value="">All districts</option>
+                        @foreach (request('region') ? ($regions[request('region')] ?? []) : array_merge(...array_values($regions)) as $district)
+                            <option value="{{ $district }}" @selected(request('district') === $district)>{{ $district }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'inactive', 'under_maintenance', 'archived'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst(str_replace('_', ' ', $status))) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -57,13 +72,13 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Property</th>
-                                <th>Landlord</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Buildings</th>
-                                <th>Units</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('Landlord') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Buildings') }}</th>
+                                <th>{{ __('Units') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,7 +86,10 @@
                                 <tr>
                                     <td>
                                         <div class="fw-semibold">{{ $property->name }}</div>
-                                        <div class="text-secondary small">{{ $property->city }}{{ $property->city && $property->country_code ? ', ' : '' }}{{ $property->country_code }}</div>
+                                        <div class="text-secondary small">
+                                            @php($location = collect([$property->area, $property->city, $property->state])->filter()->implode(', '))
+                                            @if ($location)<i class="bi bi-geo-alt me-1"></i>{{ $location }}@endif
+                                        </div>
                                     </td>
                                     <td>
                                         @if ($property->landlord)
@@ -119,3 +137,20 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Searchable location filters - picking one reloads the list.
+        ['#regionFilter', '#districtFilter'].forEach(function (id) {
+            $(id).select2({ width: '100%', allowClear: true, placeholder: $(id).data('placeholder') })
+                .on('change', function () {
+                    if (id === '#regionFilter') {
+                        $('#districtFilter').val('');
+                    }
+                    this.form.submit();
+                });
+        });
+    });
+</script>
+@endpush

@@ -58,6 +58,33 @@ class MaintenanceRequestController extends Controller
         return MaintenanceRequestResource::make($maintenanceRequest->load(['property', 'unit', 'vendor']));
     }
 
+    /**
+     * Just the status (and an optional note) - what a caretaker, cleaner or
+     * vendor updates from the mobile app, without the full edit form.
+     */
+    public function updateStatus(Request $request, MaintenanceRequest $maintenanceRequest): MaintenanceRequestResource
+    {
+        $this->authorize('update', $maintenanceRequest);
+
+        $data = $request->validate([
+            'status' => ['required', 'in:open,in_progress,completed,cancelled'],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $changes = ['status' => $data['status']];
+        if ($data['status'] === 'completed' && ! $maintenanceRequest->completed_date) {
+            $changes['completed_date'] = company_now()->toDateString();
+        }
+        if (filled($data['notes'] ?? null)) {
+            $changes['notes'] = trim($maintenanceRequest->notes."
+".$data['notes']);
+        }
+
+        $maintenanceRequest = $this->service->update($maintenanceRequest, $changes);
+
+        return MaintenanceRequestResource::make($maintenanceRequest->load(['property', 'unit', 'tenant', 'vendor']));
+    }
+
     public function destroy(MaintenanceRequest $maintenanceRequest): JsonResponse
     {
         $this->authorize('delete', $maintenanceRequest);

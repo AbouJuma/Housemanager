@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Journal Entries')
+@section('title', __('Journal Entries'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Journal Entries</h1>
+    <h1 class="h4 mb-0">{{ __('Journal Entries') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Journal Entries</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Journal Entries') }}</h1>
             <p class="text-secondary mb-0">{{ $entries->total() }} {{ Str::plural('entry', $entries->total()) }}</p>
         </div>
         @can('create', \App\Modules\Accounting\Models\JournalEntry::class)
             <a href="{{ route('journal-entries.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Journal Entry
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Journal Entry') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['posted', 'voided'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -49,12 +49,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Reference</th>
-                                <th class="text-end">Total</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Date') }}</th>
+                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Reference') }}</th>
+                                <th class="text-end">{{ __('Total') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

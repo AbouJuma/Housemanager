@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Inventory')
+@section('title', __('Inventory'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Inventory</h1>
+    <h1 class="h4 mb-0">{{ __('Inventory') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Inventory</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Inventory') }}</h1>
             <p class="text-secondary mb-0">{{ $items->total() }} {{ Str::plural('item', $items->total()) }}</p>
         </div>
         @can('create', \App\Modules\Inventory\Models\InventoryItem::class)
             <a href="{{ route('inventory-items.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Item
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Item') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="category" class="form-select" onchange="this.form.submit()">
-                        <option value="">All categories</option>
+                        <option value="">{{ __('All categories') }}</option>
                         @foreach (['appliance', 'furniture', 'tool', 'plumbing_supply', 'electrical_supply', 'cleaning_supply', 'hardware', 'safety_equipment', 'other'] as $category)
                             <option value="{{ $category }}" @selected(request('category') === $category)>{{ ucfirst(str_replace('_', ' ', $category)) }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'discontinued'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -47,7 +47,7 @@
                 <div class="col-auto d-flex align-items-center">
                     <div class="form-check">
                         <input type="checkbox" name="low_stock" value="1" id="lowStockOnly" class="form-check-input" onchange="this.form.submit()" @checked(request()->boolean('low_stock'))>
-                        <label class="form-check-label" for="lowStockOnly">Low stock only</label>
+                        <label class="form-check-label" for="lowStockOnly">{{ __('Low stock only') }}</label>
                     </div>
                 </div>
             </form>
@@ -55,20 +55,20 @@
             @if ($items->isEmpty())
                 <div class="text-center py-5">
                     <i class="bi bi-box-seam display-4 text-secondary"></i>
-                    <p class="mt-3 mb-1 fw-semibold">No inventory items yet</p>
-                    <p class="text-secondary">Items you add will show up here.</p>
+                    <p class="mt-3 mb-1 fw-semibold">{{ __('No inventory items yet') }}</p>
+                    <p class="text-secondary">{{ __('Items you add will show up here.') }}</p>
                 </div>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Property</th>
-                                <th>On Hand</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('On Hand') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +80,7 @@
                                     <td>
                                         {{ rtrim(rtrim(number_format($item->quantity_on_hand, 2), '0'), '.') }} {{ $item->unit_of_measure }}
                                         @if ($item->isLowStock())
-                                            <span class="badge text-bg-warning ms-1">Low</span>
+                                            <span class="badge text-bg-warning ms-1">{{ __('Low') }}</span>
                                         @endif
                                     </td>
                                     <td>

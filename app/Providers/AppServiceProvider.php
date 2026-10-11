@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::before(fn ($user, string $ability) => $user->isSaasOwner() && $ability === 'reports.view' ? true : null);
+        Gate::before(fn ($user, string $ability) => $user->isSaasOwner() && in_array($ability, ['reports.view', 'message-logs.view'], true) ? true : null);
 
         Paginator::useBootstrapFive();
     }

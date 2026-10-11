@@ -1,24 +1,24 @@
 @extends('layouts.app')
 
-@section('title', 'Billing Status')
+@section('title', __('Billing Status'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Billing Status</h1>
+    <h1 class="h4 mb-0">{{ __('Billing Status') }}</h1>
 @endsection
 
 @section('content')
     <div class="mb-3 d-flex flex-column flex-md-row justify-content-between gap-2 align-items-start align-items-md-center">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Billing Status</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Billing Status') }}</h1>
             <p class="text-secondary mb-0">{{ $rows->count() }} subscription invoices.</p>
         </div>
         <div class="d-flex gap-2 align-items-center flex-wrap">
-            <label for="billingStatusFilter" class="small text-secondary mb-0">Filter status</label>
+            <label for="billingStatusFilter" class="small text-secondary mb-0">{{ __('Filter status') }}</label>
             <select id="billingStatusFilter" class="form-select form-select-sm" data-dt-filter="billingStatusTable" data-dt-filter-column="5">
-                <option value="">All statuses</option>
-                <option value="unpaid">Unpaid</option>
-                <option value="paid">Paid</option>
-                <option value="void">Void</option>
+                <option value="">{{ __('All statuses') }}</option>
+                <option value="unpaid">{{ __('Unpaid') }}</option>
+                <option value="paid">{{ __('Paid') }}</option>
+                <option value="void">{{ __('Void') }}</option>
             </select>
         </div>
     </div>
@@ -32,12 +32,12 @@
                     <table id="billingStatusTable" class="table table-striped table-hover table-sm align-middle datatable">
                         <thead>
                             <tr>
-                                <th>Company</th>
+                                <th>{{ __('Company') }}</th>
                                 <th>Invoice #</th>
-                                <th class="text-end">Amount</th>
-                                <th>Issue Date</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
+                                <th class="text-end">{{ __('Amount') }}</th>
+                                <th>{{ __('Issue Date') }}</th>
+                                <th>{{ __('Due Date') }}</th>
+                                <th>{{ __('Status') }}</th>
                                 <th>Overdue</th>
                             </tr>
                         </thead>

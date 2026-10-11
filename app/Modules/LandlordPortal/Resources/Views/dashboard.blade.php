@@ -1,41 +1,54 @@
 @extends('landlord-portal::layout')
 
-@section('title', 'Dashboard')
+@section('title', __('Dashboard'))
+
+@section('portal-hero')
+    <div class="page-hero-eyebrow">{{ company_now()->locale(app()->getLocale())->isoFormat('dddd, D MMMM YYYY') }}</div>
+    <h1 class="h2 mb-2">{{ __('Welcome back, :name', ['name' => $landlord->name]) }}</h1>
+    <p class="text-secondary mb-3" style="max-width: 36rem;">{{ __('Occupancy, rent collected and expenses across your portfolio.') }}</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ route('landlord-portal.properties.index') }}" class="btn btn-primary"><i class="bi bi-buildings me-1"></i> {{ __('My properties') }}</a>
+        <a href="{{ route('landlord-portal.expenses.index') }}" class="btn btn-light"><i class="bi bi-cash-stack me-1"></i> {{ __('Expenses') }}</a>
+    </div>
+@endsection
 
 @section('content')
-    <h1 class="h4 mb-4">Welcome, {{ $landlord->name }}</h1>
 
     <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card kpi-card h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-secondary mb-2">Properties</h2>
-                    <p class="display-6 mb-0">{{ $properties->count() }}</p>
+                    <span class="icon-tile icon-tile-brand mb-3"><i class="bi bi-buildings"></i></span>
+                    <h2 class="h6 text-secondary mb-1">{{ __('Properties') }}</h2>
+                    <p class="display-6 fw-semibold mb-0">{{ $properties->count() }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card kpi-card h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-secondary mb-2">Units</h2>
-                    <p class="display-6 mb-0">{{ $unitCounts['total'] }}</p>
+                    <span class="icon-tile icon-tile-violet mb-3"><i class="bi bi-door-open"></i></span>
+                    <h2 class="h6 text-secondary mb-1">{{ __('Units') }}</h2>
+                    <p class="display-6 fw-semibold mb-0">{{ $unitCounts['total'] }}</p>
                     <p class="text-secondary small mb-0">{{ $unitCounts['occupied'] }} occupied &middot; {{ $unitCounts['vacant'] }} vacant</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card kpi-card h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-secondary mb-2">Rent Collected</h2>
-                    <p class="display-6 mb-0">{{ number_format($totalCollected, 2) }}</p>
+                    <span class="icon-tile icon-tile-green mb-3"><i class="bi bi-cash-coin"></i></span>
+                    <h2 class="h6 text-secondary mb-1">{{ __('Rent Collected') }}</h2>
+                    <p class="display-6 fw-semibold mb-0">{{ number_format($totalCollected, 2) }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card kpi-card h-100">
                 <div class="card-body">
-                    <h2 class="h6 text-secondary mb-2">Net</h2>
-                    <p class="display-6 mb-0">{{ number_format($netAmount, 2) }}</p>
+                    <span class="icon-tile icon-tile-amber mb-3"><i class="bi bi-graph-up-arrow"></i></span>
+                    <h2 class="h6 text-secondary mb-1">{{ __('Net') }}</h2>
+                    <p class="display-6 fw-semibold mb-0">{{ number_format($netAmount, 2) }}</p>
                     <p class="text-secondary small mb-0">{{ number_format($totalExpenses, 2) }} in expenses</p>
                 </div>
             </div>
@@ -44,9 +57,9 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h2 class="h6 mb-3">Recent Maintenance Requests</h2>
+            <h2 class="h6 mb-3 d-flex align-items-center gap-2"><span class="icon-tile icon-tile-amber" style="width: 32px; height: 32px; font-size: 1rem;"><i class="bi bi-tools"></i></span> {{ __('Recent Maintenance Requests') }}</h2>
             @if ($recentMaintenanceRequests->isEmpty())
-                <p class="text-secondary small mb-0">No maintenance requests yet.</p>
+                <p class="text-secondary small mb-0">{{ __('No maintenance requests yet.') }}</p>
             @else
                 <ul class="list-unstyled mb-0">
                     @foreach ($recentMaintenanceRequests as $request)

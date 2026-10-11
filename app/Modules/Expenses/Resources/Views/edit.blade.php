@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Expense')
+@section('title', __('Edit Expense'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Edit Expense</h1>
+    <h1 class="h4 mb-0">{{ __('Edit Expense') }}</h1>
 @endsection
 
 @section('content')
@@ -16,7 +16,7 @@
                 @method('PUT')
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Property <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label class="form-label">{{ __('Property') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <select name="property_id" class="form-select @error('property_id') is-invalid @enderror">
                             <option value="">&mdash; Not property-specific &mdash;</option>
                             @foreach ($properties as $property)
@@ -26,7 +26,7 @@
                         @error('property_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Vendor <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label class="form-label">{{ __('Vendor') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <select name="vendor_id" class="form-select @error('vendor_id') is-invalid @enderror">
                             <option value="">&mdash; Not on file &mdash;</option>
                             @foreach ($vendors as $vendor)
@@ -36,32 +36,32 @@
                         @error('vendor_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Vendor Name <span class="text-secondary fw-normal">(if not on file above)</span></label>
+                        <label class="form-label">{{ __('Vendor Name') }} <span class="text-secondary fw-normal">(if not on file above)</span></label>
                         <input type="text" name="vendor_name" value="{{ old('vendor_name', $expense->vendor_name) }}" class="form-control @error('vendor_name') is-invalid @enderror">
                         @error('vendor_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label">Description</label>
+                        <label class="form-label">{{ __('Description') }}</label>
                         <input type="text" name="description" value="{{ old('description', $expense->description) }}" class="form-control @error('description') is-invalid @enderror" required>
                         @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Reference <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label class="form-label">{{ __('Reference') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <input type="text" name="reference" value="{{ old('reference', $expense->reference) }}" class="form-control @error('reference') is-invalid @enderror">
                         @error('reference') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Notes <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label class="form-label">{{ __('Notes') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <textarea name="notes" rows="2" class="form-control @error('notes') is-invalid @enderror">{{ old('notes', $expense->notes) }}</textarea>
                         @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a href="{{ route('expenses.show', $expense) }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                    <a href="{{ route('expenses.show', $expense) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

@@ -5,6 +5,7 @@ namespace Tests\Feature\RentCollection;
 use App\Modules\Companies\Models\Company;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Leases\Models\Lease;
+use App\Modules\PaymentReminders\Services\ReminderRuleService;
 use App\Modules\Properties\Models\Building;
 use App\Modules\Properties\Models\Property;
 use App\Modules\Properties\Models\Unit;
@@ -23,6 +24,16 @@ class SendRentRemindersTest extends TestCase
     protected function makeInvoice(string $status, array $overrides = []): Invoice
     {
         $company = Company::factory()->create();
+
+        // Company::factory()->create() is direct Eloquent creation - it
+        // never fires CompanyCreated (see CompanySeeder's own docblock),
+        // so this company gets no reminder rules automatically the way
+        // a company created through CompanyService::create() would.
+        // Seeding the same defaults SeedDefaultReminderRulesForCompany
+        // would apply keeps these tests' due-date math (3 days
+        // due-soon, 7-day overdue repeat) meaningful.
+        app(ReminderRuleService::class)->seedDefaultsFor($company);
+
         $tenant = Tenant::factory()->create(['company_id' => $company->id]);
         $property = Property::factory()->create(['company_id' => $company->id]);
         $building = Building::factory()->create(['company_id' => $company->id, 'property_id' => $property->id]);

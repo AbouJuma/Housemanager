@@ -7,17 +7,20 @@ use Illuminate\Support\Carbon;
 
 class ArAgingReportService
 {
+    /** Invoice statuses that can still be owed - and filtered by. */
+    public const STATUSES = ['sent', 'partially_paid', 'overdue'];
+
     protected const BUCKETS = ['current', '1_30', '31_60', '61_90', 'over_90'];
 
-    public function generate(): array
+    public function generate(?string $status = null): array
     {
         $today = Carbon::today();
 
         $buckets = array_fill_keys(self::BUCKETS, []);
 
         $invoices = Invoice::query()
-            ->whereIn('status', ['sent', 'partially_paid', 'overdue'])
-            ->with('lease.tenant')
+            ->whereIn('status', in_array($status, self::STATUSES, true) ? [$status] : self::STATUSES)
+            ->with(['lease.tenant', 'sale.buyer'])
             ->get()
             ->filter(fn (Invoice $invoice) => $invoice->balanceDue() > 0);
 
@@ -34,7 +37,9 @@ class ArAgingReportService
 
             $buckets[$bucket][] = [
                 'invoice_number' => $invoice->invoice_number,
-                'tenant' => $invoice->lease->tenant->name,
+                // Rent invoices are owed by the lease's tenant, sale invoices
+                // by the buyer - a sale invoice has no lease at all.
+                'tenant' => $invoice->lease?->tenant?->name ?? $invoice->sale?->buyer?->name ?? 'Unknown customer',
                 'due_date' => $invoice->due_date->toDateString(),
                 'days_overdue' => $daysOverdue,
                 'balance' => $invoice->balanceDue(),

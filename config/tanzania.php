@@ -1,0 +1,78 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Tanzania locations
+|--------------------------------------------------------------------------
+|
+| Region -> district list used by the property form's searchable
+| location pickers and the property list's filters. A property stores
+| its region in `state`, district in `city` and neighbourhood/ward in
+| `area`. `areas` are suggestions only - the form still accepts any
+| typed value, so a ward that isn't listed here can always be entered.
+|
+*/
+
+return [
+    'regions' => [
+        'Arusha' => ['Arusha City', 'Arusha DC', 'Meru', 'Karatu', 'Longido', 'Monduli', 'Ngorongoro'],
+        'Dar es Salaam' => ['Ilala', 'Kinondoni', 'Temeke', 'Ubungo', 'Kigamboni'],
+        'Dodoma' => ['Dodoma City', 'Bahi', 'Chamwino', 'Chemba', 'Kondoa', 'Kongwa', 'Mpwapwa'],
+        'Geita' => ['Geita', 'Bukombe', 'Chato', 'Mbogwe', "Nyang'hwale"],
+        'Iringa' => ['Iringa Municipal', 'Iringa DC', 'Kilolo', 'Mafinga Town', 'Mufindi'],
+        'Kagera' => ['Bukoba Municipal', 'Bukoba DC', 'Biharamulo', 'Karagwe', 'Kyerwa', 'Missenyi', 'Muleba', 'Ngara'],
+        'Katavi' => ['Mpanda', 'Tanganyika', 'Mlele', 'Mpimbwe', 'Nsimbo'],
+        'Kigoma' => ['Kigoma-Ujiji', 'Kigoma DC', 'Buhigwe', 'Kakonko', 'Kasulu', 'Kibondo', 'Uvinza'],
+        'Kilimanjaro' => ['Moshi Municipal', 'Moshi DC', 'Hai', 'Mwanga', 'Rombo', 'Same', 'Siha'],
+        'Lindi' => ['Lindi Municipal', 'Kilwa', 'Liwale', 'Mtama', 'Nachingwea', 'Ruangwa'],
+        'Manyara' => ['Babati Town', 'Babati DC', 'Hanang', 'Kiteto', 'Mbulu', 'Simanjiro'],
+        'Mara' => ['Musoma Municipal', 'Musoma DC', 'Bunda', 'Butiama', 'Rorya', 'Serengeti', 'Tarime'],
+        'Mbeya' => ['Mbeya City', 'Mbeya DC', 'Busokelo', 'Chunya', 'Kyela', 'Mbarali', 'Rungwe'],
+        'Morogoro' => ['Morogoro Municipal', 'Morogoro DC', 'Gairo', 'Ifakara Town', 'Kilombero', 'Kilosa', 'Malinyi', 'Mvomero', 'Ulanga'],
+        'Mtwara' => ['Mtwara Municipal', 'Mtwara DC', 'Masasi', 'Nanyamba', 'Nanyumbu', 'Newala', 'Tandahimba'],
+        'Mwanza' => ['Ilemela', 'Nyamagana', 'Buchosa', 'Kwimba', 'Magu', 'Misungwi', 'Sengerema', 'Ukerewe'],
+        'Njombe' => ['Njombe Town', 'Njombe DC', 'Ludewa', 'Makambako', 'Makete', "Wanging'ombe"],
+        'Pwani' => ['Kibaha Town', 'Kibaha DC', 'Bagamoyo', 'Chalinze', 'Kibiti', 'Kisarawe', 'Mafia', 'Mkuranga', 'Rufiji'],
+        'Rukwa' => ['Sumbawanga Municipal', 'Sumbawanga DC', 'Kalambo', 'Nkasi'],
+        'Ruvuma' => ['Songea Municipal', 'Songea DC', 'Madaba', 'Mbinga', 'Namtumbo', 'Nyasa', 'Tunduru'],
+        'Shinyanga' => ['Shinyanga Municipal', 'Shinyanga DC', 'Kahama', 'Kishapu', 'Msalala', 'Ushetu'],
+        'Simiyu' => ['Bariadi', 'Busega', 'Itilima', 'Maswa', 'Meatu'],
+        'Singida' => ['Singida Municipal', 'Singida DC', 'Ikungi', 'Iramba', 'Itigi', 'Manyoni', 'Mkalama'],
+        'Songwe' => ['Mbozi', 'Ileje', 'Momba', 'Songwe', 'Tunduma'],
+        'Tabora' => ['Tabora Municipal', 'Igunga', 'Kaliua', 'Nzega', 'Sikonge', 'Urambo', 'Uyui'],
+        'Tanga' => ['Tanga City', 'Bumbuli', 'Handeni', 'Kilindi', 'Korogwe', 'Lushoto', 'Mkinga', 'Muheza', 'Pangani'],
+        'Mjini Magharibi' => ['Mjini', 'Magharibi A', 'Magharibi B'],
+        'Unguja North' => ['Kaskazini A', 'Kaskazini B'],
+        'Unguja South' => ['Kati', 'Kusini'],
+        'Pemba North' => ['Wete', 'Micheweni'],
+        'Pemba South' => ['Chake Chake', 'Mkoani'],
+    ],
+
+    // District -> well-known neighbourhoods / wards (suggestions).
+    'areas' => [
+        'Kinondoni' => ['Masaki', 'Oyster Bay', 'Msasani', 'Mikocheni', 'Mbezi Beach', 'Kawe', 'Kijitonyama', 'Mwananyamala', 'Mwenge', 'Kunduchi', 'Tegeta', 'Wazo', 'Bunju', 'Mbweni', 'Boko', 'Kinondoni', 'Magomeni'],
+        'Ilala' => ['City Centre (Posta)', 'Upanga', 'Kariakoo', 'Kisutu', 'Gerezani', 'Mchikichini', 'Buguruni', 'Tabata', 'Segerea', 'Kinyerezi', 'Kipawa', 'Ukonga', 'Gongo la Mboto', 'Kitunda', 'Chanika', 'Pugu', 'Vingunguti'],
+        'Temeke' => ['Temeke', "Chang'ombe", 'Kurasini', 'Keko', 'Tandika', 'Mbagala', 'Yombo', 'Mtoni', 'Kijichi', 'Toangoma', 'Kibondemaji'],
+        'Ubungo' => ['Ubungo', 'Sinza', 'Mabibo', 'Manzese', 'Kimara', 'Mbezi Luis', 'Goba', 'Makongo', 'Kibamba', 'Msigani', 'Saranga', 'Makuburi'],
+        'Kigamboni' => ['Kigamboni', 'Mji Mwema', 'Kibada', 'Tungi', 'Vijibweni', 'Somangila', 'Kisarawe II', 'Pembamnazi'],
+        'Arusha City' => ['Njiro', 'Sakina', 'Kijenge', 'Themi', 'Olasiti', 'Sekei', 'Kaloleni', 'Levolosi', 'Moshono', 'Sinoni', 'Ngarenaro', 'Kimandolu', 'Unga Limited'],
+        'Meru' => ['Usa River', 'Tengeru', 'Kikatiti', 'Maji ya Chai'],
+        'Dodoma City' => ['Area C', 'Area D', 'Kisasa', 'Nzuguni', 'Iyumbu', 'Mlimwa', 'Makulu', 'Kikuyu', 'Ipagala', 'Mtumba', 'Kizota', 'Ntyuka', 'Chang\'ombe', 'Kilimani'],
+        'Nyamagana' => ['Isamilo', 'Igogo', 'Mkuyuni', 'Butimba', 'Nyegezi', 'Mabatini', 'Mirongo', 'Pamba', 'Mbugani', 'Buhongwa'],
+        'Ilemela' => ['Kirumba', 'Pasiansi', 'Nyamanoro', 'Kiseke', 'Buswelu', 'Bugogwa', 'Ilemela', 'Kitangiri', 'Nyasaka'],
+        'Moshi Municipal' => ['Shanty Town', 'Soweto', 'Kiusa', 'Pasua', 'Majengo', 'Rau', 'Bondeni', 'Mawenzi', 'Njoro'],
+        'Mbeya City' => ['Forest', 'Iyunga', 'Sisimba', 'Mwanjelwa', 'Uyole', 'Ilomba', 'Isanga', 'Mabatini'],
+        'Morogoro Municipal' => ['Kihonda', 'Mazimbu', 'Boma', 'Kilakala', 'Bigwa', 'Mafiga', 'Kichangani', 'Mji Mkuu'],
+        'Tanga City' => ['Chumbageni', 'Raskazone', 'Usagara', 'Makorora', 'Nguvumali', 'Mabawa', 'Mzingani'],
+        'Mjini' => ['Stone Town', 'Malindi', 'Kikwajuni', 'Mwanakwerekwe', 'Mombasa', 'Kiembe Samaki', 'Mbweni', 'Amani', 'Mpendae'],
+        'Magharibi A' => ['Bububu', 'Mtoni', 'Chuini', 'Kianga'],
+        'Magharibi B' => ['Fumba', 'Tomondo', 'Mwera', 'Kijichi'],
+        'Kaskazini A' => ['Nungwi', 'Kendwa', 'Matemwe', 'Kiwengwa'],
+        'Kusini' => ['Paje', 'Jambiani', 'Makunduchi', 'Kizimkazi', 'Bwejuu'],
+        'Kibaha Town' => ['Mailimoja', 'Picha ya Ndege', 'Tumbi', 'Visiga'],
+        'Bagamoyo' => ['Bagamoyo Town', 'Kiromo', 'Zinga', 'Mapinga'],
+        'Mkuranga' => ['Mkuranga Town', 'Vikindu', 'Kisemvule', 'Mwandege'],
+        'Iringa Municipal' => ['Gangilonga', 'Kihesa', 'Mkwawa', 'Kitwiru', 'Ipogolo'],
+        'Mtwara Municipal' => ['Shangani', 'Chikongola', 'Magomeni', 'Likombe'],
+    ],
+];

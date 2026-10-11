@@ -2,8 +2,8 @@
 
 namespace App\Modules\TenantPortal\Services;
 
+use App\Core\Auth\LoginIdentity;
 use App\Modules\Tenants\Models\Tenant;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -24,11 +24,8 @@ class TenantPortalService
      */
     public function enableAccess(Tenant $tenant): string
     {
-        if (! $tenant->email) {
-            throw ValidationException::withMessages(['email' => 'This tenant needs an email address before portal access can be enabled.']);
-        }
 
-        $emailTaken = Tenant::withoutGlobalScope('company')
+        $emailTaken = $tenant->email && Tenant::withoutGlobalScope('company')
             ->whereNotNull('password')
             ->where('email', $tenant->email)
             ->where('id', '!=', $tenant->id)
@@ -38,7 +35,9 @@ class TenantPortalService
             throw ValidationException::withMessages(['email' => 'Another tenant with portal access already uses this email address.']);
         }
 
-        $plainPassword = Str::password(12);
+        // Same starting password a new account gets: their phone number
+        // (random when there's no usable phone) - see LoginIdentity.
+        $plainPassword = LoginIdentity::defaultPassword($tenant->phone);
 
         $tenant->forceFill(['password' => $plainPassword])->save();
 

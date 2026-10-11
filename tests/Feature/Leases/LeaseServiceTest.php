@@ -3,7 +3,11 @@
 namespace Tests\Feature\Leases;
 
 use App\Modules\Companies\Models\Company;
+use App\Modules\Invoices\Notifications\LandlordPaymentConfirmation;
+use App\Modules\Invoices\Notifications\TenantPaymentConfirmation;
+use App\Modules\Landlords\Models\Landlord;
 use App\Modules\Leases\Models\Lease;
+use App\Modules\Leases\Notifications\LeaseCreatedLandlordNotice;
 use App\Modules\Leases\Repositories\EloquentLeaseRepository;
 use App\Modules\Leases\Repositories\LeaseRepositoryInterface;
 use App\Modules\Leases\Services\LeaseService;
@@ -12,6 +16,7 @@ use App\Modules\Properties\Models\Property;
 use App\Modules\Properties\Models\Unit;
 use App\Modules\Tenants\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class LeaseServiceTest extends TestCase
@@ -110,5 +115,85 @@ class LeaseServiceTest extends TestCase
         ]);
 
         $this->assertSame('vacant', $unit->fresh()->status);
+    }
+
+    /**
+     * @return array{Company, Tenant, Landlord, Unit}
+     */
+    protected function makeLeaseScenario(): array
+    {
+        $company = Company::factory()->create();
+        $tenant = Tenant::factory()->create(['company_id' => $company->id]);
+        $landlord = Landlord::factory()->create(['company_id' => $company->id]);
+        $property = Property::factory()->create(['company_id' => $company->id, 'landlord_id' => $landlord->id]);
+        $building = Building::factory()->create(['company_id' => $company->id, 'property_id' => $property->id]);
+        $unit = Unit::factory()->create(['company_id' => $company->id, 'building_id' => $building->id, 'status' => 'vacant']);
+
+        return [$company, $tenant, $landlord, $unit];
+    }
+
+    protected function createLease(Company $company, Tenant $tenant, Unit $unit, float $rent, float $deposit): Lease
+    {
+        return $this->service->create([
+            'company_id' => $company->id,
+            'tenant_id' => $tenant->id,
+            'unit_id' => $unit->id,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+            'rent_amount' => $rent,
+            'deposit_amount' => $deposit,
+        ]);
+    }
+
+    /**
+     * A payment message only makes sense if money actually changed hands
+     * at signing: no deposit means no payment is recorded and neither
+     * the tenant nor the landlord gets a payment confirmation.
+     */
+    public function test_create_without_a_deposit_records_no_payment_and_sends_no_payment_messages(): void
+    {
+        Notification::fake();
+        [$company, $tenant, $landlord, $unit] = $this->makeLeaseScenario();
+
+        $lease = $this->createLease($company, $tenant, $unit, 500, 0);
+
+        $invoice = $lease->invoices()->first();
+        $this->assertEquals(0, $invoice->amount_paid);
+        $this->assertSame('sent', $invoice->status);
+        Notification::assertSentTo($landlord, LeaseCreatedLandlordNotice::class);
+        Notification::assertNotSentTo($landlord, LandlordPaymentConfirmation::class);
+        Notification::assertNotSentTo($tenant, TenantPaymentConfirmation::class);
+    }
+
+    /**
+     * The deposit is applied to the first invoice so the due amount
+     * reflects it (200,000 rent - 150,000 deposit = 50,000 still due),
+     * and both parties are told through the payment templates.
+     */
+    public function test_create_with_a_deposit_applies_it_to_the_first_invoice_and_notifies_both_parties(): void
+    {
+        Notification::fake();
+        [$company, $tenant, $landlord, $unit] = $this->makeLeaseScenario();
+
+        $lease = $this->createLease($company, $tenant, $unit, 200000, 150000);
+
+        $invoice = $lease->invoices()->first();
+        $this->assertEquals(150000, $invoice->amount_paid);
+        $this->assertEquals(50000, $invoice->balanceDue());
+        $this->assertSame('partially_paid', $invoice->status);
+        Notification::assertSentTo($landlord, LandlordPaymentConfirmation::class);
+        Notification::assertSentTo($tenant, TenantPaymentConfirmation::class);
+    }
+
+    public function test_a_deposit_larger_than_the_first_invoice_is_capped_and_marks_it_paid(): void
+    {
+        Notification::fake();
+        [$company, $tenant, $landlord, $unit] = $this->makeLeaseScenario();
+
+        $lease = $this->createLease($company, $tenant, $unit, 200000, 500000);
+
+        $invoice = $lease->invoices()->first();
+        $this->assertEquals(200000, $invoice->amount_paid);
+        $this->assertSame('paid', $invoice->status);
     }
 }

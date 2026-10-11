@@ -1,13 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', __('Dashboard'))
+
+@section('hero-class', 'page-hero-lg')
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Dashboard</h1>
+    @php
+        $hour = company_now()->hour;
+    @endphp
+    <div class="page-hero-eyebrow">{{ company_now()->locale(app()->getLocale())->isoFormat('dddd, D MMMM YYYY') }}</div>
+    <h1 class="h2 mb-2">{{ __($hour < 12 ? 'Good morning, :name' : ($hour < 17 ? 'Good afternoon, :name' : 'Good evening, :name'), ['name' => \Illuminate\Support\Str::before(auth()->user()->name, ' ')]) }}</h1>
+    <p class="text-secondary mb-0" style="max-width: 38rem;">
+        @if ($isSaasOwner)
+            {{ __("Here's how the platform is doing today.") }}
+        @else
+            {{ __("Here's what's happening across your properties today.") }}
+        @endif
+    </p>
 @endsection
 
 @section('content')
-    <h1 class="h4 mb-3 d-lg-none">Dashboard</h1>
 
     @if ($isSaasOwner)
         <div class="row g-3 mb-4">
@@ -42,6 +54,21 @@
                     <x-slot:footer>{{ number_format($unpaidInvoicesTotal, 2) }} total</x-slot:footer>
                 </x-kpi-card>
             </div>
+            <div class="col-sm-6 col-xl-3">
+                <x-kpi-card
+                    label="Platform SMS Balance"
+                    :value="$smsBalance['success'] ? number_format($smsBalance['balance'], 2) : '—'"
+                    icon="bi-chat-dots"
+                >
+                    <x-slot:footer>
+                        @if ($smsBalance['success'])
+                            <span class="text-secondary">Beem credits &middot; updates every minute</span>
+                        @else
+                            <span class="text-danger">{{ $smsBalance['message'] }}</span>
+                        @endif
+                    </x-slot:footer>
+                </x-kpi-card>
+            </div>
         </div>
 
         <div class="row g-3 mb-4">
@@ -56,7 +83,7 @@
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Companies by Status</h2>
+                        <h2 class="h6 mb-3">{{ __('Companies by Status') }}</h2>
                         <canvas id="statusChart" height="220"></canvas>
                     </div>
                 </div>
@@ -76,7 +103,7 @@
             @if ($occupancyRate !== null)
                 <div class="col-sm-6 col-xl-3">
                     <x-kpi-card label="Occupancy Rate" :value="$occupancyRate . '%'" icon="bi-graph-up">
-                        <x-slot:footer>{{ $occupiedUnits }} of {{ $totalUnits }} occupied</x-slot:footer>
+                        <x-slot:footer>{{ __(':occupied of :total occupied', ['occupied' => $occupiedUnits, 'total' => $totalUnits]) }}</x-slot:footer>
                     </x-kpi-card>
                 </div>
             @endif
@@ -91,28 +118,32 @@
             @endif
         </div>
 
-        @if (! empty($usersByRole))
-            <div class="row g-3 mb-4">
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <h2 class="h6 mb-3">Users by Role</h2>
-                            <canvas id="rolesChart" height="220"></canvas>
-                        </div>
+    @endif
+
+    @php
+        // Users by Role (staff dashboards) shares a row with Recent Activity.
+        $showRolesChart = ! $isSaasOwner && ! empty($usersByRole);
+    @endphp
+    <div class="row g-3">
+        @if ($showRolesChart)
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="h6 mb-3">{{ __('Users by Role') }}</h2>
+                        <canvas id="rolesChart" height="220"></canvas>
                     </div>
                 </div>
             </div>
         @endif
-    @endif
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <h2 class="h6 mb-3">Recent Activity</h2>
+    <div class="{{ $showRolesChart ? 'col-lg-8' : 'col-12' }}">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+            <h2 class="h6 mb-3">{{ __('Recent Activity') }}</h2>
 
             @if ($recentActivity->isEmpty())
-                <p class="text-secondary small mb-0">No activity yet.</p>
+                <p class="text-secondary small mb-0">{{ __('No activity yet.') }}</p>
             @else
-                <ul class="list-unstyled mb-0">
+                <ul class="list-unstyled mb-0 overflow-auto" style="max-height: 340px;">
                     @foreach ($recentActivity as $entry)
                         <li class="d-flex justify-content-between align-items-start py-2 {{ ! $loop->last ? 'border-bottom' : '' }}">
                             <div>
@@ -122,7 +153,7 @@
                                 @if ($isSaasOwner && $entry->company)
                                     <span class="text-secondary">&middot; {{ $entry->company->name }}</span>
                                 @endif
-                                <div class="small text-secondary">by {{ $entry->causer?->name ?? 'System' }}</div>
+                                <div class="small text-secondary">{{ __('by :name', ['name' => $entry->causer?->name ?? __('System')]) }}</div>
                             </div>
                             <span class="text-secondary small text-nowrap">{{ $entry->created_at->diffForHumans() }}</span>
                         </li>
@@ -131,10 +162,20 @@
             @endif
         </div>
     </div>
+    </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
+    // DOMContentLoaded: Chart is set on window by app.js, a deferred module
+    // that runs after this inline script would otherwise execute.
+    document.addEventListener('DOMContentLoaded', function () {
+    // Brand color comes from the company's own theme tokens (see partials/head).
+    const brandColor = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#1F5A94';
+    const brandRgb = getComputedStyle(document.documentElement).getPropertyValue('--brand-rgb').trim() || '31, 90, 148';
+    const chartPalette = [brandColor, '#2DD4BF', '#6366F1', '#0EA5E9', '#F43F5E', '#10B981', '#94A3B8'];
+
     @if ($isSaasOwner)
         new Chart(document.getElementById('signupsChart'), {
             type: 'line',
@@ -143,8 +184,8 @@
                 datasets: [{
                     label: 'New Companies',
                     data: @json(array_values($signupsByDay)),
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderColor: brandColor,
+                    backgroundColor: `rgba(${brandRgb}, 0.12)`,
                     fill: true,
                     tension: 0.3,
                 }],
@@ -161,7 +202,8 @@
                 labels: @json(array_map('ucfirst', array_keys($companiesByStatus->all()))),
                 datasets: [{
                     data: @json(array_values($companiesByStatus->all())),
-                    backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#6c757d'],
+                    backgroundColor: chartPalette,
+                    borderWidth: 0,
                 }],
             },
             options: { plugins: { legend: { position: 'bottom' } } },
@@ -173,11 +215,13 @@
                 labels: @json(array_keys($usersByRole)),
                 datasets: [{
                     data: @json(array_values($usersByRole)),
-                    backgroundColor: ['#0d6efd', '#6c757d', '#198754', '#ffc107', '#dc3545'],
+                    backgroundColor: chartPalette,
+                    borderWidth: 0,
                 }],
             },
             options: { plugins: { legend: { position: 'bottom' } } },
         });
     @endif
+    });
 </script>
 @endpush

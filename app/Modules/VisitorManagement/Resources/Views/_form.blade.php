@@ -3,7 +3,7 @@
 
 <div class="row g-3">
     <div class="col-md-4">
-        <label class="form-label">Property</label>
+        <label class="form-label">{{ __('Property') }}</label>
         <select name="property_id" class="form-select @error('property_id') is-invalid @enderror" required>
             <option value="">&mdash; Select a property &mdash;</option>
             @foreach ($properties as $property)
@@ -13,7 +13,7 @@
         @error('property_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-4">
-        <label class="form-label">Unit <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">{{ __('Unit') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror">
             <option value="">&mdash; Not unit-specific &mdash;</option>
             @foreach ($units as $unit)
@@ -23,7 +23,7 @@
         @error('unit_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-4">
-        <label class="form-label">Visiting Tenant <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">Visiting Tenant <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <select name="tenant_id" class="form-select @error('tenant_id') is-invalid @enderror">
             <option value="">&mdash; Not visiting a tenant &mdash;</option>
             @foreach ($tenants as $tenant)
@@ -39,7 +39,7 @@
         @error('visitor_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label">Visitor Phone <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">Visitor Phone <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <input type="text" name="visitor_phone" value="{{ old('visitor_phone', $visitor?->visitor_phone) }}" class="form-control @error('visitor_phone') is-invalid @enderror">
         @error('visitor_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
@@ -50,7 +50,7 @@
         @error('host_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label">Represents Vendor <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">{{ __('Represents Vendor') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <select name="vendor_id" class="form-select @error('vendor_id') is-invalid @enderror">
             <option value="">&mdash; None &mdash;</option>
             @foreach ($vendors as $vendor)
@@ -70,12 +70,12 @@
         @error('purpose') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-3">
-        <label class="form-label">Vehicle Plate <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">{{ __('Vehicle Plate') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <input type="text" name="vehicle_plate" value="{{ old('vehicle_plate', $visitor?->vehicle_plate) }}" class="form-control @error('vehicle_plate') is-invalid @enderror">
         @error('vehicle_plate') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-3">
-        <label class="form-label">Badge Number <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">{{ __('Badge Number') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <input type="text" name="badge_number" value="{{ old('badge_number', $visitor?->badge_number) }}" class="form-control @error('badge_number') is-invalid @enderror">
         @error('badge_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="col-12">
-        <label class="form-label">Notes <span class="text-secondary fw-normal">(optional)</span></label>
+        <label class="form-label">{{ __('Notes') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <textarea name="notes" rows="2" class="form-control @error('notes') is-invalid @enderror">{{ old('notes', $visitor?->notes) }}</textarea>
         @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>

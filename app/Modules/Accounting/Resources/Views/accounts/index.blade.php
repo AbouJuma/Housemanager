@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Chart of Accounts')
+@section('title', __('Chart of Accounts'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Chart of Accounts</h1>
+    <h1 class="h4 mb-0">{{ __('Chart of Accounts') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Chart of Accounts</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Chart of Accounts') }}</h1>
             <p class="text-secondary mb-0">{{ $accounts->total() }} {{ Str::plural('account', $accounts->total()) }}</p>
         </div>
         @can('create', \App\Modules\Accounting\Models\Account::class)
             <a href="{{ route('accounts.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Account
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Account') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="type" class="form-select" onchange="this.form.submit()">
-                        <option value="">All types</option>
+                        <option value="">{{ __('All types') }}</option>
                         @foreach (['asset', 'liability', 'equity', 'income', 'expense'] as $type)
                             <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst($type) }}</option>
                         @endforeach
@@ -49,12 +49,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th class="text-end">Balance</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Code') }}</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th class="text-end">{{ __('Balance') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

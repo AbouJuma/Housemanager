@@ -42,6 +42,30 @@ return [
             'label' => 'Date Format',
             'description' => 'PHP date() format used wherever this company\'s dates are displayed.',
         ],
+        'payment_details_source' => [
+            'type' => 'string',
+            'default' => 'landlord',
+            'label' => 'Bank account shown to tenants',
+            'description' => '"company" uses the company bank account below in tenant messages; "landlord" uses the bank account saved on each property\'s landlord.',
+        ],
+        'company_bank_name' => [
+            'type' => 'string',
+            'default' => '',
+            'label' => 'Company Bank Name',
+            'description' => 'Bank the company receives payments in.',
+        ],
+        'company_bank_account_name' => [
+            'type' => 'string',
+            'default' => '',
+            'label' => 'Company Account Name',
+            'description' => 'Name the company bank account is registered under.',
+        ],
+        'company_bank_account_number' => [
+            'type' => 'string',
+            'default' => '',
+            'label' => 'Company Account Number',
+            'description' => 'Company bank account number.',
+        ],
     ],
 
 ];

@@ -1,0 +1,61 @@
+{
+    "data": [
+        {
+            "uuid": "18f539ad-0815-450d-9fc7-529cbfbf5178",
+            "visitor_name": "Juston Anderson",
+            "visitor_phone": null,
+            "host_display_name": null,
+            "purpose": "delivery",
+            "vehicle_plate": null,
+            "badge_number": null,
+            "check_in_at": "2026-10-09T15:05:42+00:00",
+            "check_out_at": null,
+            "is_checked_in": true,
+            "notes": null,
+            "property": {
+                "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
+                "name": "Stella Square Complex"
+            },
+            "unit": null,
+            "tenant": null,
+            "vendor": null,
+            "created_at": "2026-10-11T19:05:42+00:00",
+            "updated_at": "2026-10-11T19:05:42+00:00"
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/v1/visitors?page=1",
+        "last": "http://localhost/api/v1/visitors?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/v1/visitors?page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/v1/visitors",
+        "per_page": 15,
+        "to": 1,
+        "total": 1
+    }
+}

@@ -14,9 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends Controller
 {
-    public function __construct(protected UserService $service)
-    {
-    }
+    public function __construct(protected UserService $service) {}
 
     public function index(Request $request): AnonymousResourceCollection
     {

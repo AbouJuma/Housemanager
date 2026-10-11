@@ -15,3 +15,30 @@ if (! function_exists('setting')) {
         return app(SettingsService::class)->forCurrentCompany($key);
     }
 }
+
+if (! function_exists('company_timezone')) {
+    /**
+     * The signed-in user's company timezone (staff, tenant, landlord or
+     * buyer alike), falling back to config('company.default_timezone')
+     * - East Africa Time - for the SaaS owner or a company without one.
+     */
+    function company_timezone(): string
+    {
+        $timezone = \App\Modules\Companies\Support\BrandTheme::current()->timezone;
+
+        return $timezone && in_array($timezone, timezone_identifiers_list(), true)
+            ? $timezone
+            : config('company.default_timezone');
+    }
+}
+
+if (! function_exists('company_now')) {
+    /**
+     * "Now" as the company sees it - for greetings ("Good afternoon")
+     * and dates shown to people. Stored timestamps stay in app timezone.
+     */
+    function company_now(): \Illuminate\Support\Carbon
+    {
+        return now()->setTimezone(company_timezone());
+    }
+}

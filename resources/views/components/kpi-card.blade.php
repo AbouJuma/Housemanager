@@ -1,16 +1,25 @@
-@props(['label', 'value', 'icon' => null])
+@props(['label', 'value', 'icon' => null, 'color' => null])
 
-<div {{ $attributes->merge(['class' => 'card border-0 shadow-sm kpi-card']) }}>
+@php
+    // Without an explicit color, cards take the next palette color in
+    // render order, so a row of KPIs always reads as distinct tiles.
+    $palette = ['brand', 'amber', 'violet', 'green', 'sky', 'rose', 'blue'];
+    $kpiIndex = app()->bound('kpi-card.index') ? app('kpi-card.index') + 1 : 0;
+    app()->instance('kpi-card.index', $kpiIndex);
+    $color ??= $palette[$kpiIndex % count($palette)];
+@endphp
+
+<div {{ $attributes->merge(['class' => 'card kpi-card h-100']) }}>
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <p class="text-secondary small mb-1">{{ $label }}</p>
-                <h3 class="mb-0">{{ $value }}</h3>
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            <div class="min-w-0">
+                <p class="text-secondary small fw-medium mb-1">{{ __($label) }}</p>
+                <h3 class="mb-0 text-truncate">{{ $value }}</h3>
             </div>
             @if ($icon)
-                <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
-                    <i class="bi {{ $icon }} fs-5"></i>
-                </div>
+                <span class="icon-tile icon-tile-{{ $color }}">
+                    <i class="bi {{ $icon }}"></i>
+                </span>
             @endif
         </div>
         @isset($footer)

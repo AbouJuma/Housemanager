@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Modules\Landlords\Models\Landlord;
+use App\Modules\Sales\Models\Buyer;
 use App\Modules\Tenants\Models\Tenant;
 
 return [
@@ -62,6 +63,17 @@ return [
             'driver' => 'session',
             'provider' => 'landlords',
         ],
+
+        // App\Modules\BuyerPortal - a fourth, equally independent
+        // identity. JSON/Sanctum-token-only (no session-based web portal
+        // exists for buyers), but the guard is still session-shaped for
+        // symmetry with the other three and in case a web portal is
+        // added later - Sanctum token auth doesn't go through this guard
+        // at all (see api-tenant's 'auth:sanctum' in bootstrap/app.php).
+        'buyer' => [
+            'driver' => 'session',
+            'provider' => 'buyers',
+        ],
     ],
 
     /*
@@ -95,6 +107,11 @@ return [
         'landlords' => [
             'driver' => 'eloquent',
             'model' => Landlord::class,
+        ],
+
+        'buyers' => [
+            'driver' => 'eloquent',
+            'model' => Buyer::class,
         ],
 
         // 'users' => [

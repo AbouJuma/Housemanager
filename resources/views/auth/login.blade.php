@@ -1,6 +1,7 @@
 @extends('layouts.guest')
 
-@section('title', 'Sign In')
+@section('title', __('Sign In'))
+@section('auth-eyebrow', __('Staff sign in'))
 
 @section('content')
     @if (session('status'))
@@ -11,13 +12,13 @@
         @csrf
 
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required autofocus autocomplete="username">
+            <label for="email" class="form-label">{{ __('Email, username or phone') }}</label>
+            <input id="email" type="text" name="email" autocapitalize="none" spellcheck="false" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required autofocus autocomplete="username">
             @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">{{ __('Password') }}</label>
             <div class="input-group">
                 <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror" required autocomplete="current-password">
                 <button type="button" class="btn btn-outline-secondary" data-password-toggle="password" aria-label="Show password">
@@ -29,34 +30,41 @@
 
         <div class="form-check mb-3">
             <input id="remember_me" type="checkbox" name="remember" class="form-check-input">
-            <label for="remember_me" class="form-check-label">Remember me</label>
+            <label for="remember_me" class="form-check-label">{{ __('Remember me') }}</label>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Log In</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100">{{ __('Log In') }}</button>
 
         <div class="mt-4">
             <div class="d-flex align-items-center my-3">
                 <div class="flex-grow-1 border-top"></div>
-                <span class="mx-2 text-uppercase small text-secondary fw-semibold">Quick access</span>
+                <span class="mx-2 text-uppercase small text-secondary fw-semibold">{{ __('Quick access') }}</span>
                 <div class="flex-grow-1 border-top"></div>
             </div>
 
-            <div class="d-grid gap-2">
-                <a href="{{ route('portal.login') }}" class="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2">
-                    <i class="bi bi-person-badge-fill"></i>
-                    <span>Login as Tenant</span>
-                </a>
-
-                <a href="{{ route('landlord-portal.login') }}" class="btn btn-outline-success btn-lg d-flex align-items-center justify-content-center gap-2">
-                    <i class="bi bi-house-door-fill"></i>
-                    <span>Login as Landlord</span>
-                </a>
+            <div class="row g-2">
+                <div class="col-6">
+                    <a href="{{ route('portal.login') }}" class="card card-hover h-100 text-decoration-none">
+                        <div class="card-body d-flex align-items-center gap-2 p-3">
+                            <span class="icon-tile icon-tile-sky" style="width: 36px; height: 36px;"><i class="bi bi-person-badge-fill"></i></span>
+                            <span class="fw-semibold text-body small">{{ __('Tenant portal') }}</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{{ route('landlord-portal.login') }}" class="card card-hover h-100 text-decoration-none">
+                        <div class="card-body d-flex align-items-center gap-2 p-3">
+                            <span class="icon-tile icon-tile-amber" style="width: 36px; height: 36px;"><i class="bi bi-house-door-fill"></i></span>
+                            <span class="fw-semibold text-body small">{{ __('Landlord portal') }}</span>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
 
         @if (Route::has('password.request'))
             <div class="text-end mt-3 small">
-                <a href="{{ route('password.request') }}" class="text-decoration-none">Forgot your password?</a>
+                <a href="{{ route('password.request') }}" class="text-decoration-none">{{ __('Forgot your password?') }}</a>
             </div>
         @endif
     </form>

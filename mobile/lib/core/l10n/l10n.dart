@@ -1,0 +1,394 @@
+import 'dart:ui';
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers.dart';
+
+/// English / Kiswahili, switchable any time (More screen, login screen).
+/// Like the web app (lang/sw.json), texts are keyed by their English
+/// wording: `context.tr('Sign in')` returns "Ingia" in Swahili, and any
+/// text without an entry - including messages the server already sent
+/// in the right language - comes back unchanged.
+const supportedLocales = [Locale('en'), Locale('sw')];
+
+/// The chosen language, or null to follow the phone.
+class LocaleNotifier extends Notifier<Locale?> {
+  static const _storageKey = 'app_locale';
+
+  @override
+  Locale? build() {
+    _restore();
+    return null;
+  }
+
+  Future<void> _restore() async {
+    final saved = await ref.read(secureStorageProvider).read(key: _storageKey);
+    if (saved == 'en' || saved == 'sw') state = Locale(saved!);
+  }
+
+  Future<void> set(Locale? locale) async {
+    state = locale;
+    final storage = ref.read(secureStorageProvider);
+    if (locale == null) {
+      await storage.delete(key: _storageKey);
+    } else {
+      await storage.write(key: _storageKey, value: locale.languageCode);
+    }
+  }
+}
+
+final localeProvider = NotifierProvider<LocaleNotifier, Locale?>(LocaleNotifier.new);
+
+/// 'en' or 'sw' - the chosen language, else the phone's when it's Swahili.
+String effectiveLanguage(Locale? chosen) {
+  if (chosen != null) return chosen.languageCode;
+  return PlatformDispatcher.instance.locale.languageCode == 'sw' ? 'sw' : 'en';
+}
+
+extension Translate on BuildContext {
+  String get languageCode => Localizations.maybeLocaleOf(this)?.languageCode ?? 'en';
+
+  /// [text] in the current language; `:name`-style placeholders filled from [params].
+  String tr(String text, [Map<String, Object?> params = const {}]) {
+    var out = languageCode == 'sw' ? (swahili[text] ?? text) : text;
+    params.forEach((key, value) => out = out.replaceAll(':$key', '${value ?? ''}'));
+    return out;
+  }
+}
+
+const swahili = <String, String>{
+  // Navigation
+  'Home': 'Nyumbani',
+  'More': 'Zaidi',
+  'Leases': 'Mikataba',
+  'Lease': 'Mkataba',
+  'Invoices': 'Ankara',
+  'Invoice': 'Ankara',
+  'Maintenance': 'Matengenezo',
+  'Properties': 'Mali',
+  'Property': 'Mali',
+  'Expenses': 'Matumizi',
+  'Purchases': 'Ununuzi',
+  'Purchase': 'Ununuzi',
+  'Tenants': 'Wapangaji',
+  'Tenant': 'Mpangaji',
+  'Landlord': 'Mwenye nyumba',
+  'Buyer': 'Mnunuzi',
+  'Staff': 'Mfanyakazi',
+  'Documents': 'Nyaraka',
+  'Reports': 'Ripoti',
+  'Dashboard': 'Dashibodi',
+  'My Leases': 'Mikataba Yangu',
+  'My Invoices': 'Ankara Zangu',
+  'My Properties': 'Mali Zangu',
+  'My Purchases': 'Ununuzi Wangu',
+  'Maintenance Requests': 'Maombi ya Matengenezo',
+  'Maintenance Request': 'Ombi la Matengenezo',
+  'New Maintenance Request': 'Ombi Jipya la Matengenezo',
+  'New Invoice': 'Ankara Mpya',
+  'Rent Roll': 'Orodha ya Kodi',
+  'Occupancy': 'Upangishaji',
+
+  // Sign in
+  'Welcome back': 'Karibu tena',
+  'Choose how you use the app, then sign in.': 'Chagua jinsi unavyotumia app, kisha ingia.',
+  'Email, username or phone': 'Barua pepe, jina la mtumiaji au simu',
+  'Enter your email, username or phone number': 'Weka barua pepe, jina la mtumiaji au namba ya simu',
+  'Password': 'Nenosiri',
+  'Enter your password': 'Weka nenosiri lako',
+  'Sign in': 'Ingia',
+  'Sign out': 'Toka',
+  'Every property, lease\nand payment - in one place.': 'Kila mali, mkataba\nna malipo - mahali pamoja.',
+  'Server': 'Seva',
+  'Server address': 'Anwani ya seva',
+  'Address': 'Anwani',
+  'Reset': 'Rudisha',
+  'Test': 'Jaribu',
+  'Testing…': 'Inajaribu…',
+  'Save': 'Hifadhi',
+  'Connected.': 'Imeunganishwa.',
+  "On a phone, use your computer's Wi-Fi address and start the backend with:\nphp artisan serve --host=0.0.0.0 --port=8000":
+      'Kwenye simu, tumia anwani ya Wi-Fi ya kompyuta yako na uwashe seva kwa:\nphp artisan serve --host=0.0.0.0 --port=8000',
+
+  // Dashboard
+  'Good morning': 'Habari za asubuhi',
+  'Good afternoon': 'Habari za mchana',
+  'Good evening': 'Habari za jioni',
+  'Good morning, :name': 'Habari za asubuhi, :name',
+  'Good afternoon, :name': 'Habari za mchana, :name',
+  'Good evening, :name': 'Habari za jioni, :name',
+  'Outstanding balance': 'Deni lililobaki',
+  'All paid up': 'Umelipa yote',
+  ':count unpaid invoice': 'Ankara :count isiyolipwa',
+  ':count unpaid invoices': 'Ankara :count zisizolipwa',
+  'Quick access': 'Njia za haraka',
+  'Your home': 'Nyumba yako',
+  'Bills & receipts': 'Ankara na risiti',
+  'Report & track': 'Ripoti na fuatilia',
+  'Your files': 'Faili zako',
+  ':occupied of :total units': ':occupied kati ya vyumba :total',
+  ':count vacant': ':count wazi',
+  'This period': 'Kipindi hiki',
+  'Rent collected': 'Kodi iliyokusanywa',
+  'Net': 'Faida halisi',
+  'Units & tenants': 'Vyumba na wapangaji',
+  'Where it went': 'Matumizi yalikoenda',
+  'Open requests': 'Maombi yaliyo wazi',
+  'Contracts & files': 'Mikataba na faili',
+  'Paid so far': 'Kilicholipwa hadi sasa',
+  ':amount remaining': ':amount kimebaki',
+  ':count property': 'Mali :count',
+  ':count properties': 'Mali :count',
+  ':count unpaid': ':count hazijalipwa',
+  'Back office': 'Ofisini',
+  'Your workspace': 'Eneo lako la kazi',
+  'Tap + to create a record': 'Gusa + kuongeza rekodi',
+  'Manage': 'Simamia',
+  'Profiles & contacts': 'Wasifu na mawasiliano',
+  'Active & expiring': 'Hai na zinazoisha',
+  'Billing & payments': 'Ankara na malipo',
+  'Rent roll & occupancy': 'Kodi na upangishaji',
+  'Report an issue': 'Ripoti tatizo',
+  'Create': 'Unda',
+  'New tenant': 'Mpangaji mpya',
+  'New lease': 'Mkataba mpya',
+  'New invoice': 'Ankara mpya',
+  'Add a tenant and their contact details.': 'Ongeza mpangaji na mawasiliano yake.',
+  'Rent a vacant unit to a tenant.': 'Pangisha chumba kilicho wazi kwa mpangaji.',
+  'Bill a tenant for rent or other charges.': 'Mtoze mpangaji kodi au gharama nyingine.',
+
+  // More / appearance / language
+  'APPEARANCE': 'MWONEKANO',
+  'LANGUAGE': 'LUGHA',
+  'System': 'Mfumo',
+  'Light': 'Mwanga',
+  'Dark': 'Giza',
+  'English': 'English',
+  'Kiswahili': 'Kiswahili',
+  'Property management': 'Usimamizi wa mali',
+  'Account': 'Akaunti',
+
+  // Errors and states
+  'Something went wrong': 'Kuna tatizo',
+  "Can't connect right now": 'Imeshindikana kuunganisha sasa',
+  'Check your internet connection and that the server is running, then try again.':
+      'Hakikisha una intaneti na seva inafanya kazi, kisha jaribu tena.',
+  'No access': 'Huna ruhusa',
+  "You don't have permission to view this.": 'Huna ruhusa ya kuona hiki.',
+  'Not found': 'Haikupatikana',
+  'This item no longer exists or was moved.': 'Kitu hiki hakipo tena au kimehamishwa.',
+  'Server problem': 'Tatizo la seva',
+  'Something went wrong on our side. Please try again in a moment.': 'Kuna tatizo upande wetu. Tafadhali jaribu tena baada ya muda mfupi.',
+  "We couldn't load this. Please try again.": 'Imeshindikana kupakia. Tafadhali jaribu tena.',
+  'Try again': 'Jaribu tena',
+  'Invoice sent': 'Ankara imetumwa',
+  'Payment recorded': 'Malipo yamerekodiwa',
+
+  // Lists and empty states
+  'All': 'Zote',
+  'Date range': 'Kipindi',
+  'Clear date range': 'Ondoa kipindi',
+  'No invoices yet.': 'Bado hakuna ankara.',
+  'No invoices yet. Tap + to create one.': 'Bado hakuna ankara. Gusa + kuunda.',
+  'No leases yet.': 'Bado hakuna mikataba.',
+  'No leases yet. Tap + to create one.': 'Bado hakuna mikataba. Gusa + kuunda.',
+  'No tenants yet. Tap + to add one.': 'Bado hakuna wapangaji. Gusa + kuongeza.',
+  'No maintenance requests yet.': 'Bado hakuna maombi ya matengenezo.',
+  'No maintenance requests yet. Tap + to report an issue.': 'Bado hakuna maombi ya matengenezo. Gusa + kuripoti tatizo.',
+  'No expenses yet.': 'Bado hakuna matumizi.',
+  'No documents yet.': 'Bado hakuna nyaraka.',
+  'No purchases yet.': 'Bado hakuna ununuzi.',
+  'No properties yet.': 'Bado hakuna mali.',
+  'No units match.': 'Hakuna chumba kinacholingana.',
+  'No units in this building yet.': 'Bado hakuna vyumba kwenye jengo hili.',
+  'No buildings or units on file yet.': 'Bado hakuna majengo au vyumba.',
+  'You need an active lease to file a maintenance request.': 'Unahitaji mkataba hai ili kuomba matengenezo.',
+  'Search by name, email or phone': 'Tafuta kwa jina, barua pepe au simu',
+  'Search by tenant name or unit number': 'Tafuta kwa jina la mpangaji au namba ya chumba',
+  'Search unit, property or tenant': 'Tafuta chumba, mali au mpangaji',
+
+  // Status words (status chips, filters)
+  'active': 'hai',
+  'inactive': 'haitumiki',
+  'paid': 'imelipwa',
+  'unpaid': 'haijalipwa',
+  'sent': 'imetumwa',
+  'draft': 'rasimu',
+  'overdue': 'imechelewa',
+  'partially paid': 'imelipwa kiasi',
+  'cancelled': 'imeghairiwa',
+  'completed': 'imekamilika',
+  'pending': 'inasubiri',
+  'open': 'wazi',
+  'in progress': 'inaendelea',
+  'resolved': 'imetatuliwa',
+  'expired': 'imeisha',
+  'terminated': 'imesitishwa',
+  'blacklisted': 'amezuiliwa',
+  'occupied': 'imepangishwa',
+  'vacant': 'wazi',
+  'sold': 'imeuzwa',
+  'Active': 'Hai',
+  'Inactive': 'Haitumiki',
+  'Paid': 'Imelipwa',
+  'Unpaid': 'Haijalipwa',
+  'Sent': 'Imetumwa',
+  'Draft': 'Rasimu',
+  'Overdue': 'Imechelewa',
+  'Partially paid': 'Imelipwa kiasi',
+  'Cancelled': 'Imeghairiwa',
+  'Completed': 'Imekamilika',
+  'Pending': 'Inasubiri',
+  'Open': 'Wazi',
+  'In progress': 'Inaendelea',
+  'Expired': 'Imeisha',
+  'Terminated': 'Imesitishwa',
+
+  // Forms and details
+  'Name': 'Jina',
+  'Email': 'Barua pepe',
+  'Phone': 'Simu',
+  'Type': 'Aina',
+  'Status': 'Hali',
+  'Notes': 'Maelezo',
+  'Title': 'Kichwa',
+  'Description': 'Maelezo',
+  'Category': 'Kundi',
+  'Priority': 'Kipaumbele',
+  'Amount': 'Kiasi',
+  'Method': 'Njia',
+  'Reference (optional)': 'Kumbukumbu (si lazima)',
+  'Record payment': 'Rekodi malipo',
+  'Record': 'Rekodi',
+  'Cancel': 'Ghairi',
+  'Pay': 'Lipa',
+  'Pay now': 'Lipa sasa',
+  'Pay invoice': 'Lipa ankara',
+  'Send invoice': 'Tuma ankara',
+  'Create invoice': 'Unda ankara',
+  'Submit request': 'Tuma ombi',
+  'Start date': 'Tarehe ya kuanza',
+  'End date': 'Tarehe ya kuisha',
+  'Issue date': 'Tarehe ya kutolewa',
+  'Due date': 'Tarehe ya kulipa',
+  'Rent amount': 'Kiasi cha kodi',
+  'Deposit amount (optional)': 'Kiasi cha amana (si lazima)',
+  'Billing cycle': 'Mzunguko wa malipo',
+  'Termination reason (optional)': 'Sababu ya kusitisha (si lazima)',
+  'Unit (vacant only)': 'Chumba (vilivyo wazi tu)',
+  'Unit price': 'Bei ya kimoja',
+  'Quantity': 'Idadi',
+  'Line items': 'Vipengele',
+  'Add line item': 'Ongeza kipengele',
+  'Units': 'Vyumba',
+  'Unit': 'Chumba',
+  'Building': 'Jengo',
+  'Buildings': 'Majengo',
+  'Installments': 'Awamu',
+  'Assigned vendor': 'Mzabuni aliyepewa',
+  'Occupied': 'Imepangishwa',
+  'Total Rent': 'Jumla ya Kodi',
+  'Overall occupancy': 'Upangishaji kwa jumla',
+  'Occupied vs. vacant units, per property.': 'Vyumba vilivyopangishwa na vilivyo wazi, kwa kila mali.',
+  'Every unit, its tenant, lease dates and rent amount.': 'Kila chumba, mpangaji wake, tarehe za mkataba na kodi.',
+  'Sold': 'Imeuzwa',
+
+  // Profile, notifications, server, roles, report statuses
+  'My profile': 'Wasifu wangu',
+  'Account details': 'Taarifa za akaunti',
+  'Username': 'Jina la mtumiaji',
+  'Used to sign in, along with your phone or email.': 'Hutumika kuingia, pamoja na simu au barua pepe yako.',
+  'Save changes': 'Hifadhi mabadiliko',
+  'Change password': 'Badilisha nenosiri',
+  'Current password': 'Nenosiri la sasa',
+  'New password': 'Nenosiri jipya',
+  'Confirm new password': 'Thibitisha nenosiri jipya',
+  'Show passwords': 'Onyesha manenosiri',
+  'Use at least 8 characters.': 'Tumia angalau herufi 8.',
+  'The passwords do not match.': 'Manenosiri hayalingani.',
+  'This field is required.': 'Sehemu hii inahitajika.',
+  'Other devices signed in to your account will be signed out.': 'Vifaa vingine vilivyoingia kwenye akaunti yako vitatolewa.',
+  'Your profile has been updated.': 'Wasifu wako umesasishwa.',
+  'Your password has been changed.': 'Nenosiri lako limebadilishwa.',
+  'A username needs at least 3 characters.': 'Jina la mtumiaji linahitaji angalau herufi 3.',
+  'A username can only use letters, numbers, dots, dashes and underscores (no spaces).': 'Jina la mtumiaji linaweza kuwa na herufi, namba, nukta, vistari na mistari ya chini tu (bila nafasi).',
+  'Live': 'Mtandaoni',
+  'Local': 'Ndani (majaribio)',
+  'Notifications': 'Arifa',
+  'Mark all read': 'Weka zote zimesomwa',
+  'No notifications yet.': 'Bado hakuna arifa.',
+  'Your role has no app features yet.': 'Jukumu lako bado halina huduma za app.',
+  'Ask an administrator to give your role access to tenants, leases, invoices or reports.': 'Mwombe msimamizi aipe ruhusa jukumu lako kwa wapangaji, mikataba, ankara au ripoti.',
+  'reserved': 'imehifadhiwa',
+  'under maintenance': 'inafanyiwa matengenezo',
+  'archived': 'imewekwa kumbukumbu',
+
+  // Staff features for any role (maintenance, expenses, visitors...)
+  'Visitors': 'Wageni',
+  'Inventory': 'Stoo',
+  'Vendors': 'Wasambazaji',
+  'Repairs & job status': 'Matengenezo na hali ya kazi',
+  'Bills & payments out': 'Bili na malipo yanayotoka',
+  'Gate log & check-out': 'Daftari la getini na kutoka',
+  'Stock & supplies': 'Bidhaa na vifaa',
+  'Buildings & units': 'Majengo na vyumba',
+  'Suppliers & contractors': 'Wasambazaji na wakandarasi',
+  'Expense': 'Matumizi',
+  'Visitor': 'Mgeni',
+  'Inventory item': 'Bidhaa ya stoo',
+  'Vendor': 'Msambazaji',
+  'Document': 'Nyaraka',
+  'No maintenance requests.': 'Hakuna maombi ya matengenezo.',
+  'No visitors recorded.': 'Hakuna wageni walioandikwa.',
+  'No inventory items.': 'Hakuna bidhaa stoo.',
+  'No vendors yet.': 'Bado hakuna wasambazaji.',
+  'Reported': 'Iliripotiwa',
+  'Scheduled': 'Imepangwa',
+  'Estimated cost': 'Gharama inayokadiriwa',
+  'Actual cost': 'Gharama halisi',
+  'Date': 'Tarehe',
+  'Paid to': 'Amelipwa',
+  'Payment method': 'Njia ya malipo',
+  'Paid on': 'Ililipwa tarehe',
+  'Reference': 'Kumbukumbu',
+  'Purpose': 'Madhumuni',
+  'Visiting': 'Anamtembelea',
+  'Vehicle': 'Gari',
+  'Badge': 'Beji',
+  'Checked in': 'Ameingia',
+  'Checked out': 'Ametoka',
+  'On hand': 'Kilichopo',
+  'Reorder level': 'Kiwango cha kuagiza tena',
+  'Unit cost': 'Bei kwa kipimo',
+  'SKU': 'SKU',
+  'Supplier': 'Msambazaji',
+  'Region': 'Mkoa',
+  'District': 'Wilaya',
+  'Area': 'Eneo',
+  'Other phone': 'Simu nyingine',
+  'City': 'Mji',
+  'TIN': 'TIN',
+  'For': 'Kwa',
+  'Expires': 'Inaisha',
+  'File': 'Faili',
+  'Update status': 'Badilisha hali',
+  'Notes (optional)': 'Maelezo (si lazima)',
+  'Mark as paid': 'Weka imelipwa',
+  'Check out': 'Toa',
+  'Check this visitor out now?': 'Mtoe mgeni huyu sasa?',
+  'Open file': 'Fungua faili',
+  'Couldn\'t open the file.': 'Imeshindikana kufungua faili.',
+  'Saved.': 'Imehifadhiwa.',
+  'Ask an administrator to give your role the permissions it needs.': 'Mwombe msimamizi aipe jukumu lako ruhusa zinazohitajika.',
+  'Cash': 'Taslimu',
+  'Bank transfer': 'Uhamisho wa benki',
+  'Mobile money': 'Pesa kwa simu',
+  'Cheque': 'Hundi',
+  'Other': 'Nyingine',
+  'void': 'imefutwa',
+  'checked in': 'ameingia',
+  'checked out': 'ametoka',
+  'low stock': 'stoo ndogo',
+  'expiring soon': 'inakaribia kuisha',
+};

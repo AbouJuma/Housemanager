@@ -2,21 +2,26 @@
 
 namespace App\Modules\Sales\Services;
 
-use App\Modules\Invoices\Models\Invoice;
-use App\Modules\Invoices\Models\InvoiceItem;
+use App\Modules\Invoices\Events\InvoiceSent;
+use App\Modules\Invoices\Services\InvoiceService;
 use App\Modules\Sales\Models\Installment;
 use App\Modules\Sales\Models\Sale;
-use App\Modules\Tenants\Services\BeemsSmsService;
+use App\Modules\Sales\Notifications\SaleCreatedNotice;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
+/**
+ * Buyer welcome messages are NOT sent from here - a Sale always
+ * references an existing Buyer (picked via new_buyer_id, see
+ * resources/views/create.blade.php), so the buyer already received a
+ * BuyerWelcome notification when created -
+ * App\Modules\Sales\Http\Controllers\BuyerController::store() is the
+ * only place a Buyer is created and therefore the only welcome-message
+ * call site.
+ */
 class SaleService
 {
-    protected BeemsSmsService $smsService;
-
-    public function __construct(BeemsSmsService $smsService)
+    public function __construct(protected InvoiceService $invoiceService)
     {
-        $this->smsService = $smsService;
     }
 
     public function create(array $data): Sale
@@ -33,8 +38,8 @@ class SaleService
                 $sale->save();
             }
 
-            // Send welcome message to buyer
-            $this->sendBuyerWelcomeMessage($sale);
+            // One message with the full picture - not one per installment.
+            $sale->buyer?->notify(new SaleCreatedNotice($sale->messagePlaceholders()));
 
             return $sale;
         });
@@ -43,10 +48,23 @@ class SaleService
     public function update(Sale $sale, array $data): Sale
     {
         return DB::transaction(function () use ($sale, $data) {
+            // Captured before update() mutates the model in place - the
+            // old comparison read $sale->installment_period AFTER the
+            // update already applied, so it was comparing the new value
+            // to itself and this branch could never actually fire.
+            $originalPeriod = $sale->installment_period;
+
             $sale->update($data);
 
-            // If installment period changed, regenerate schedule
-            if (isset($data['installment_period']) && $data['installment_period'] != $sale->installment_period) {
+            // If installment period changed, regenerate schedule -
+            // delete only invoices with no payments yet (an installment
+            // someone already paid against keeps its real invoice/
+            // payment history rather than losing it to a schedule
+            // change).
+            if (isset($data['installment_period']) && $data['installment_period'] != $originalPeriod) {
+                $sale->installments()->get()->each(function (Installment $installment): void {
+                    $installment->invoice()->whereDoesntHave('payments')->delete();
+                });
                 $sale->installments()->delete();
                 $this->generateInstallmentSchedule($sale);
             }
@@ -63,6 +81,17 @@ class SaleService
         });
     }
 
+    /**
+     * Finds the installment's linked invoice (generated upfront by
+     * generateInstallmentSchedule() below, every installment has one
+     * from the moment the sale is created) and records the payment
+     * against it via the shared InvoiceService::recordPayment() - the
+     * exact same path a tenant's rent payment goes through. That method
+     * already fires the correct buyer+landlord notifications for a
+     * sale-linked invoice (sendSalePaymentNotifications()), so nothing
+     * sale-specific needs to happen here beyond updating the
+     * installment's own denormalized paid_amount/status.
+     */
     public function recordPayment(Installment $installment, float $amount): void
     {
         DB::transaction(function () use ($installment, $amount) {
@@ -77,14 +106,14 @@ class SaleService
 
             $installment->save();
 
-            // Create invoice for the payment
-            $this->createPaymentInvoice($installment, $amount);
+            $invoice = $installment->invoice;
 
-            // Send payment notifications
-            $this->sendPaymentNotifications($installment, $amount);
+            if ($invoice) {
+                $this->invoiceService->recordPayment($invoice, ['amount' => $amount, 'paid_on' => now()->toDateString()]);
+            }
 
-            // Check if sale is completed
             $sale = $installment->sale;
+
             if ($sale->remaining_balance <= 0) {
                 $sale->markAsCompleted();
             }
@@ -92,223 +121,14 @@ class SaleService
     }
 
     /**
-     * Send buyer welcome message
+     * Every installment gets its own Invoice the moment the schedule is
+     * generated (not reactively after payment, as before) - reuses
+     * InvoiceService::create() so numbering/item-total calculation
+     * stays identical to a staff-created invoice, and fires the same
+     * InvoiceSent event a manually-sent invoice would (revenue posting
+     * listens to it). NotifyCustomerOfInvoiceSent deliberately does NOT
+     * text the buyer for these - see its docblock.
      */
-    protected function sendBuyerWelcomeMessage(Sale $sale): void
-    {
-        try {
-            $buyer = $sale->buyer;
-            $company = $sale->company;
-            $unit = $sale->unit;
-            $property = $unit->building->property;
-
-            $data = [
-                'buyer_name' => $buyer->name,
-                'company_name' => $company->name,
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'amount' => number_format($sale->total_price, 0),
-                'control_number' => $sale->control_number ?? 'N/A',
-                'bank_name' => 'N/A',
-                'account_number' => 'N/A',
-            ];
-
-            // Get message template (shared templates for all companies)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'buyer_welcome')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $sale->company_id)
-                    ->where('type', 'buyer_welcome')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active buyer_welcome template found', [
-                    'company_id' => $sale->company_id,
-                ]);
-                return;
-            }
-
-            // Send SMS
-            if ($buyer->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending SMS to buyer', ['phone' => $buyer->phone, 'message' => $smsMessage]);
-                $this->smsService->send($buyer->phone, $smsMessage);
-            } else {
-                \Log::warning('Buyer has no phone number', ['buyer_id' => $buyer->id]);
-            }
-
-            // Send Email
-            if ($buyer->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                \Log::info('Sending email to buyer', ['email' => $buyer->email]);
-                Mail::raw($emailBody, function ($message) use ($buyer, $emailSubject) {
-                    $message->to($buyer->email)
-                        ->subject($emailSubject);
-                });
-            } else {
-                \Log::warning('Buyer has no email', ['buyer_id' => $buyer->id]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending buyer welcome message', [
-                'sale_id' => $sale->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
-    }
-
-    /**
-     * Send payment notifications for buyer and landlord
-     */
-    protected function sendPaymentNotifications(Installment $installment, float $amount): void
-    {
-        $sale = $installment->sale;
-        $buyer = $sale->buyer;
-        $unit = $sale->unit;
-        $property = $unit->building->property;
-        $landlord = $property->landlord;
-
-        // Send notification to buyer
-        $this->sendBuyerPaymentNotification($sale, $buyer, $unit, $property, $amount, $installment);
-
-        // Send notification to landlord
-        if ($landlord) {
-            $this->sendLandlordPaymentNotification($sale, $buyer, $unit, $property, $landlord, $amount, $installment);
-        }
-    }
-
-    /**
-     * Send payment notification to buyer
-     */
-    protected function sendBuyerPaymentNotification(Sale $sale, $buyer, $unit, $property, float $amount, Installment $installment): void
-    {
-        try {
-            $data = [
-                'amount' => number_format($amount, 0),
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'payment_date' => now()->format('Y-m-d'),
-                'balance' => number_format($sale->remaining_balance, 0),
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'tenant_payment_notification')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$buyer->phone) {
-                \Log::warning('Cannot send buyer payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $buyer->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            \Log::info('Sending payment notification to buyer', ['phone' => $buyer->phone, 'message' => $smsMessage]);
-            $this->smsService->send($buyer->phone, $smsMessage);
-        } catch (\Exception $e) {
-            \Log::error('Error sending buyer payment notification', [
-                'sale_id' => $sale->id,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send payment notification to landlord
-     */
-    protected function sendLandlordPaymentNotification(Sale $sale, $buyer, $unit, $property, $landlord, float $amount, Installment $installment): void
-    {
-        try {
-            $data = [
-                'amount' => number_format($amount, 0),
-                'tenant_name' => $buyer->name,
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'payment_date' => now()->format('Y-m-d'),
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'landlord_payment_notification')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$landlord->phone) {
-                \Log::warning('Cannot send landlord payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $landlord->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            \Log::info('Sending payment notification to landlord', ['phone' => $landlord->phone, 'message' => $smsMessage]);
-            $this->smsService->send($landlord->phone, $smsMessage);
-        } catch (\Exception $e) {
-            \Log::error('Error sending landlord payment notification', [
-                'sale_id' => $sale->id,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-    protected function createPaymentInvoice(Installment $installment, float $amount): Invoice
-    {
-        $sale = $installment->sale;
-
-        $invoice = Invoice::create([
-            'company_id' => $sale->company_id,
-            'sale_id' => $sale->id,
-            'invoice_number' => $this->generateInvoiceNumber($sale),
-            'issue_date' => now(),
-            'due_date' => $installment->due_date,
-            'status' => 'sent',
-            'total_amount' => $amount,
-            'amount_paid' => $amount,
-            'notes' => "Payment for installment #{$installment->installment_number}",
-        ]);
-
-        InvoiceItem::create([
-            'invoice_id' => $invoice->id,
-            'description' => "Installment #{$installment->installment_number} Payment - Unit {$sale->unit->unit_number}",
-            'quantity' => 1,
-            'unit_price' => $amount,
-            'amount' => $amount,
-        ]);
-
-        return $invoice;
-    }
-
-    protected function generateInvoiceNumber(Sale $sale): string
-    {
-        $prefix = 'INV-' . now()->format('Y') . '-';
-        $lastInvoice = Invoice::where('company_id', $sale->company_id)
-            ->where('invoice_number', 'like', $prefix . '%')
-            ->orderBy('invoice_number', 'desc')
-            ->first();
-
-        if ($lastInvoice) {
-            $lastNumber = (int) str_replace($prefix, '', $lastInvoice->invoice_number);
-            $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
-        } else {
-            $newNumber = '00001';
-        }
-
-        return $prefix . $newNumber;
-    }
-
     protected function generateInstallmentSchedule(Sale $sale): void
     {
         $remainingAmount = $sale->total_price - $sale->down_payment;
@@ -321,16 +141,35 @@ class SaleService
         }
 
         $startDate = $sale->sale_date->copy()->addMonth();
+        $unitLabel = $sale->unit ? "Unit {$sale->unit->unit_number}" : 'Unit';
 
         for ($i = 1; $i <= $period; $i++) {
-            Installment::create([
+            $dueDate = $startDate->copy()->addMonths($i - 1);
+
+            $installment = Installment::create([
                 'sale_id' => $sale->id,
                 'uuid' => (string) \Illuminate\Support\Str::uuid(),
                 'installment_number' => $i,
-                'due_date' => $startDate->copy()->addMonths($i - 1),
+                'due_date' => $dueDate,
                 'amount' => $installmentAmount,
                 'status' => 'pending',
             ]);
+
+            $invoice = $this->invoiceService->create([
+                'company_id' => $sale->company_id,
+                'sale_id' => $sale->id,
+                'installment_id' => $installment->id,
+                'issue_date' => now()->toDateString(),
+                'due_date' => $dueDate->toDateString(),
+                'status' => 'sent',
+                'items' => [[
+                    'description' => "Installment #{$i} - {$unitLabel}",
+                    'quantity' => 1,
+                    'unit_price' => (float) $installmentAmount,
+                ]],
+            ]);
+
+            InvoiceSent::dispatch($invoice);
         }
     }
 

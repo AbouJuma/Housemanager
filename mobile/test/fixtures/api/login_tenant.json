@@ -1,0 +1,37 @@
+{
+    "token": "2|hzjNQYdZcKDJtlBd2Lmiz8ECbg3N0ceXVm8xaOkj6d80a776",
+    "tenant": {
+        "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+        "name": "Amina Tenant",
+        "type": "individual",
+        "status": "active",
+        "email": null,
+        "phone": "0712000333",
+        "secondary_phone": null,
+        "date_of_birth": null,
+        "identification_type": null,
+        "identification_number": null,
+        "address": {
+            "line1": null,
+            "line2": null,
+            "city": null,
+            "state": null,
+            "postal_code": null,
+            "country_code": null
+        },
+        "emergency_contact": {
+            "name": null,
+            "phone": null
+        },
+        "notes": null,
+        "photo_url": null,
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

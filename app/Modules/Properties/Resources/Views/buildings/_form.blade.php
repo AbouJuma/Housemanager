@@ -14,10 +14,10 @@
 
     @if ($building)
         <div class="col-md-3">
-            <label class="form-label">Status</label>
+            <label class="form-label">{{ __('Status') }}</label>
             <select name="status" class="form-select @error('status') is-invalid @enderror">
                 @foreach (['active', 'inactive', 'under_maintenance'] as $status)
-                    <option value="{{ $status }}" @selected(old('status', $building->status) === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                    <option value="{{ $status }}" @selected(old('status', $building->status) === $status)>{{ __(ucfirst(str_replace('_', ' ', $status))) }}</option>
                 @endforeach
             </select>
             @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -25,7 +25,7 @@
     @endif
 
     <div class="col-12">
-        <label class="form-label">Description</label>
+        <label class="form-label">{{ __('Description') }}</label>
         <textarea name="description" rows="3" class="form-control @error('description') is-invalid @enderror">{{ old('description', $building?->description) }}</textarea>
         @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>

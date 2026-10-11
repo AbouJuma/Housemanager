@@ -1,23 +1,23 @@
 @extends('landlord-portal::layout')
 
-@section('title', 'My Properties')
+@section('title', __('My Properties'))
 
 @section('content')
-    <h1 class="h4 mb-4">My Properties</h1>
+    <h1 class="h4 mb-4">{{ __('My Properties') }}</h1>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             @if ($properties->isEmpty())
-                <p class="text-secondary small mb-0">No properties on file.</p>
+                <p class="text-secondary small mb-0">{{ __('No properties on file.') }}</p>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Buildings</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Buildings') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Create Multiple Units')
+@section('title', __('Create Multiple Units'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Create Multiple Units</h1>
+    <h1 class="h4 mb-0">{{ __('Create Multiple Units') }}</h1>
 @endsection
 
 @section('content')
@@ -35,7 +35,7 @@
                     <button type="button" class="btn btn-primary" id="saveAllBtn">
                         <i class="bi bi-save"></i> Create All Units
                     </button>
-                    <a href="{{ route('buildings.show', $building) }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('buildings.show', $building) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>
@@ -47,11 +47,11 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label">Unit Number <span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('Unit Number') }} <span class="text-danger">*</span></label>
                         <input type="text" name="units[__INDEX__][unit_number]" class="form-control unit-number" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Type <span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('Type') }} <span class="text-danger">*</span></label>
                         <select name="units[__INDEX__][type]" class="form-select unit-type" required>
                             <option value="">Choose…</option>
                             <option value="apartment">Apartment</option>
@@ -60,39 +60,39 @@
                             <option value="shop">Shop</option>
                             <option value="warehouse_space">Warehouse Space</option>
                             <option value="room">Room</option>
-                            <option value="other">Other</option>
+                            <option value="other">{{ __('Other') }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Bedrooms</label>
+                        <label class="form-label">{{ __('Bedrooms') }}</label>
                         <input type="number" min="0" name="units[__INDEX__][bedrooms]" class="form-control" value="0">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Bathrooms</label>
+                        <label class="form-label">{{ __('Bathrooms') }}</label>
                         <input type="number" min="0" name="units[__INDEX__][bathrooms]" class="form-control" value="0">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Area</label>
+                        <label class="form-label">{{ __('Area') }}</label>
                         <input type="number" step="0.01" min="0" name="units[__INDEX__][area]" class="form-control">
                     </div>
                     <div class="col-12">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <label class="form-label">Area Unit</label>
+                                <label class="form-label">{{ __('Area Unit') }}</label>
                                 <select name="units[__INDEX__][area_unit]" class="form-select">
                                     <option value="sqm">SQM</option>
                                     <option value="sqft">SQFT</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Rent Amount</label>
+                                <label class="form-label">{{ __('Rent Amount') }}</label>
                                 <input type="number" step="0.01" min="0" name="units[__INDEX__][rent_amount]" class="form-control">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Status</label>
+                                <label class="form-label">{{ __('Status') }}</label>
                                 <select name="units[__INDEX__][status]" class="form-select">
-                                    <option value="vacant">Vacant</option>
-                                    <option value="occupied">Occupied</option>
+                                    <option value="vacant">{{ __('Vacant') }}</option>
+                                    <option value="occupied">{{ __('Occupied') }}</option>
                                     <option value="under_maintenance">Under Maintenance</option>
                                     <option value="reserved">Reserved</option>
                                 </select>
@@ -105,7 +105,7 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Description</label>
+                        <label class="form-label">{{ __('Description') }}</label>
                         <textarea name="units[__INDEX__][description]" rows="2" class="form-control"></textarea>
                     </div>
                 </div>

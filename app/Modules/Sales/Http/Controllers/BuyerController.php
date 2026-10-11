@@ -2,10 +2,12 @@
 
 namespace App\Modules\Sales\Http\Controllers;
 
+use App\Core\Auth\AccountProvisioner;
 use App\Http\Controllers\Controller;
 use App\Modules\Sales\Http\Requests\StoreBuyerRequest;
 use App\Modules\Sales\Http\Requests\UpdateBuyerRequest;
 use App\Modules\Sales\Models\Buyer;
+use App\Modules\Sales\Notifications\BuyerWelcome;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -49,8 +51,17 @@ class BuyerController extends Controller
         
         $buyer = Buyer::create($data);
 
-        // Send welcome message to buyer
-        $this->sendWelcomeMessage($buyer);
+        // Straight into the mobile app: username + phone-number password.
+        $provisioner = app(AccountProvisioner::class);
+        $password = $provisioner->grantAccess($buyer);
+
+        $buyer->notify(new BuyerWelcome([
+            'buyer_name' => $buyer->name,
+            'company_name' => $buyer->company->name,
+            'control_number' => $buyer->control_number,
+            'phone' => $buyer->phone,
+            ...$provisioner->credentials($buyer, $password, AccountProvisioner::loginUrlFor('buyer')),
+        ]));
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -60,78 +71,7 @@ class BuyerController extends Controller
             ]);
         }
 
-        return redirect()->route('buyers.index')->with('success', 'Buyer created successfully.');
-    }
-
-    protected function sendWelcomeMessage(Buyer $buyer): void
-    {
-        try {
-            $company = $buyer->company;
-
-            $data = [
-                'buyer_name' => $buyer->name,
-                'company_name' => $company->name,
-                'control_number' => $buyer->control_number,
-                'phone' => $buyer->phone,
-                'bank_name' => 'N/A',
-                'account_number' => 'N/A',
-                'amount' => '0',
-                'unit_number' => 'N/A',
-                'property_name' => 'N/A',
-            ];
-
-            // Get message template (shared templates for all companies)
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'buyer_welcome')
-                ->where('is_active', true)
-                ->first();
-
-            // If no shared template, try company-specific template
-            if (!$template) {
-                $template = \App\Models\MessageTemplate::where('company_id', $buyer->company_id)
-                    ->where('type', 'buyer_welcome')
-                    ->where('is_active', true)
-                    ->first();
-            }
-
-            // Only send messages if template exists and is active
-            if (!$template) {
-                \Log::warning('No active buyer_welcome template found', [
-                    'company_id' => $buyer->company_id,
-                ]);
-                return;
-            }
-
-            // Send SMS
-            if ($buyer->phone) {
-                $smsMessage = $template->renderSmsTemplate($data);
-                \Log::info('Sending SMS to buyer', ['phone' => $buyer->phone, 'message' => $smsMessage]);
-                $smsService = new \App\Modules\Tenants\Services\BeemsSmsService();
-                $smsService->send($buyer->phone, $smsMessage);
-            } else {
-                \Log::warning('Buyer has no phone number', ['buyer_id' => $buyer->id]);
-            }
-
-            // Send Email
-            if ($buyer->email) {
-                $emailSubject = $template->renderEmailSubject($data);
-                $emailBody = $template->renderEmailTemplate($data);
-                
-                \Log::info('Sending email to buyer', ['email' => $buyer->email]);
-                \Illuminate\Support\Facades\Mail::raw($emailBody, function ($message) use ($buyer, $emailSubject) {
-                    $message->to($buyer->email)
-                        ->subject($emailSubject);
-                });
-            } else {
-                \Log::warning('Buyer has no email', ['buyer_id' => $buyer->id]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error sending buyer welcome message', [
-                'buyer_id' => $buyer->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
+        return redirect()->route('buyers.index')->with('success', __('Buyer created. App login - username: :username, password: :password', ['username' => $buyer->username, 'password' => $password]));
     }
 
     protected function generateControlNumber(int $companyId): string

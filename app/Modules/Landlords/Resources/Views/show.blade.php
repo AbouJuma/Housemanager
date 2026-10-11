@@ -18,7 +18,7 @@
             </a>
             @can('update', $landlord)
                 <a href="{{ route('landlords.edit', $landlord) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -28,32 +28,32 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Contact</h2>
+                    <h2 class="h6 mb-3">{{ __('Contact') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Email</div>
+                            <div class="text-secondary">{{ __('Email') }}</div>
                             <div>{{ $landlord->email ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Phone</div>
+                            <div class="text-secondary">{{ __('Phone') }}</div>
                             <div>{{ $landlord->phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Secondary Phone</div>
+                            <div class="text-secondary">{{ __('Secondary Phone') }}</div>
                             <div>{{ $landlord->secondary_phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-8">
-                            <div class="text-secondary">Address</div>
+                            <div class="text-secondary">{{ __('Address') }}</div>
                             <div>{{ collect([$landlord->address_line1, $landlord->address_line2, $landlord->city, $landlord->state, $landlord->postal_code, $landlord->country_code])->filter()->implode(', ') ?: '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Tax ID</div>
+                            <div class="text-secondary">{{ __('Tax ID') }}</div>
                             <div>{{ $landlord->tax_id ?? '—' }}</div>
                         </div>
                     </div>
                     @if ($landlord->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $landlord->notes }}</p>
                     @endif
                 </div>
@@ -62,26 +62,26 @@
             @if ($landlord->bank_details)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Bank Details</h2>
+                        <h2 class="h6 mb-3">{{ __('Bank Details') }}</h2>
                         <div class="row g-3 small">
                             <div class="col-md-4">
-                                <div class="text-secondary">Bank</div>
+                                <div class="text-secondary">{{ __('Bank') }}</div>
                                 <div>{{ $landlord->bankDetail('name') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Account Name</div>
+                                <div class="text-secondary">{{ __('Account Name') }}</div>
                                 <div>{{ $landlord->bankDetail('account_name') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Account Number</div>
+                                <div class="text-secondary">{{ __('Account Number') }}</div>
                                 <div>{{ $landlord->bankDetail('account_number') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Branch</div>
+                                <div class="text-secondary">{{ __('Branch') }}</div>
                                 <div>{{ $landlord->bankDetail('branch') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">SWIFT / Branch Code</div>
+                                <div class="text-secondary">{{ __('SWIFT / Branch Code') }}</div>
                                 <div>{{ $landlord->bankDetail('swift_code') ?? '—' }}</div>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Properties</h2>
+                    <h2 class="h6 mb-3">{{ __('Properties') }}</h2>
 
                     @if ($properties->isEmpty())
                         <div class="text-center py-4">
@@ -103,10 +103,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Property</th>
-                                        <th>Type</th>
-                                        <th>Buildings</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Property') }}</th>
+                                        <th>{{ __('Type') }}</th>
+                                        <th>{{ __('Buildings') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,10 +130,10 @@
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Documents</h2>
+                        <h2 class="h6 mb-0">{{ __('Documents') }}</h2>
                         @can('create', \App\Modules\Documents\Models\Document::class)
                             <a href="{{ route('documents.create', ['documentable_type' => 'landlord', 'documentable_id' => $landlord->id]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Add Document
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Add Document') }}
                             </a>
                         @endcan
                     </div>
@@ -145,9 +145,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -172,7 +172,7 @@
             @can('update', $landlord)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Portal Access</h2>
+                        <h2 class="h6 mb-3">{{ __('Portal Access') }}</h2>
 
                         @if (session('portal_password'))
                             <div class="alert alert-warning small">
@@ -182,22 +182,22 @@
                         @endif
 
                         @if ($landlord->hasPortalAccess())
-                            <p class="small text-secondary mb-3"><span class="badge text-bg-success">Enabled</span> {{ $landlord->email }} can sign in to the landlord portal.</p>
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-success">{{ __('Enabled') }}</span> {{ $landlord->email }} can sign in to the landlord portal.</p>
                             <div class="d-flex gap-2">
                                 <form action="{{ route('landlords.portal-access.enable', $landlord) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Reset Password</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('Reset Password') }}</button>
                                 </form>
                                 <form action="{{ route('landlords.portal-access.disable', $landlord) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Disable Access</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('Disable Access') }}</button>
                                 </form>
                             </div>
                         @else
-                            <p class="small text-secondary mb-3"><span class="badge text-bg-secondary">Not Enabled</span> This landlord cannot sign in to the portal.</p>
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-secondary">{{ __('Not Enabled') }}</span> This landlord cannot sign in to the portal.</p>
                             <form action="{{ route('landlords.portal-access.enable', $landlord) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-primary" {{ $landlord->email ? '' : 'disabled' }}>Enable Portal Access</button>
+                                <button type="submit" class="btn btn-sm btn-primary" {{ $landlord->email ? '' : 'disabled' }}>{{ __('Enable Portal Access') }}</button>
                             </form>
                             @unless ($landlord->email)
                                 <div class="form-text">Add an email address to this landlord first.</div>
@@ -209,11 +209,11 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Photo</h2>
+                    <h2 class="h6 mb-3">{{ __('Photo') }}</h2>
                     @if ($landlord->photoUrl())
                         <img src="{{ $landlord->photoUrl() }}" alt="{{ $landlord->name }}" class="img-fluid rounded-3">
                     @else
-                        <p class="text-secondary small mb-0">No photo uploaded yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No photo uploaded yet.') }}</p>
                     @endif
                 </div>
             </div>

@@ -2,50 +2,57 @@
 
 namespace App\Modules\Sales\Notifications;
 
+use App\Modules\PaymentReminders\Models\PaymentReminderRule;
 use App\Modules\Sales\Models\Installment;
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
+use App\Notifications\TemplatedNotification;
 
-class PaymentOverdue extends Notification
+/**
+ * Sent once a buyer's installment is marked overdue, per a company's
+ * own configured PaymentReminderRule - see
+ * App\Modules\Sales\Console\Commands\SendPaymentReminders. Text comes
+ * from the `installment_overdue` MessageTemplate - see PaymentDueSoon's
+ * docblock for why this extends TemplatedNotification.
+ */
+class PaymentOverdue extends TemplatedNotification
 {
-    use Queueable;
-
-    public function __construct(protected Installment $installment)
+    public function __construct(protected Installment $installment, protected ?PaymentReminderRule $rule = null)
     {
+        $sale = $installment->sale;
+        $unit = $sale->unit;
+        $property = $unit->building->property;
+
+        parent::__construct('installment_overdue', [
+            'buyer_name' => $sale->buyer->name,
+            'installment_number' => $installment->installment_number,
+            'amount' => number_format($installment->amount, 0),
+            'due_date' => $installment->due_date->format('M j, Y'),
+            'unit_number' => $unit->unit_number,
+            'property_name' => $property->name,
+        ]);
     }
 
-    public function via($notifiable): array
-    {
-        return ['database', 'mail', 'sms'];
-    }
-
-    public function toMail($notifiable)
-    {
-        return (new \Illuminate\Notifications\Messages\MailMessage)
-            ->subject('Payment Overdue - Installment #' . $this->installment->installment_number)
-            ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('Your installment payment is now overdue.')
-            ->line('Installment #' . $this->installment->installment_number . ' of ' . $this->installment->sale->installments->count())
-            ->line('Amount: ' . number_format($this->installment->amount, 2))
-            ->line('Due Date: ' . $this->installment->due_date->format('M j, Y'))
-            ->line('Please make your payment as soon as possible to avoid any issues.')
-            ->action('View Sale', url('/sales/' . $this->installment->sale->uuid))
-            ->line('Thank you.');
-    }
-
-    public function toSms($notifiable)
-    {
-        return "Payment overdue: Installment #{$this->installment->installment_number} of " . number_format($this->installment->amount, 2) . " was due on " . $this->installment->due_date->format('M j, Y') . ". Please pay immediately.";
-    }
-
-    public function toArray($notifiable): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(mixed $notifiable): array
     {
         return [
-            'title' => 'Payment Overdue',
-            'message' => "Installment #{$this->installment->installment_number} payment of " . number_format($this->installment->amount, 2) . " is overdue since " . $this->installment->due_date->format('M j, Y'),
-            'url' => url('/sales/' . $this->installment->sale->uuid),
+            'title' => $this->title(),
+            'message' => $this->summary($notifiable),
+            'url' => url('/sales/'.$this->installment->sale->uuid),
             'installment_id' => $this->installment->id,
             'sale_id' => $this->installment->sale->id,
+            'rule_id' => $this->rule?->id,
         ];
+    }
+
+    protected function title(): string
+    {
+        return 'Payment overdue';
+    }
+
+    protected function summary(mixed $notifiable): string
+    {
+        return "Installment #{$this->installment->installment_number} payment of ".number_format($this->installment->amount, 2).' is overdue since '.$this->installment->due_date->format('M j, Y');
     }
 }

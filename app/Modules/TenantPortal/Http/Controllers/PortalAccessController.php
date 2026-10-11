@@ -3,8 +3,8 @@
 namespace App\Modules\TenantPortal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Tenants\Models\Tenant;
 use App\Modules\TenantPortal\Services\TenantPortalService;
+use App\Modules\Tenants\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 
 /**
@@ -16,9 +16,7 @@ use Illuminate\Http\RedirectResponse;
  */
 class PortalAccessController extends Controller
 {
-    public function __construct(protected TenantPortalService $service)
-    {
-    }
+    public function __construct(protected TenantPortalService $service) {}
 
     public function enable(Tenant $tenant): RedirectResponse
     {

@@ -1,0 +1,22 @@
+{
+    "token": "4|jQAKHs5s7tv5UOEn28KGaVhwNwXOLydC5UWiOOsCe72fc47e",
+    "buyer": {
+        "uuid": "d679366c-f296-4c54-b8dc-6d9bb69d5eaf",
+        "name": "Asha Buyer",
+        "email": null,
+        "phone": "0788000444",
+        "control_number": null,
+        "address": "1587 Dandre Bypass Apt. 050\nNew Amayaland, NM 67145",
+        "id_number": "4322307410",
+        "status": "active",
+        "notes": null,
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

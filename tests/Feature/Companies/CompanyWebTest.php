@@ -114,7 +114,7 @@ class CompanyWebTest extends TestCase
         $this->assertNotNull($company->fresh()->logoUrl());
     }
 
-    public function test_branding_upload_fails_gracefully_for_an_unimplemented_storage_provider(): void
+    public function test_branding_upload_fails_gracefully_for_an_unconfigured_storage_provider(): void
     {
         $company = Company::factory()->create();
         Integration::create([

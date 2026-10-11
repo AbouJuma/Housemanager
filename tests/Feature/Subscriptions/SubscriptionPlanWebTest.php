@@ -90,7 +90,7 @@ class SubscriptionPlanWebTest extends TestCase
     public function test_the_catalog_page_shows_the_overview_kpis_and_subscriber_counts(): void
     {
         $owner = User::factory()->create();
-        $plan = SubscriptionPlan::factory()->create(['name' => 'Growth Plan', 'price' => 79]);
+        $plan = SubscriptionPlan::factory()->create(['name' => 'Growth Plan', 'price' => 79, 'billing_cycle' => 'monthly']);
         $company = Company::factory()->create();
         app(SubscriptionService::class)->subscribe($company, $plan, 'active');
 

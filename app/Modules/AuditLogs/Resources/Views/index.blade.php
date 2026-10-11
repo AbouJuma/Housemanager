@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Audit Logs')
+@section('title', __('Audit Logs'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Audit Logs</h1>
+    <h1 class="h4 mb-0">{{ __('Audit Logs') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Audit Logs</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Audit Logs') }}</h1>
             <p class="text-secondary mb-0">{{ $logs->total() }} {{ Str::plural('entry', $logs->total()) }}</p>
         </div>
     </div>
@@ -20,7 +20,7 @@
                 <form method="GET" class="mb-3">
                     <div class="d-flex gap-2" style="max-width: 320px;">
                         <select name="log_name" class="form-select" onchange="this.form.submit()">
-                            <option value="">All areas</option>
+                            <option value="">{{ __('All areas') }}</option>
                             @foreach ($logNames as $name)
                                 <option value="{{ $name }}" @selected(request('log_name') === $name)>{{ ucfirst($name) }}</option>
                             @endforeach
@@ -32,23 +32,23 @@
             @if ($logs->isEmpty())
                 <div class="text-center py-5">
                     <i class="bi bi-clock-history display-4 text-secondary"></i>
-                    <p class="mt-3 mb-1 fw-semibold">No activity yet</p>
-                    <p class="text-secondary">Changes to companies and users will show up here.</p>
+                    <p class="mt-3 mb-1 fw-semibold">{{ __('No activity yet') }}</p>
+                    <p class="text-secondary">{{ __('Changes to companies and users will show up here.') }}</p>
                 </div>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>When</th>
+                                <th>{{ __('When') }}</th>
                                 @if (auth()->user()->isSaasOwner())
-                                    <th>Company</th>
+                                    <th>{{ __('Company') }}</th>
                                 @endif
-                                <th>Area</th>
-                                <th>Event</th>
-                                <th>Subject</th>
-                                <th>By</th>
-                                <th>Changes</th>
+                                <th>{{ __('Area') }}</th>
+                                <th>{{ __('Event') }}</th>
+                                <th>{{ __('Subject') }}</th>
+                                <th>{{ __('By') }}</th>
+                                <th>{{ __('Changes') }}</th>
                             </tr>
                         </thead>
                         <tbody>

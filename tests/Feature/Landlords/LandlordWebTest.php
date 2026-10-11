@@ -64,6 +64,42 @@ class LandlordWebTest extends TestCase
         $this->assertSame('CRDB Bank', $landlord->bankDetail('name'));
     }
 
+    /**
+     * The property form's "Add New" landlord modal (properties::
+     * properties._form) posts here with an X-Requested-With header and
+     * expects JSON back instead of a redirect - see
+     * LandlordController::store()'s expectsJson() branch.
+     */
+    public function test_an_ajax_request_gets_back_json_instead_of_a_redirect(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $response = $this->actingAs($admin)->postJson(route('landlords.store'), [
+            'name' => 'Quick Landlord',
+            'type' => 'individual',
+            'phone' => '0712345678',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('success', true);
+        $response->assertJsonPath('landlord.name', 'Quick Landlord');
+        $this->assertDatabaseHas('landlords', ['name' => 'Quick Landlord', 'company_id' => $company->id]);
+    }
+
+    public function test_an_ajax_request_with_invalid_data_gets_back_a_422_with_errors(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $response = $this->actingAs($admin)->postJson(route('landlords.store'), [
+            'type' => 'individual',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('name');
+    }
+
     public function test_a_company_admin_cannot_view_another_companys_landlord(): void
     {
         $company = Company::factory()->create();

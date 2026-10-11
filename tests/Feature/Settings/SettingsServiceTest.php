@@ -72,7 +72,11 @@ class SettingsServiceTest extends TestCase
         $company = Company::factory()->create();
         $this->service->setForCompany($company->id, 'date_format', 'Y-m-d');
 
-        $this->assertSame(['date_format' => 'Y-m-d'], $this->service->allForCompany($company->id));
+        $all = $this->service->allForCompany($company->id);
+
+        $this->assertSame('Y-m-d', $all['date_format']);
+        $this->assertSame('landlord', $all['payment_details_source']);
+        $this->assertSame('', $all['company_bank_name']);
     }
 
     public function test_all_system_merges_stored_values_with_catalog_defaults(): void

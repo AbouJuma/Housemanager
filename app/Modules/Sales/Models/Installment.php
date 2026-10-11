@@ -3,9 +3,11 @@
 namespace App\Modules\Sales\Models;
 
 use App\Core\Concerns\HasUuid;
+use App\Modules\Invoices\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -38,6 +40,16 @@ class Installment extends Model
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    // One invoice per installment, generated upfront when the schedule
+    // is created (App\Modules\Sales\Services\SaleService::
+    // generateInstallmentSchedule()) - a payment against this
+    // installment updates that SAME invoice rather than creating a new
+    // one (App\Modules\Sales\Services\SaleService::recordPayment()).
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
     }
 
     public function isPaid(): bool

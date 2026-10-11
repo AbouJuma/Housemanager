@@ -27,6 +27,8 @@ class PropertyController extends Controller
                 $request->string('search')->toString() ?: null,
                 $request->string('type')->toString() ?: null,
                 $request->string('status')->toString() ?: null,
+                region: $request->string('region')->toString() ?: null,
+                district: $request->string('district')->toString() ?: null,
             )
         );
     }

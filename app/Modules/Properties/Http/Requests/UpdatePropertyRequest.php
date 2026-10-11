@@ -26,6 +26,7 @@ class UpdatePropertyRequest extends FormRequest
             'address_line1' => ['nullable', 'string', 'max:255'],
             'address_line2' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
+            'area' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:32'],
             'country_code' => ['nullable', 'string', 'size:2'],

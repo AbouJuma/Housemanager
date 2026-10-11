@@ -7,9 +7,13 @@ use Illuminate\Support\Collection;
 
 class OccupancyReportService
 {
-    public function generate(): Collection
+    /** Property statuses the report can be filtered by. */
+    public const STATUSES = ['active', 'inactive', 'under_maintenance', 'archived'];
+
+    public function generate(?string $status = null): Collection
     {
         return Property::query()
+            ->when(in_array($status, self::STATUSES, true), fn ($query) => $query->where('status', $status))
             ->with('units')
             ->orderBy('name')
             ->get()

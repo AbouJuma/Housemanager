@@ -12,9 +12,9 @@
             <h1 class="h4 mb-0 d-lg-none">{{ $visitor->visitor_name }}</h1>
             <p class="text-secondary mb-0">
                 @if ($visitor->isCheckedIn())
-                    <span class="badge text-bg-success">Checked In</span>
+                    <span class="badge text-bg-success">{{ __('Checked In') }}</span>
                 @else
-                    <span class="badge text-bg-secondary">Checked Out</span>
+                    <span class="badge text-bg-secondary">{{ __('Checked Out') }}</span>
                 @endif
                 <span class="text-capitalize">{{ $visitor->purpose }}</span>
             </p>
@@ -33,7 +33,7 @@
                     </form>
                 @endif
                 <a href="{{ route('visitors.edit', $visitor) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
             @can('delete', $visitor)
@@ -41,7 +41,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-outline-danger btn-sm js-confirm-delete" data-name="this visitor record">
-                        <i class="bi bi-trash me-1"></i> Delete
+                        <i class="bi bi-trash me-1"></i> {{ __('Delete') }}
                     </button>
                 </form>
             @endcan
@@ -50,14 +50,14 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h2 class="h6 mb-3">Details</h2>
+            <h2 class="h6 mb-3">{{ __('Details') }}</h2>
             <div class="row g-3 small">
                 <div class="col-md-4">
-                    <div class="text-secondary">Property</div>
+                    <div class="text-secondary">{{ __('Property') }}</div>
                     <div><a href="{{ route('properties.show', $visitor->property) }}">{{ $visitor->property->name }}</a></div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Unit</div>
+                    <div class="text-secondary">{{ __('Unit') }}</div>
                     <div>
                         @if ($visitor->unit)
                             <a href="{{ route('units.show', $visitor->unit) }}">{{ $visitor->unit->unit_number }}</a>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Visiting</div>
+                    <div class="text-secondary">{{ __('Visiting') }}</div>
                     <div>
                         @if ($visitor->tenant)
                             <a href="{{ route('tenants.show', $visitor->tenant) }}">{{ $visitor->tenant->name }}</a>
@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Represents Vendor</div>
+                    <div class="text-secondary">{{ __('Represents Vendor') }}</div>
                     <div>
                         @if ($visitor->vendor)
                             <a href="{{ route('vendors.show', $visitor->vendor) }}">{{ $visitor->vendor->name }}</a>
@@ -87,15 +87,15 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Phone</div>
+                    <div class="text-secondary">{{ __('Phone') }}</div>
                     <div>{{ $visitor->visitor_phone ?? '—' }}</div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Vehicle Plate</div>
+                    <div class="text-secondary">{{ __('Vehicle Plate') }}</div>
                     <div>{{ $visitor->vehicle_plate ?? '—' }}</div>
                 </div>
                 <div class="col-md-4">
-                    <div class="text-secondary">Badge Number</div>
+                    <div class="text-secondary">{{ __('Badge Number') }}</div>
                     <div>{{ $visitor->badge_number ?? '—' }}</div>
                 </div>
                 <div class="col-md-4">
@@ -119,7 +119,7 @@
             </div>
             @if ($visitor->notes)
                 <hr>
-                <div class="text-secondary small mb-1">Notes</div>
+                <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                 <p class="mb-0">{{ $visitor->notes }}</p>
             @endif
         </div>

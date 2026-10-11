@@ -1,0 +1,30 @@
+{
+    "data": {
+        "uuid": "6d74b6ad-d454-4924-8f0e-62d26e5bb0a6",
+        "name": "New Tenant",
+        "type": "individual",
+        "status": "active",
+        "email": null,
+        "phone": "0713000555",
+        "secondary_phone": null,
+        "date_of_birth": null,
+        "identification_type": null,
+        "identification_number": null,
+        "address": {
+            "line1": null,
+            "line2": null,
+            "city": null,
+            "state": null,
+            "postal_code": null,
+            "country_code": null
+        },
+        "emergency_contact": {
+            "name": null,
+            "phone": null
+        },
+        "notes": null,
+        "photo_url": null,
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    }
+}

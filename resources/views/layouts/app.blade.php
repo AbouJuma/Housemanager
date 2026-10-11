@@ -5,252 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name'))</title>
-    @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    @php
+        $brand = \App\Modules\Companies\Support\BrandTheme::current();
+    @endphp
+    @include('partials.head')
 </head>
 <body>
+    @php
+        // Photo behind each section's page hero - a view can override it
+        // with @section('hero-image', 'villa'). Files: public/images/brand.
+        $heroImage = trim($__env->yieldContent('hero-image')) ?: match (true) {
+            request()->routeIs('dashboard') => 'aerial',
+            request()->routeIs('properties.*', 'buildings.*', 'units.*') => 'apartments',
+            request()->routeIs('landlords.*', 'maintenance-requests.*', 'inventory-items.*') => 'villa',
+            request()->routeIs('tenants.*', 'leases.*', 'visitors.*', 'documents.*') => 'interior',
+            request()->routeIs('sales.*', 'buyers.*') => 'land',
+            default => 'office',
+        };
+        $nameParts = preg_split('/\s+/', trim(auth()->user()->name));
+        $initials = mb_strtoupper(mb_substr($nameParts[0], 0, 1).(count($nameParts) > 1 ? mb_substr(end($nameParts), 0, 1) : ''));
+    @endphp
+
     <div class="app-shell">
         <aside class="app-sidebar d-none d-lg-flex flex-column p-3">
-            <a href="{{ route('dashboard') }}" class="d-flex align-items-center mb-4 text-decoration-none">
-                <span class="d-flex align-items-center justify-content-center rounded-3 bg-primary text-white me-2" style="width: 32px; height: 32px;">
-                    <i class="bi bi-buildings-fill"></i>
+            <a href="{{ route('dashboard') }}" class="app-brand">
+                <x-brand-logo :size="40" />
+                <span>
+                    <span class="app-brand-name">{{ $brand->companyName ?? config('app.name') }}</span>
+                    <span class="app-brand-sub">{{ __('Property workspace') }}</span>
                 </span>
-                <span class="fs-5 fw-semibold text-body">{{ config('app.name') }}</span>
             </a>
-            <nav class="nav nav-pills flex-column gap-1">
-                <a href="{{ route('dashboard') }}" class="nav-link d-flex align-items-center {{ request()->routeIs('dashboard') ? 'active' : 'text-body' }}">
-                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                </a>
-                <a href="{{ route('companies.index') }}"
-                   class="nav-link d-flex align-items-center {{ request()->routeIs('companies.*') ? 'active' : 'text-body' }}">
-                    <i class="bi bi-building me-2"></i> Companies
-                </a>
-                @can('viewAny', App\Modules\Subscriptions\Models\SubscriptionPlan::class)
-                    <a href="{{ route('subscription-plans.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('subscription-plans.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-credit-card me-2"></i> Subscription Plans
-                    </a>
-                @endcan
-                @unless (auth()->user()->isSaasOwner())
-                    <a href="{{ route('billing.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('billing.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-receipt me-2"></i> Billing
-                    </a>
-                @endunless
-                @can('viewAny', App\Modules\Properties\Models\Property::class)
-                    <a href="{{ route('properties.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('properties.*', 'buildings.*', 'units.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-buildings me-2"></i> Properties
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Landlords\Models\Landlord::class)
-                    <a href="{{ route('landlords.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('landlords.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-person-badge me-2"></i> Landlords
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Tenants\Models\Tenant::class)
-                    <a href="{{ route('tenants.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('tenants.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-people me-2"></i> Tenants
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Leases\Models\Lease::class)
-                    <a href="{{ route('leases.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('leases.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-file-earmark-text me-2"></i> Leases
-                    </a>
-                @endcan
-                @can('sales.viewAny')
-                    <a href="{{ route('sales.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('sales.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-currency-dollar me-2"></i> Sales
-                    </a>
-                @endcan
-                @can('buyers.viewAny')
-                    <a href="{{ route('buyers.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('buyers.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-person me-2"></i> Buyers
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Invoices\Models\Invoice::class)
-                    <a href="{{ route('invoices.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('invoices.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-receipt me-2"></i> Invoices
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Accounting\Models\Account::class)
-                    <a href="{{ route('accounts.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('accounts.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-journal-text me-2"></i> Chart of Accounts
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Accounting\Models\JournalEntry::class)
-                    <a href="{{ route('journal-entries.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('journal-entries.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-journals me-2"></i> Journal Entries
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Expenses\Models\Expense::class)
-                    <a href="{{ route('expenses.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('expenses.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-cash-stack me-2"></i> Expenses
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Vendors\Models\Vendor::class)
-                    <a href="{{ route('vendors.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('vendors.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-truck me-2"></i> Vendors
-                    </a>
-                @endcan
-                <a href="{{ route('message-templates.index') }}"
-                   class="nav-link d-flex align-items-center {{ request()->routeIs('message-templates.*') ? 'active' : 'text-body' }}">
-                    <i class="bi bi-envelope me-2"></i> Message Templates
-                </a>
-                @can('viewAny', App\Modules\Maintenance\Models\MaintenanceRequest::class)
-                    <a href="{{ route('maintenance-requests.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('maintenance-requests.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-tools me-2"></i> Maintenance
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Inventory\Models\InventoryItem::class)
-                    <a href="{{ route('inventory-items.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('inventory-items.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-box-seam me-2"></i> Inventory
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Documents\Models\Document::class)
-                    <a href="{{ route('documents.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('documents.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-file-earmark-text me-2"></i> Documents
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\VisitorManagement\Models\Visitor::class)
-                    <a href="{{ route('visitors.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('visitors.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-person-badge me-2"></i> Visitors
-                    </a>
-                @endcan
-                @can('reports.view')
-                    <a href="{{ route('reports.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('reports.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-bar-chart-line me-2"></i> Reports
-                    </a>
-                @endcan
-                @can('viewAny', App\Models\User::class)
-                    <a href="{{ route('users.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-people me-2"></i> Users
-                    </a>
-                @endcan
-                @can('viewAny', Spatie\Permission\Models\Role::class)
-                    <a href="{{ route('roles.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('roles.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-shield-lock me-2"></i> Roles
-                    </a>
-                @endcan
-                @can('settings.view-company')
-                    <a href="{{ route('settings.edit') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('settings.edit') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-gear me-2"></i> Settings
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\Integrations\Models\Integration::class)
-                    <a href="{{ route('integrations.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('integrations.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-plug me-2"></i> Integrations
-                    </a>
-                @endcan
-                @can('settings.view-system')
-                    <a href="{{ route('settings.system.edit') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('settings.system.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-sliders me-2"></i> System Settings
-                    </a>
-                @endcan
-                @can('viewAny', App\Modules\AuditLogs\Models\ActivityLogEntry::class)
-                    <a href="{{ route('audit-logs.index') }}"
-                       class="nav-link d-flex align-items-center {{ request()->routeIs('audit-logs.*') ? 'active' : 'text-body' }}">
-                        <i class="bi bi-clock-history me-2"></i> Audit Logs
-                    </a>
-                @endcan
-            </nav>
+
+            @include('layouts.partials.app-nav')
+
+            <div class="sidebar-photo-card mt-auto" style="background-image: url('{{ asset('images/brand/aerial.webp') }}');">
+                <div class="small fw-semibold">{{ $brand->companyName ?? config('app.name') }}</div>
+                <div class="small opacity-75">{{ __('Every property, lease and payment in one place.') }}</div>
+            </div>
         </aside>
 
         <div class="app-main d-flex flex-column">
-            <header class="app-topbar d-flex align-items-center justify-content-between px-3 px-lg-4">
-                <button class="btn btn-outline-secondary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebarOffcanvas">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="d-none d-lg-block">@yield('page-heading')</div>
+            <header class="app-topbar d-flex align-items-center justify-content-between gap-2 px-3 px-lg-4">
                 <div class="d-flex align-items-center gap-2">
-                    @auth
-                        <button class="btn btn-outline-secondary btn-sm rounded-3 d-flex align-items-center gap-2 border-0 bg-body-tertiary" type="button" data-bs-toggle="modal" data-bs-target="#commandPaletteModal" title="Search (Ctrl+K)">
-                            <i class="bi bi-search"></i>
-                            <span class="d-none d-md-inline text-secondary small">Search</span>
-                            <kbd class="d-none d-md-inline small text-secondary bg-transparent border px-1">Ctrl K</kbd>
-                        </button>
-                    @endauth
-                    <button class="btn btn-outline-secondary btn-sm rounded-3 border-0 bg-body-tertiary" type="button" onclick="toggleTheme()" title="Toggle theme">
-                        <i class="bi bi-circle-half"></i>
+                    <button class="topbar-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebarOffcanvas" aria-label="{{ __('Open menu') }}">
+                        <i class="bi bi-list fs-5"></i>
                     </button>
-                    @auth
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary btn-sm rounded-3 border-0 bg-body-tertiary position-relative" type="button" id="notificationBellButton" data-bs-toggle="dropdown">
-                                <i class="bi bi-bell"></i>
-                                <span id="notificationUnreadBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger d-none">0</span>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end p-0" style="width: 340px;" id="notificationDropdown">
-                                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-                                    <span class="fw-semibold small">Notifications</span>
-                                    <a href="{{ route('notifications.index') }}" class="small">View all</a>
-                                </div>
-                                <div id="notificationList" class="list-group list-group-flush" style="max-height: 360px; overflow-y: auto;">
-                                    <div class="list-group-item text-secondary small">Loading…</div>
-                                </div>
+                    <a href="{{ route('dashboard') }}" class="d-lg-none"><x-brand-logo :size="34" /></a>
+                    <button class="topbar-btn d-none d-md-inline-flex" type="button" data-bs-toggle="modal" data-bs-target="#commandPaletteModal" title="{{ __('Search') }} (Ctrl+K)" style="min-width: 260px; justify-content: flex-start;">
+                        <i class="bi bi-search text-secondary"></i>
+                        <span class="text-secondary small flex-grow-1 text-start">{{ __('Search…') }}</span>
+                        <kbd class="small text-secondary bg-transparent border px-1">Ctrl K</kbd>
+                    </button>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button class="topbar-btn d-md-none" type="button" data-bs-toggle="modal" data-bs-target="#commandPaletteModal" aria-label="{{ __('Search') }}">
+                        <i class="bi bi-search"></i>
+                    </button>
+
+                    <x-locale-switch class="d-none d-sm-inline-flex" />
+                    <x-theme-switch />
+
+                    <div class="dropdown">
+                        <button class="topbar-btn position-relative" type="button" id="notificationBellButton" data-bs-toggle="dropdown" aria-label="{{ __('Notifications') }}">
+                            <i class="bi bi-bell"></i>
+                            <span id="notificationUnreadBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger d-none">0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-0" style="width: 340px;" id="notificationDropdown">
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                                <span class="fw-semibold small">{{ __('Notifications') }}</span>
+                                <a href="{{ route('notifications.index') }}" class="small">{{ __('View all') }}</a>
+                            </div>
+                            <div id="notificationList" class="list-group list-group-flush" style="max-height: 360px; overflow-y: auto;">
+                                <div class="list-group-item text-secondary small">{{ __('Loading…') }}</div>
                             </div>
                         </div>
-                    @endauth
-                    @auth
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary btn-sm rounded-3 border-0 bg-body-tertiary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                {{ auth()->user()->name }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear me-2"></i>Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Log Out
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    @endauth
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="topbar-btn ps-1 pe-2" type="button" data-bs-toggle="dropdown" aria-label="{{ __('Account menu') }}">
+                            <span class="avatar">{{ $initials }}</span>
+                            <span class="d-none d-md-inline small fw-medium">{{ auth()->user()->name }}</span>
+                            <i class="bi bi-chevron-down small text-secondary"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="px-3 py-2">
+                                <div class="fw-semibold small">{{ auth()->user()->name }}</div>
+                                <div class="text-secondary small">{{ auth()->user()->email }}</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear me-2"></i>{{ __('Profile') }}</a></li>
+                            @if (! auth()->user()->isSaasOwner() && auth()->user()->can('settings.view-company'))
+                                <li><a class="dropdown-item" href="{{ route('company-profile.edit') }}"><i class="bi bi-building-gear me-2"></i>{{ __('Company Profile') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('branding.edit') }}"><i class="bi bi-palette me-2"></i>{{ __('Branding') }}</a></li>
+                            @endif
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>{{ __('Log Out') }}
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </header>
 
             <main class="flex-grow-1 p-3 p-lg-4">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('status'))
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        {{ session('status') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                @hasSection('page-heading')
+                    <section class="page-hero @yield('hero-class')" style="--hero-image: url('{{ asset("images/brand/{$heroImage}.webp") }}');">
+                        @yield('page-heading')
+                    </section>
                 @endif
 
                 @yield('content')
@@ -258,106 +125,39 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="appSidebarOffcanvas">
+    <div class="offcanvas offcanvas-start d-lg-none app-sidebar-offcanvas" tabindex="-1" id="appSidebarOffcanvas">
         <div class="offcanvas-header">
-            <span class="fs-5 fw-semibold">{{ config('app.name') }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <a href="{{ route('dashboard') }}" class="app-brand p-0">
+                <x-brand-logo :size="34" />
+                <span class="app-brand-name">{{ $brand->companyName ?? config('app.name') }}</span>
+            </a>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
-            <nav class="nav nav-pills flex-column gap-1">
-                <a href="{{ route('dashboard') }}" class="nav-link text-body">Dashboard</a>
-                <a href="{{ route('companies.index') }}" class="nav-link {{ request()->routeIs('companies.*') ? 'active' : 'text-body' }}">Companies</a>
-                @can('viewAny', App\Modules\Subscriptions\Models\SubscriptionPlan::class)
-                    <a href="{{ route('subscription-plans.index') }}" class="nav-link {{ request()->routeIs('subscription-plans.*') ? 'active' : 'text-body' }}">Subscription Plans</a>
-                @endcan
-                @unless (auth()->user()->isSaasOwner())
-                    <a href="{{ route('billing.index') }}" class="nav-link {{ request()->routeIs('billing.*') ? 'active' : 'text-body' }}">Billing</a>
-                @endunless
-                @can('viewAny', App\Modules\Properties\Models\Property::class)
-                    <a href="{{ route('properties.index') }}" class="nav-link {{ request()->routeIs('properties.*', 'buildings.*', 'units.*') ? 'active' : 'text-body' }}">Properties</a>
-                @endcan
-                @can('viewAny', App\Modules\Landlords\Models\Landlord::class)
-                    <a href="{{ route('landlords.index') }}" class="nav-link {{ request()->routeIs('landlords.*') ? 'active' : 'text-body' }}">Landlords</a>
-                @endcan
-                @can('viewAny', App\Modules\Tenants\Models\Tenant::class)
-                    <a href="{{ route('tenants.index') }}" class="nav-link {{ request()->routeIs('tenants.*') ? 'active' : 'text-body' }}">Tenants</a>
-                @endcan
-                @can('viewAny', App\Modules\Leases\Models\Lease::class)
-                    <a href="{{ route('leases.index') }}" class="nav-link {{ request()->routeIs('leases.*') ? 'active' : 'text-body' }}">Leases</a>
-                @endcan
-                @can('sales.viewAny')
-                    <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') ? 'active' : 'text-body' }}">Sales</a>
-                @endcan
-                @can('buyers.viewAny')
-                    <a href="{{ route('buyers.index') }}" class="nav-link {{ request()->routeIs('buyers.*') ? 'active' : 'text-body' }}">Buyers</a>
-                @endcan
-                @can('viewAny', App\Modules\Invoices\Models\Invoice::class)
-                    <a href="{{ route('invoices.index') }}" class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : 'text-body' }}">Invoices</a>
-                @endcan
-                @can('viewAny', App\Modules\Accounting\Models\Account::class)
-                    <a href="{{ route('accounts.index') }}" class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : 'text-body' }}">Chart of Accounts</a>
-                @endcan
-                @can('viewAny', App\Modules\Accounting\Models\JournalEntry::class)
-                    <a href="{{ route('journal-entries.index') }}" class="nav-link {{ request()->routeIs('journal-entries.*') ? 'active' : 'text-body' }}">Journal Entries</a>
-                @endcan
-                @can('viewAny', App\Modules\Expenses\Models\Expense::class)
-                    <a href="{{ route('expenses.index') }}" class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : 'text-body' }}">Expenses</a>
-                @endcan
-                @can('viewAny', App\Modules\Vendors\Models\Vendor::class)
-                    <a href="{{ route('vendors.index') }}" class="nav-link {{ request()->routeIs('vendors.*') ? 'active' : 'text-body' }}">Vendors</a>
-                @endcan
-                @can('viewAny', App\Modules\Maintenance\Models\MaintenanceRequest::class)
-                    <a href="{{ route('maintenance-requests.index') }}" class="nav-link {{ request()->routeIs('maintenance-requests.*') ? 'active' : 'text-body' }}">Maintenance</a>
-                @endcan
-                @can('viewAny', App\Modules\Inventory\Models\InventoryItem::class)
-                    <a href="{{ route('inventory-items.index') }}" class="nav-link {{ request()->routeIs('inventory-items.*') ? 'active' : 'text-body' }}">Inventory</a>
-                @endcan
-                @can('viewAny', App\Modules\Documents\Models\Document::class)
-                    <a href="{{ route('documents.index') }}" class="nav-link {{ request()->routeIs('documents.*') ? 'active' : 'text-body' }}">Documents</a>
-                @endcan
-                @can('viewAny', App\Modules\VisitorManagement\Models\Visitor::class)
-                    <a href="{{ route('visitors.index') }}" class="nav-link {{ request()->routeIs('visitors.*') ? 'active' : 'text-body' }}">Visitors</a>
-                @endcan
-                @can('reports.view')
-                    <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : 'text-body' }}">Reports</a>
-                @endcan
-                @can('viewAny', App\Models\User::class)
-                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : 'text-body' }}">Users</a>
-                @endcan
-                @can('viewAny', Spatie\Permission\Models\Role::class)
-                    <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.*') ? 'active' : 'text-body' }}">Roles</a>
-                @endcan
-                @can('settings.view-company')
-                    <a href="{{ route('settings.edit') }}" class="nav-link {{ request()->routeIs('settings.edit') ? 'active' : 'text-body' }}">Settings</a>
-                @endcan
-                @can('viewAny', App\Modules\Integrations\Models\Integration::class)
-                    <a href="{{ route('integrations.index') }}" class="nav-link {{ request()->routeIs('integrations.*') ? 'active' : 'text-body' }}">Integrations</a>
-                @endcan
-                @can('settings.view-system')
-                    <a href="{{ route('settings.system.edit') }}" class="nav-link {{ request()->routeIs('settings.system.*') ? 'active' : 'text-body' }}">System Settings</a>
-                @endcan
-                @can('viewAny', App\Modules\AuditLogs\Models\ActivityLogEntry::class)
-                    <a href="{{ route('audit-logs.index') }}" class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : 'text-body' }}">Audit Logs</a>
-                @endcan
-            </nav>
+        <div class="offcanvas-body pt-0">
+            <x-locale-switch class="mb-3 d-sm-none" />
+            @include('layouts.partials.app-nav')
         </div>
     </div>
 
-    @auth
-        <div class="modal fade" id="commandPaletteModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body p-0">
-                        <div class="p-3 border-bottom">
-                            <input type="text" id="commandPaletteInput" class="form-control form-control-lg border-0 shadow-none px-0" placeholder="Search companies, users…" autocomplete="off">
-                        </div>
-                        <div id="commandPaletteResults" class="list-group list-group-flush" style="max-height: 360px; overflow-y: auto;"></div>
+    <div class="modal fade" id="commandPaletteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <div class="p-3 border-bottom d-flex align-items-center gap-2">
+                        <i class="bi bi-search text-secondary"></i>
+                        <input type="text" id="commandPaletteInput" class="form-control form-control-lg border-0 shadow-none px-0" placeholder="{{ __('Search companies, users…') }}" autocomplete="off">
                     </div>
+                    <div id="commandPaletteResults" class="list-group list-group-flush" style="max-height: 360px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
-    @endauth
+    </div>
 
+    {{-- Modals that belong to a form partial but must not be nested
+         inside that <form> (their own inputs would join its validation). --}}
+    @stack('modals')
+
+    @include('partials.flash-toasts')
     @stack('scripts')
 </body>
 </html>

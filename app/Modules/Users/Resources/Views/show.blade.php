@@ -18,15 +18,15 @@
                         </div>
                         @can('update', $user)
                             <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-pencil me-1"></i> Edit
+                                <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                             </a>
                         @endcan
                     </div>
 
                     <dl class="row mb-0">
-                        <dt class="col-sm-4 text-secondary fw-normal">Company</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Company') }}</dt>
                         <dd class="col-sm-8">{{ $user->company?->name ?? 'SaaS Owner' }}</dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Roles</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Roles') }}</dt>
                         <dd class="col-sm-8">
                             @forelse ($user->roleNamesForOwnCompany() as $role)
                                 <span class="badge text-bg-secondary">{{ $role }}</span>
@@ -34,7 +34,7 @@
                                 &mdash;
                             @endforelse
                         </dd>
-                        <dt class="col-sm-4 text-secondary fw-normal">Joined</dt>
+                        <dt class="col-sm-4 text-secondary fw-normal">{{ __('Joined') }}</dt>
                         <dd class="col-sm-8">{{ $user->created_at->format(setting('date_format')) }}</dd>
                     </dl>
                 </div>

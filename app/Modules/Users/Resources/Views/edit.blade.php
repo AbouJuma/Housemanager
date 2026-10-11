@@ -15,19 +15,20 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">{{ __('Name') }}</label>
                         <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" class="form-control @error('name') is-invalid @enderror" required autofocus>
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+                        <x-username-field type="staff" :value="$user->username" :ignore="$user->id" />
 
                     <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label">{{ __('Email') }}</label>
                         <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" class="form-control @error('email') is-invalid @enderror" required>
                         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label for="phone" class="form-label">{{ __('Phone') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <input id="phone" type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control @error('phone') is-invalid @enderror" placeholder="+255700000000">
                         @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -41,7 +42,7 @@
 
                 @if ($roles->isNotEmpty())
                     <fieldset class="mt-4">
-                        <legend class="h6">Roles</legend>
+                        <legend class="h6">{{ __('Roles') }}</legend>
                         <div class="row g-2">
                             @foreach ($roles as $role)
                                 <div class="col-md-4">
@@ -57,8 +58,8 @@
                 @endif
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                    <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

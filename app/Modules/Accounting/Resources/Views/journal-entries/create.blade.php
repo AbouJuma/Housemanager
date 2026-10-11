@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Journal Entry')
+@section('title', __('New Journal Entry'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Journal Entry</h1>
+    <h1 class="h4 mb-0">{{ __('New Journal Entry') }}</h1>
 @endsection
 
 @section('content')
@@ -18,27 +18,27 @@
                         @error('entry_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Reference <span class="text-secondary fw-normal">(optional)</span></label>
+                        <label class="form-label">{{ __('Reference') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
                         <input type="text" name="reference" value="{{ old('reference') }}" class="form-control @error('reference') is-invalid @enderror">
                         @error('reference') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Description</label>
+                        <label class="form-label">{{ __('Description') }}</label>
                         <input type="text" name="description" value="{{ old('description') }}" class="form-control @error('description') is-invalid @enderror" required>
                         @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-12">
                         <hr>
-                        <h2 class="h6 mb-3">Lines</h2>
+                        <h2 class="h6 mb-3">{{ __('Lines') }}</h2>
                         <div class="table-responsive">
                             <table class="table table-sm align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Account</th>
-                                        <th style="width: 140px;">Debit</th>
-                                        <th style="width: 140px;">Credit</th>
-                                        <th>Memo</th>
+                                        <th>{{ __('Account') }}</th>
+                                        <th style="width: 140px;">{{ __('Debit') }}</th>
+                                        <th style="width: 140px;">{{ __('Credit') }}</th>
+                                        <th>{{ __('Memo') }}</th>
                                         <th style="width: 40px;"></th>
                                     </tr>
                                 </thead>
@@ -76,7 +76,7 @@
 
                 <div class="mt-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Post Journal Entry</button>
-                    <a href="{{ route('journal-entries.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('journal-entries.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

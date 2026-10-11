@@ -1,0 +1,33 @@
+{
+    "data": {
+        "uuid": "be60c2ff-663f-4d24-a8f2-a68da8d861d0",
+        "name": "Prof. Derrick Goodwin DVM",
+        "type": "individual",
+        "category": "hvac",
+        "status": "active",
+        "email": "lowe.alexandria@example.com",
+        "phone": "951.818.7749",
+        "secondary_phone": null,
+        "address": {
+            "line1": null,
+            "line2": null,
+            "city": "Hermanport",
+            "state": null,
+            "postal_code": null,
+            "country_code": "WF"
+        },
+        "tax_id": "TIN-79600974",
+        "bank_details": {
+            "bank_name": null,
+            "account_name": null,
+            "account_number": null,
+            "branch": null,
+            "swift_code": null
+        },
+        "notes": null,
+        "photo_url": null,
+        "expenses_count": 0,
+        "created_at": "2026-10-11T19:05:42+00:00",
+        "updated_at": "2026-10-11T19:05:42+00:00"
+    }
+}

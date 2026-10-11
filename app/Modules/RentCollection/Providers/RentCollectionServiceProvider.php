@@ -3,6 +3,7 @@
 namespace App\Modules\RentCollection\Providers;
 
 use App\Core\Foundation\ModuleServiceProvider;
+use App\Modules\RentCollection\Console\Commands\GenerateRentInvoices;
 use App\Modules\RentCollection\Console\Commands\SendRentReminders;
 use App\Modules\RentCollection\Console\Commands\VerifyPendingRentPayments;
 use Illuminate\Console\Scheduling\Schedule;
@@ -24,14 +25,22 @@ class RentCollectionServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        $this->commands([SendRentReminders::class, VerifyPendingRentPayments::class]);
+        $this->commands([GenerateRentInvoices::class, SendRentReminders::class, VerifyPendingRentPayments::class]);
 
         $this->app->booted(function (): void {
             $schedule = $this->app->make(Schedule::class);
 
-            // After MarkOverdueInvoices (Invoices module, also daily)
-            // so a freshly-overdue invoice gets its reminder same-day.
-            $schedule->command(SendRentReminders::class)->daily();
+            // GenerateRentInvoices first, so a lease invoice generated
+            // today is immediately eligible for SendRentReminders'/
+            // MarkOverdueInvoices' same-day checks - then those two
+            // (MarkOverdueInvoices lives in the Invoices module, also
+            // daily), then the reminder itself.
+            // These two text customers (a new-invoice message, rent
+            // reminders), so they run at a sensible local hour: app.timezone
+            // is UTC, and a bare daily() (00:00 UTC) is 3 AM in East Africa.
+            // MarkOverdueInvoices still runs at 00:00 UTC, before both.
+            $schedule->command(GenerateRentInvoices::class)->dailyAt('08:00')->timezone('Africa/Dar_es_Salaam');
+            $schedule->command(SendRentReminders::class)->dailyAt('08:10')->timezone('Africa/Dar_es_Salaam');
             $schedule->command(VerifyPendingRentPayments::class)->everyFifteenMinutes();
         });
     }

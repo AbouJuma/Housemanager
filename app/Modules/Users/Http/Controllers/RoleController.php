@@ -13,9 +13,7 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    public function __construct(protected RoleService $service)
-    {
-    }
+    public function __construct(protected RoleService $service) {}
 
     public function index(Request $request): View
     {

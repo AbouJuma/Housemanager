@@ -2,6 +2,8 @@
 
 namespace App\Modules\Users\Http\Requests;
 
+use App\Core\Auth\UsernameRules;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -17,11 +19,18 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
+            // Optional - generated from the name when blank.
+            'username' => UsernameRules::for(User::class, $this->route('user')?->id),
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', Password::defaults()],
             'roles' => ['array'],
             'roles.*' => ['string'],
         ];
+    }
+
+    public function messages(): array
+    {
+        return UsernameRules::messages();
     }
 }

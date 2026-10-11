@@ -1,0 +1,38 @@
+{
+    "token": "3|4MrTJJeoAJGRKaTAW4dlsNbfLWCbnTUQKmN054Rnecf06a75",
+    "landlord": {
+        "uuid": "9437ea05-0fab-4513-8875-97d877ce8cbd",
+        "name": "Juma Landlord",
+        "type": "individual",
+        "status": "active",
+        "email": null,
+        "phone": "0754000222",
+        "secondary_phone": null,
+        "address": {
+            "line1": null,
+            "line2": null,
+            "city": null,
+            "state": null,
+            "postal_code": null,
+            "country_code": null
+        },
+        "tax_id": null,
+        "bank_details": {
+            "bank_name": null,
+            "account_name": null,
+            "account_number": null,
+            "branch": null,
+            "swift_code": null
+        },
+        "notes": null,
+        "photo_url": null,
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    },
+    "branding": {
+        "company_name": "Contract Homes",
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

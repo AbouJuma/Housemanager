@@ -1,16 +1,16 @@
 // ---------------------------------------------------------------------
-// Design system - clean/minimal direction (Stripe/Linear-inspired):
-// restrained color, generous whitespace, soft shadows over heavy
-// borders, crisp typography, understated motion. Every override below
-// happens through Bootstrap 5's own SCSS variable/utility API rather
-// than fighting it with !important - the whole app inherits this for
-// free since every view already builds on Bootstrap classes and the
-// shared layout in resources/views/layouts/app.blade.php.
+// Design system - modern property-management look: an ink sidebar,
+// photo hero banners (public/images/brand/*), soft cards, and a brand
+// color each company can set for itself (Settings -> Branding).
+//
+// Bootstrap compiles $primary in at build time, so a per-company color
+// can't come from SCSS. Instead every brand-colored surface reads the
+// runtime tokens below (--brand, --brand-rgb, --accent, ...), which
+// resources/views/partials/head.blade.php redefines per company from
+// App\Modules\Companies\Support\BrandTheme. The $primary here is only
+// the default those tokens start from.
 // ---------------------------------------------------------------------
 
-// Latin-subset only (not the full multi-script index) - keeps the
-// deployed build lean for shared hosting; covers English plus most
-// Western European text, which is this app's primary audience.
 @import "@fontsource/inter/latin-400.css";
 @import "@fontsource/inter/latin-500.css";
 @import "@fontsource/inter/latin-600.css";
@@ -20,23 +20,54 @@
 
 $font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
-// A restrained indigo rather than Bootstrap's stock blue - closer to
-// the Stripe/Linear palette without copying either brand's exact hue.
-$primary: #4f46e5;
-$primary-text-emphasis: #4338ca;
+$primary: #1F5A94;
+$secondary: #475467;
+$success: #12B76A;
+$info: #0BA5EC;
+$warning: #F79009;
+$danger: #F04438;
+
+// Light theme - stronger secondary text than Bootstrap's default 75%
+// alpha, which read as washed out on white cards (portal especially).
+$body-color: #101828;
+$body-bg: #FFFFFF;
+$body-emphasis-color: #0F2440;
+$body-secondary-color: #475467;
+$body-secondary-bg: #EEF1F5;
+$body-tertiary-color: #667085;
+$body-tertiary-bg: #F3F5F8;
+$border-color: #E3E8EF;
+$headings-color: #0F2440;
+
+// Dark theme - deep navy instead of Bootstrap's neutral gray.
+$body-color-dark: #E4E7EC;
+$body-bg-dark: #10213A;
+$body-emphasis-color-dark: #FFFFFF;
+$body-secondary-color-dark: #A6B0C3;
+$body-secondary-bg-dark: #18304F;
+$body-tertiary-color-dark: #7D889C;
+$body-tertiary-bg-dark: #0A1A2F;
+$border-color-dark: #24405F;
+$headings-color-dark: #F5F7FA;
 
 $border-radius: .625rem;
 $border-radius-sm: .5rem;
-$border-radius-lg: .875rem;
+$border-radius-lg: 1rem;
 $border-radius-xl: 1.25rem;
 
-$box-shadow-sm: 0 1px 2px rgba(16, 24, 40, .06);
-$box-shadow: 0 4px 12px rgba(16, 24, 40, .08);
-$box-shadow-lg: 0 12px 32px rgba(16, 24, 40, .12);
+$box-shadow-sm: 0 1px 2px rgba(16, 24, 40, .05);
+$box-shadow: 0 6px 16px -4px rgba(16, 24, 40, .08), 0 2px 6px -2px rgba(16, 24, 40, .04);
+$box-shadow-lg: 0 20px 40px -12px rgba(16, 24, 40, .18);
 
-$card-border-width: 0;
+$card-border-width: 1px;
 $card-cap-bg: transparent;
+$card-spacer-y: 1.25rem;
+$card-spacer-x: 1.25rem;
 
+$input-padding-y: .5rem;
+$input-padding-x: .875rem;
+$btn-padding-y: .5rem;
+$btn-padding-x: 1rem;
 $btn-font-weight: 500;
 $font-weight-semibold: 600;
 
@@ -46,21 +77,200 @@ $link-decoration: none;
 @import "bootstrap-icons/font/bootstrap-icons.css";
 @import "select2/dist/css/select2.min.css";
 
-// --- Design tokens (light) ---
+// =====================================================================
+// Brand tokens - defaults; head.blade.php overrides them per company.
+// =====================================================================
 
 :root {
-    --app-sidebar-width: 268px;
-    --app-topbar-height: 64px;
+    --brand: #1F5A94;
+    --brand-rgb: 31, 90, 148;
+    --brand-hover: #1B4D7F;
+    --brand-light: #8AA9C8;
+    --brand-light-rgb: 138, 169, 200;
+    --brand-contrast: #FFFFFF;
+    --accent: #5EEAD4;
+    --accent-rgb: 94, 234, 212;
+    --accent-contrast: #101828;
+
+    --ink: #0F2440;
+    --ink-rgb: 15, 36, 64;
+
+    --app-sidebar-width: 272px;
+    --app-topbar-height: 68px;
     --app-transition-fast: 150ms ease;
     --app-transition: 220ms cubic-bezier(.4, 0, .2, 1);
-    --app-surface-border: rgba(16, 24, 40, .06);
-    --app-ring: rgba(79, 70, 229, .16);
+    --app-surface-border: #E8ECF2;
+    --app-ring: rgba(var(--brand-rgb), .16);
 }
 
 [data-bs-theme="dark"] {
-    --app-surface-border: rgba(255, 255, 255, .08);
-    --app-ring: rgba(129, 140, 248, .28);
+    --app-surface-border: rgba(255, 255, 255, .07);
+    --app-ring: rgba(var(--brand-light-rgb), .25);
 }
+
+// Route Bootstrap's own primary through the brand tokens.
+:root,
+[data-bs-theme="light"],
+[data-bs-theme="dark"] {
+    --bs-primary: var(--brand);
+    --bs-primary-rgb: var(--brand-rgb);
+    --bs-primary-text-emphasis: var(--brand-hover);
+    --bs-primary-bg-subtle: rgba(var(--brand-rgb), .1);
+    --bs-primary-border-subtle: rgba(var(--brand-rgb), .3);
+    --bs-link-color: var(--brand);
+    --bs-link-color-rgb: var(--brand-rgb);
+    --bs-link-hover-color: var(--brand-hover);
+    --bs-link-hover-color-rgb: var(--brand-rgb);
+    --bs-focus-ring-color: rgba(var(--brand-rgb), .25);
+}
+
+[data-bs-theme="dark"] {
+    // The raw brand color is often too dark to read on navy - text and
+    // links use its lightened variant instead; filled surfaces (buttons,
+    // badges) keep the real brand color.
+    --bs-primary-text-emphasis: var(--brand-light);
+    --bs-primary-bg-subtle: rgba(var(--brand-rgb), .2);
+    --bs-link-color: var(--brand-light);
+    --bs-link-color-rgb: var(--brand-light-rgb);
+    --bs-link-hover-color: #FFFFFF;
+    --bs-link-hover-color-rgb: 255, 255, 255;
+    --bs-secondary-rgb: 166, 176, 195;
+
+    .text-primary {
+        color: var(--brand-light) !important;
+    }
+}
+
+.btn-primary {
+    --bs-btn-color: var(--brand-contrast);
+    --bs-btn-bg: var(--brand);
+    --bs-btn-border-color: var(--brand);
+    --bs-btn-hover-color: var(--brand-contrast);
+    --bs-btn-hover-bg: var(--brand-hover);
+    --bs-btn-hover-border-color: var(--brand-hover);
+    --bs-btn-active-color: var(--brand-contrast);
+    --bs-btn-active-bg: var(--brand-hover);
+    --bs-btn-active-border-color: var(--brand-hover);
+    --bs-btn-disabled-color: var(--brand-contrast);
+    --bs-btn-disabled-bg: var(--brand);
+    --bs-btn-disabled-border-color: var(--brand);
+    --bs-btn-focus-shadow-rgb: var(--brand-rgb);
+    box-shadow: 0 1px 2px rgba(var(--brand-rgb), .25), inset 0 1px 0 rgba(255, 255, 255, .12);
+
+    &:hover {
+        box-shadow: 0 6px 14px -4px rgba(var(--brand-rgb), .45);
+    }
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--brand);
+    --bs-btn-border-color: rgba(var(--brand-rgb), .5);
+    --bs-btn-hover-color: var(--brand-contrast);
+    --bs-btn-hover-bg: var(--brand);
+    --bs-btn-hover-border-color: var(--brand);
+    --bs-btn-active-color: var(--brand-contrast);
+    --bs-btn-active-bg: var(--brand-hover);
+    --bs-btn-active-border-color: var(--brand-hover);
+    --bs-btn-disabled-color: var(--brand);
+    --bs-btn-disabled-border-color: var(--brand);
+    --bs-btn-focus-shadow-rgb: var(--brand-rgb);
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: var(--brand-light);
+    --bs-btn-border-color: rgba(var(--brand-light-rgb), .5);
+}
+
+.btn-accent {
+    --bs-btn-color: var(--accent-contrast);
+    --bs-btn-bg: var(--accent);
+    --bs-btn-border-color: var(--accent);
+    --bs-btn-hover-color: var(--accent-contrast);
+    --bs-btn-hover-bg: var(--accent);
+    --bs-btn-hover-border-color: var(--accent);
+    --bs-btn-active-bg: var(--accent);
+    --bs-btn-focus-shadow-rgb: var(--accent-rgb);
+    filter: saturate(1.05);
+
+    &:hover {
+        filter: brightness(.95) saturate(1.1);
+    }
+}
+
+.text-bg-primary {
+    color: var(--brand-contrast) !important;
+}
+
+.text-accent {
+    color: var(--accent) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent) !important;
+    color: var(--accent-contrast);
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: var(--brand);
+    --bs-nav-pills-link-active-color: var(--brand-contrast);
+}
+
+.pagination {
+    --bs-pagination-color: var(--bs-link-color);
+    --bs-pagination-hover-color: var(--bs-link-hover-color);
+    --bs-pagination-focus-color: var(--bs-link-hover-color);
+    --bs-pagination-active-bg: var(--brand);
+    --bs-pagination-active-border-color: var(--brand);
+    --bs-pagination-active-color: var(--brand-contrast);
+    --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(var(--brand-rgb), .25);
+}
+
+.list-group {
+    --bs-list-group-active-bg: var(--brand);
+    --bs-list-group-active-border-color: var(--brand);
+    --bs-list-group-active-color: var(--brand-contrast);
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--brand);
+    --bs-dropdown-link-active-color: var(--brand-contrast);
+    --bs-dropdown-border-color: var(--app-surface-border);
+    --bs-dropdown-box-shadow: var(--bs-box-shadow-lg);
+    --bs-dropdown-item-padding-y: .45rem;
+    border-radius: $border-radius-lg;
+    padding: .375rem;
+
+    .dropdown-item {
+        border-radius: $border-radius-sm;
+    }
+}
+
+.progress,
+.progress-stacked {
+    --bs-progress-bar-bg: var(--brand);
+}
+
+.accordion {
+    --bs-accordion-active-color: var(--bs-primary-text-emphasis);
+    --bs-accordion-active-bg: var(--bs-primary-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem rgba(var(--brand-rgb), .2);
+}
+
+.form-check-input:checked {
+    background-color: var(--brand);
+    border-color: var(--brand);
+}
+
+.form-check-input:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: rgba(var(--brand-rgb), .55);
+    box-shadow: 0 0 0 4px var(--app-ring);
+}
+
+// =====================================================================
+// Base
+// =====================================================================
 
 * {
     scrollbar-width: thin;
@@ -74,6 +284,7 @@ body {
     min-height: 100vh;
     background-color: var(--bs-tertiary-bg);
     letter-spacing: -.011em;
+    -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -81,18 +292,31 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 600;
 }
 
-// --- App shell ---
+.form-label {
+    font-weight: 500;
+    color: var(--bs-emphasis-color);
+    font-size: .9rem;
+}
+
+.form-text {
+    color: var(--bs-secondary-color);
+}
+
+// Legacy light-only utilities used by a few older views.
+[data-bs-theme="dark"] {
+    .bg-light,
+    .bg-white {
+        background-color: var(--bs-secondary-bg) !important;
+    }
+}
+
+// =====================================================================
+// App shell
+// =====================================================================
 
 .app-shell {
     display: flex;
     min-height: 100vh;
-}
-
-.app-sidebar {
-    width: var(--app-sidebar-width);
-    flex-shrink: 0;
-    border-right: 1px solid var(--app-surface-border);
-    background-color: var(--bs-body-bg);
 }
 
 .app-main {
@@ -100,46 +324,411 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     min-width: 0;
 }
 
+// --- Sidebar: ink panel in both themes, brand-tinted glow on top ---
+
+.app-sidebar {
+    --sidebar-fg: rgba(255, 255, 255, .72);
+    --sidebar-muted: rgba(255, 255, 255, .42);
+    width: var(--app-sidebar-width);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    color: var(--sidebar-fg);
+    background:
+        radial-gradient(120% 60% at 0% 0%, rgba(var(--brand-rgb), .35), transparent 60%),
+        var(--ink);
+    border-right: 1px solid rgba(255, 255, 255, .04);
+    scrollbar-color: rgba(255, 255, 255, .15) transparent;
+}
+
+[data-bs-theme="dark"] .app-sidebar {
+    background:
+        radial-gradient(120% 60% at 0% 0%, rgba(var(--brand-rgb), .3), transparent 60%),
+        #0A1A2F;
+}
+
+.app-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .25rem .5rem 1.25rem;
+    text-decoration: none;
+    color: #FFFFFF;
+
+    &:hover {
+        color: #FFFFFF;
+    }
+}
+
+.app-brand-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+}
+
+.app-brand-sub {
+    display: block;
+    font-size: .72rem;
+    font-weight: 500;
+    color: var(--sidebar-muted, var(--bs-secondary-color));
+    letter-spacing: .02em;
+}
+
+.brand-logo {
+    flex-shrink: 0;
+    border-radius: 28%;
+    object-fit: cover;
+}
+
+.nav-section-label {
+    font-size: .68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--sidebar-muted);
+    padding: 1rem .75rem .375rem;
+}
+
+.app-sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    border-radius: $border-radius;
+    padding: .5rem .75rem;
+    color: var(--sidebar-fg);
+    font-weight: 500;
+    font-size: .9rem;
+    transition: background-color var(--app-transition-fast), color var(--app-transition-fast), transform var(--app-transition-fast);
+
+    .bi {
+        font-size: 1.05rem;
+        opacity: .85;
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, .07);
+        color: #FFFFFF;
+    }
+
+    &.active {
+        background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+        color: var(--brand-contrast);
+        box-shadow: 0 8px 18px -8px rgba(var(--brand-rgb), .8);
+
+        .bi {
+            opacity: 1;
+        }
+    }
+}
+
+.sidebar-photo-card {
+    position: relative;
+    margin-top: 1.5rem;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    min-height: 120px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #FFFFFF;
+    background-size: cover;
+    background-position: center;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(var(--ink-rgb), .1), rgba(var(--ink-rgb), .85));
+    }
+
+    > * {
+        position: relative;
+    }
+}
+
+// Offcanvas (mobile) sidebar reuses the same ink look.
+.offcanvas.app-sidebar-offcanvas {
+    --bs-offcanvas-bg: var(--ink);
+    --bs-offcanvas-color: rgba(255, 255, 255, .72);
+    --sidebar-fg: rgba(255, 255, 255, .72);
+    --sidebar-muted: rgba(255, 255, 255, .42);
+}
+
+.app-sidebar-offcanvas .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    border-radius: $border-radius;
+    padding: .5rem .75rem;
+    color: rgba(255, 255, 255, .72);
+    font-weight: 500;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, .07);
+        color: #FFFFFF;
+    }
+
+    &.active {
+        background: var(--brand);
+        color: var(--brand-contrast);
+    }
+}
+
+// --- Topbar ---
+
 .app-topbar {
     height: var(--app-topbar-height);
     border-bottom: 1px solid var(--app-surface-border);
-    background-color: rgba(var(--bs-body-bg-rgb), .85);
-    backdrop-filter: blur(8px);
+    background-color: rgba(var(--bs-body-bg-rgb), .8);
+    backdrop-filter: saturate(180%) blur(12px);
     position: sticky;
     top: 0;
     z-index: 1020;
 }
 
-// --- Sidebar navigation ---
-
-.app-sidebar .nav-link {
+.topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    height: 38px;
+    min-width: 38px;
+    padding: 0 .65rem;
     border-radius: $border-radius;
-    padding: .5rem .75rem;
-    color: var(--bs-secondary-color);
-    font-weight: 500;
-    font-size: .925rem;
-    transition: background-color var(--app-transition-fast), color var(--app-transition-fast);
-}
-
-.app-sidebar .nav-link:hover {
-    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--app-surface-border);
+    background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
+    transition: background-color var(--app-transition-fast), border-color var(--app-transition-fast);
+
+    &:hover {
+        background-color: var(--bs-secondary-bg);
+        color: var(--bs-emphasis-color);
+    }
 }
 
-.app-sidebar .nav-link.active {
-    background-color: var(--app-ring);
-    color: $primary;
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--brand-contrast);
+    background: linear-gradient(135deg, var(--brand), var(--brand-hover));
+    flex-shrink: 0;
 }
 
-[data-bs-theme="dark"] .app-sidebar .nav-link.active {
-    color: #a5b4fc;
+// --- Light/dark switch: a sliding knob showing sun or moon ---
+
+.theme-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 64px;
+    height: 34px;
+    padding: 0 .55rem;
+    border-radius: 999px;
+    border: 1px solid var(--app-surface-border);
+    background: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    cursor: pointer;
+    font-size: .8rem;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(16, 24, 40, .2);
+        transition: transform var(--app-transition);
+    }
+
+    .bi {
+        position: relative;
+        z-index: 1;
+        transition: color var(--app-transition);
+    }
+
+    .bi-sun-fill {
+        color: #F59E0B;
+    }
+
+    &:focus-visible {
+        outline: 0;
+        box-shadow: 0 0 0 4px var(--app-ring);
+    }
 }
 
-// --- Surfaces: cards lift softly instead of relying on borders ---
+[data-bs-theme="dark"] .theme-switch {
+    background: #18304F;
+
+    &::after {
+        transform: translateX(30px);
+        background: #0F2440;
+    }
+
+    .bi-sun-fill {
+        color: var(--bs-secondary-color);
+    }
+
+    .bi-moon-stars-fill {
+        color: #C7D2FE;
+    }
+}
+
+// =====================================================================
+// Page hero - photo banner carrying each page's heading
+// =====================================================================
+
+.page-hero {
+    // Ocean-blue wash with two soft "bubbles" in the corners.
+    --hero-overlay:
+        radial-gradient(circle at 95% 115%, rgba(255, 255, 255, .13) 0 22%, transparent 22.3%),
+        radial-gradient(circle at 3% -25%, rgba(255, 255, 255, .09) 0 16%, transparent 16.3%),
+        linear-gradient(110deg, rgba(var(--ink-rgb), .9) 0%, rgba(var(--brand-rgb), .8) 55%, rgba(var(--brand-rgb), .5) 100%);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: $border-radius-xl;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    min-height: 116px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #FFFFFF;
+    background-color: var(--ink);
+    box-shadow: var(--bs-box-shadow);
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-image: var(--hero-image);
+        background-size: cover;
+        background-position: center 40%;
+        transform: scale(1.02);
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--hero-overlay);
+    }
+
+    // Everything a page might put in its heading, recolored for the photo.
+    h1, h2, h3, .h1, .h2, .h3, .h4, .h5 {
+        color: #FFFFFF;
+    }
+
+    .text-secondary,
+    .text-body-secondary,
+    .text-muted {
+        color: rgba(255, 255, 255, .78) !important;
+    }
+
+    .text-body {
+        color: #FFFFFF !important;
+    }
+
+    .breadcrumb-item a,
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, .7);
+    }
+
+    .breadcrumb-item a:hover,
+    .breadcrumb-item.active {
+        color: #FFFFFF;
+    }
+
+    a:not(.btn):not(.dropdown-item) {
+        color: #FFFFFF;
+    }
+
+    .btn-outline-secondary,
+    .btn-outline-primary,
+    .btn-outline-dark,
+    .btn-light {
+        --bs-btn-color: #FFFFFF;
+        --bs-btn-bg: rgba(255, 255, 255, .12);
+        --bs-btn-border-color: rgba(255, 255, 255, .35);
+        --bs-btn-hover-color: var(--ink);
+        --bs-btn-hover-bg: #FFFFFF;
+        --bs-btn-hover-border-color: #FFFFFF;
+        --bs-btn-active-color: var(--ink);
+        --bs-btn-active-bg: #FFFFFF;
+        backdrop-filter: blur(6px);
+    }
+
+    .page-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, .7);
+        margin-bottom: .35rem;
+
+        &::before {
+            content: "";
+            width: 18px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+    }
+}
+
+.page-hero-lg {
+    min-height: 200px;
+    padding: 2rem 2.25rem;
+}
+
+@include media-breakpoint-down(md) {
+    .page-hero {
+        padding: 1.25rem;
+        border-radius: $border-radius-lg;
+    }
+}
+
+// =====================================================================
+// Surfaces
+// =====================================================================
 
 .card {
+    --bs-card-border-color: var(--app-surface-border);
+    --bs-card-border-radius: #{$border-radius-lg};
+    --bs-card-inner-border-radius: calc(#{$border-radius-lg} - 1px);
     box-shadow: var(--bs-box-shadow-sm);
-    border: 1px solid var(--app-surface-border);
+}
+
+// Older views add `border-0` to cards; keep a hairline so cards don't
+// dissolve into the page background.
+.card.border-0 {
+    border: 1px solid var(--app-surface-border) !important;
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom-color: var(--app-surface-border);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 a.card, .card-hover {
@@ -148,8 +737,8 @@ a.card, .card-hover {
 
 a.card:hover, .card-hover:hover {
     box-shadow: var(--bs-box-shadow);
-    transform: translateY(-1px);
-    border-color: rgba(79, 70, 229, .25);
+    transform: translateY(-2px);
+    border-color: rgba(var(--brand-rgb), .3);
 }
 
 // --- KPI cards ---
@@ -164,69 +753,117 @@ a.card:hover, .card-hover:hover {
 }
 
 .kpi-card:hover .rounded-circle {
-    transform: scale(1.06);
+    transform: scale(1.08) rotate(-4deg);
 }
 
-// --- Buttons & forms ---
+// Colorful rounded-square icon tiles (KPIs, quick links, portal cards).
+.icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    color: var(--tile-fg, var(--brand));
+    background: var(--tile-bg, rgba(var(--brand-rgb), .12));
+}
+
+.icon-tile-brand { --tile-fg: var(--brand); --tile-bg: rgba(var(--brand-rgb), .12); }
+.icon-tile-accent { --tile-fg: #0F766E; --tile-bg: rgba(var(--accent-rgb), .16); }
+.icon-tile-blue { --tile-fg: #1D4ED8; --tile-bg: #DBEAFE; }
+.icon-tile-violet { --tile-fg: #6D28D9; --tile-bg: #EDE9FE; }
+.icon-tile-rose { --tile-fg: #BE123C; --tile-bg: #FFE4E6; }
+.icon-tile-green { --tile-fg: #047857; --tile-bg: #D1FAE5; }
+.icon-tile-amber { --tile-fg: #B45309; --tile-bg: #FEF3C7; }
+.icon-tile-sky { --tile-fg: #0369A1; --tile-bg: #E0F2FE; }
+
+[data-bs-theme="dark"] {
+    .icon-tile-brand { --tile-fg: var(--brand-light); --tile-bg: rgba(var(--brand-rgb), .25); }
+    .icon-tile-accent { --tile-fg: var(--accent); --tile-bg: rgba(var(--accent-rgb), .18); }
+    .icon-tile-blue { --tile-fg: #93C5FD; --tile-bg: rgba(59, 130, 246, .18); }
+    .icon-tile-violet { --tile-fg: #C4B5FD; --tile-bg: rgba(139, 92, 246, .18); }
+    .icon-tile-rose { --tile-fg: #FDA4AF; --tile-bg: rgba(244, 63, 94, .18); }
+    .icon-tile-green { --tile-fg: #6EE7B7; --tile-bg: rgba(16, 185, 129, .18); }
+    .icon-tile-amber { --tile-fg: #FCD34D; --tile-bg: rgba(245, 158, 11, .18); }
+    .icon-tile-sky { --tile-fg: #7DD3FC; --tile-bg: rgba(14, 165, 233, .18); }
+}
+
+// =====================================================================
+// Buttons, forms
+// =====================================================================
 
 .btn {
-    transition: background-color var(--app-transition-fast), border-color var(--app-transition-fast), box-shadow var(--app-transition-fast), transform var(--app-transition-fast);
+    transition: background-color var(--app-transition-fast), border-color var(--app-transition-fast), box-shadow var(--app-transition-fast), transform var(--app-transition-fast), color var(--app-transition-fast);
 }
 
 .btn:active {
     transform: translateY(1px);
 }
 
-.btn-primary {
-    box-shadow: 0 1px 2px rgba(79, 70, 229, .3), 0 0 0 0 var(--app-ring);
-}
-
-.btn-primary:hover {
-    box-shadow: 0 2px 8px rgba(79, 70, 229, .35);
-}
-
 .form-control, .form-select {
     transition: border-color var(--app-transition-fast), box-shadow var(--app-transition-fast);
 }
 
-.form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 4px var(--app-ring);
+.form-control-color {
+    padding: .25rem;
+    height: 42px;
 }
 
-// --- Tables (plain Bootstrap + DataTables) ---
+// =====================================================================
+// Tables (plain Bootstrap + DataTables)
+// =====================================================================
 
 .table {
     --bs-table-border-color: var(--app-surface-border);
+    --bs-table-hover-bg: rgba(var(--brand-rgb), .04);
+    --bs-table-bg: transparent;
 }
 
-.table > thead {
-    font-size: .8rem;
+.table > thead th {
+    font-size: .74rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .04em;
+    letter-spacing: .05em;
     color: var(--bs-secondary-color);
+    background-color: var(--bs-tertiary-bg);
+    border-bottom-width: 1px;
+    white-space: nowrap;
 }
 
 .table > tbody > tr {
     transition: background-color var(--app-transition-fast);
 }
 
-// --- Alerts: soften the defaults ---
+.table > tbody > tr:hover > * {
+    background-color: rgba(var(--brand-rgb), .04);
+}
+
+div.dt-container .dt-search input,
+div.dt-container .dt-length select {
+    border-radius: $border-radius;
+}
+
+// =====================================================================
+// Alerts, badges
+// =====================================================================
 
 .alert {
     border: 1px solid transparent;
+    border-radius: $border-radius-lg;
 }
-
-// --- Badges ---
 
 .badge {
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: .01em;
+    padding: .4em .65em;
 }
 
-// --- SweetAlert2 (confirmation dialogs) ---
-// Colors/dark-mode are set per-call in resources/js/app.js
-// (window.confirmDelete) since SweetAlert2 doesn't read data-bs-theme
-// on its own; this just matches its shape to the rest of the app.
+// =====================================================================
+// SweetAlert2 (confirmation dialogs) - colors are set per call in
+// resources/js/app.js (window.confirmDelete).
+// =====================================================================
 
 .swal2-popup {
     border-radius: $border-radius-xl !important;
@@ -239,95 +876,86 @@ a.card:hover, .card-hover:hover {
     font-weight: 500;
 }
 
-// --- Select2 (searchable dropdowns) ---
-// Match Select2 to the app's Bootstrap 5 design system
+// =====================================================================
+// Select2 (searchable dropdowns)
+// =====================================================================
 
 .select2-container--default .select2-selection--single {
-    height: 38px;
+    height: 42px;
     border: 1px solid var(--bs-border-color);
     border-radius: $border-radius;
+    background-color: var(--bs-body-bg);
     transition: border-color var(--app-transition-fast), box-shadow var(--app-transition-fast);
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    padding-left: 0.75rem;
+    padding-left: .875rem;
     padding-right: 2.5rem;
-    line-height: 36px;
+    line-height: 40px;
     color: var(--bs-body-color);
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
-    right: 0.75rem;
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: var(--bs-tertiary-color);
 }
 
-.select2-container--default.select2-container--focus .select2-selection--single {
-    border-color: $primary;
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px;
+    right: .75rem;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: rgba(var(--brand-rgb), .55);
     box-shadow: 0 0 0 4px var(--app-ring);
 }
 
 .select2-dropdown {
     border: 1px solid var(--app-surface-border);
     border-radius: $border-radius;
-    box-shadow: var(--bs-box-shadow);
+    box-shadow: var(--bs-box-shadow-lg);
     background-color: var(--bs-body-bg);
+    overflow: hidden;
 }
 
 .select2-search--dropdown .select2-search__field {
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid var(--bs-border-color) !important;
     border-radius: $border-radius-sm;
-    padding: 0.375rem 0.75rem;
-    margin: 0.5rem;
-    transition: border-color var(--app-transition-fast), box-shadow var(--app-transition-fast);
+    padding: .375rem .75rem;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 
 .select2-search--dropdown .select2-search__field:focus {
-    border-color: $primary;
+    border-color: rgba(var(--brand-rgb), .55) !important;
     box-shadow: 0 0 0 4px var(--app-ring);
     outline: none;
 }
 
 .select2-results__options {
-    max-height: 200px;
+    max-height: 240px;
     overflow-y: auto;
 }
 
 .select2-results__option {
-    padding: 0.5rem 0.75rem;
+    padding: .5rem .875rem;
     color: var(--bs-body-color);
 }
 
-.select2-results__option--highlighted {
-    background-color: var(--app-ring);
-    color: $primary;
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: rgba(var(--brand-rgb), .12);
+    color: var(--bs-emphasis-color);
 }
 
-.select2-results__option[aria-selected="true"] {
-    background-color: var(--bs-tertiary-bg);
+.select2-container--default .select2-results__option--selected {
+    background-color: var(--bs-secondary-bg);
     color: var(--bs-body-color);
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-selection--single {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color-translucent);
-}
+// =====================================================================
+// Breadcrumbs, command palette
+// =====================================================================
 
-[data-bs-theme="dark"] .select2-dropdown {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color-translucent);
-}
-
-[data-bs-theme="dark"] .select2-search--dropdown .select2-search__field {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color-translucent);
-    color: var(--bs-body-color);
-}
-
-[data-bs-theme="dark"] .select2-results__option[aria-selected="true"] {
-    background-color: rgba(255, 255, 255, .05);
-}
-
-// --- Breadcrumbs ---
 .breadcrumb {
     background-color: transparent;
     padding: 0;
@@ -352,10 +980,8 @@ a.card:hover, .card-hover:hover {
 .breadcrumb-item + .breadcrumb-item::before {
     content: "›";
     color: var(--bs-secondary-color);
-    padding: 0 0.5rem;
+    padding: 0 .5rem;
 }
-
-// --- Command palette ---
 
 #commandPaletteModal .modal-content {
     border-radius: $border-radius-xl;
@@ -363,27 +989,216 @@ a.card:hover, .card-hover:hover {
     overflow: hidden;
 }
 
-// --- Auth pages (login/forgot-password/etc.) ---
+.modal-content {
+    border-radius: $border-radius-xl;
+    border-color: var(--app-surface-border);
+}
 
-.auth-shell {
+// =====================================================================
+// Auth pages - split screen: photo story on the left, form on the right
+// =====================================================================
+
+.auth-split {
     min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    background: var(--bs-body-bg);
+}
+
+.auth-visual {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5rem;
+    color: #FFFFFF;
+    background: var(--ink);
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-image: var(--auth-image);
+        background-size: cover;
+        background-position: center;
+        animation: auth-kenburns 24s ease-in-out infinite alternate;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+            linear-gradient(180deg, rgba(var(--ink-rgb), .55) 0%, rgba(var(--ink-rgb), .15) 35%, rgba(var(--ink-rgb), .9) 100%),
+            linear-gradient(90deg, rgba(var(--brand-rgb), .35), transparent 60%);
+    }
+
+    .auth-headline {
+        font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        line-height: 1.12;
+        max-width: 30rem;
+        color: #FFFFFF;
+    }
+
+    .auth-sub {
+        color: rgba(255, 255, 255, .8);
+        max-width: 28rem;
+    }
+}
+
+.auth-thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+    margin-top: 1.75rem;
+    max-width: 30rem;
+
+    span {
+        aspect-ratio: 4 / 3;
+        border-radius: $border-radius;
+        background-size: cover;
+        background-position: center;
+        border: 2px solid rgba(255, 255, 255, .25);
+        box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .6);
+    }
+}
+
+.auth-panel {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    background: radial-gradient(circle at top, rgba(79, 70, 229, .07), transparent 55%), var(--bs-tertiary-bg);
-    padding: 1.5rem;
+    padding: 2.5rem clamp(1.25rem, 5vw, 4.5rem);
+    position: relative;
 }
 
 .auth-card {
     width: 100%;
     max-width: 26rem;
+    margin: 0 auto;
 }
 
-// --- Motion: content settles in rather than popping ---
+.auth-panel .auth-switches {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+@include media-breakpoint-down(lg) {
+    .auth-split {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-visual {
+        min-height: 220px;
+        padding: 1.5rem;
+
+        .auth-thumbs,
+        .auth-sub {
+            display: none;
+        }
+    }
+}
+
+@keyframes auth-kenburns {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+// =====================================================================
+// Portals (tenant / landlord)
+// =====================================================================
+
+.portal-nav {
+    background-color: rgba(var(--bs-body-bg-rgb), .85);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--app-surface-border);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+
+    .nav-link {
+        color: var(--bs-body-color);
+        font-weight: 500;
+        border-radius: $border-radius;
+        padding: .45rem .85rem !important;
+
+        &:hover {
+            color: var(--bs-emphasis-color);
+            background-color: var(--bs-secondary-bg);
+        }
+
+        &.active {
+            color: var(--brand-contrast);
+            background-color: var(--brand);
+        }
+    }
+}
+
+[data-bs-theme="dark"] .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+// =====================================================================
+// Branding settings preview
+// =====================================================================
+
+.preset-swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border: 1px solid var(--app-surface-border);
+    border-radius: 999px;
+    padding: .3rem .75rem .3rem .3rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: border-color var(--app-transition-fast), box-shadow var(--app-transition-fast);
+
+    &:hover {
+        border-color: rgba(var(--brand-rgb), .5);
+        box-shadow: var(--bs-box-shadow-sm);
+    }
+
+    .dots {
+        display: inline-flex;
+
+        i {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--bs-body-bg);
+            display: block;
+
+            & + i {
+                margin-left: -6px;
+            }
+        }
+    }
+}
+
+// =====================================================================
+// Motion
+// =====================================================================
 
 @media (prefers-reduced-motion: no-preference) {
     .app-main > main {
         animation: app-fade-in var(--app-transition) both;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-visual::before {
+        animation: none;
     }
 }
 
@@ -396,5 +1211,50 @@ a.card:hover, .card-hover:hover {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+// Older views repeat their heading as a phone-only <h1 class="d-lg-none">
+// (the topbar used to hide it on small screens). The page hero now shows
+// the heading at every size, so drop the duplicate.
+.page-hero ~ h1.d-lg-none,
+.page-hero ~ * h1.d-lg-none {
+    display: none !important;
+}
+
+// English / Kiswahili switch (components/locale-switch).
+.locale-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    gap: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--app-surface-border);
+    background: var(--bs-secondary-bg);
+
+    form {
+        margin: 0;
+    }
+
+    button {
+        border: 0;
+        background: transparent;
+        color: var(--bs-secondary-color);
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .03em;
+        padding: .3rem .55rem;
+        border-radius: 999px;
+        line-height: 1;
+        transition: background-color var(--app-transition-fast), color var(--app-transition-fast);
+
+        &:hover {
+            color: var(--bs-emphasis-color);
+        }
+
+        &.active {
+            background: var(--brand);
+            color: var(--brand-contrast);
+        }
     }
 }

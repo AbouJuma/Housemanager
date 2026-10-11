@@ -2,6 +2,8 @@
 
 namespace App\Modules\Tenants\Http\Requests;
 
+use App\Modules\Tenants\Models\Tenant;
+use App\Core\Auth\UsernameRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,6 +20,8 @@ class UpdateTenantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
+            // Optional - generated from the name when blank.
+            'username' => UsernameRules::for(Tenant::class, $this->route('tenant')?->id),
             'type' => ['required', Rule::in(['individual', 'company'])],
             'status' => ['required', Rule::in(['active', 'inactive', 'blacklisted'])],
             'email' => ['nullable', 'email', 'max:255'],
@@ -37,5 +41,10 @@ class UpdateTenantRequest extends FormRequest
             'emergency_contact_phone' => ['nullable', 'string', 'max:32'],
             'notes' => ['nullable', 'string'],
         ];
+    }
+
+    public function messages(): array
+    {
+        return UsernameRules::messages();
     }
 }

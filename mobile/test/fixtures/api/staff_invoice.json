@@ -1,0 +1,45 @@
+{
+    "data": {
+        "uuid": "82909a29-4a21-48c0-8a30-ce3e7c5fa88e",
+        "invoice_number": "INV-000001",
+        "status": "paid",
+        "issue_date": "2026-10-11",
+        "due_date": "2026-10-11",
+        "total_amount": 450000,
+        "amount_paid": 450000,
+        "balance_due": 0,
+        "notes": null,
+        "lease": {
+            "uuid": "68629f37-8a67-494b-8a9f-e8e68ae50275",
+            "tenant": {
+                "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+                "name": "Amina Tenant"
+            },
+            "unit": {
+                "uuid": "f36e853b-c521-4fd4-92ed-7d1a96a9f1bc",
+                "unit_number": "697E4"
+            }
+        },
+        "items": [
+            {
+                "uuid": "49980f36-3df0-4d57-aef1-8f8652f41084",
+                "description": "Rent - Unit 697E4, due Oct 11, 2026",
+                "quantity": 1,
+                "unit_price": 450000,
+                "amount": 450000
+            }
+        ],
+        "payments": [
+            {
+                "uuid": "26eaf995-a98b-42d5-bf52-3742b615aa46",
+                "amount": 450000,
+                "paid_on": "2026-10-11",
+                "method": "cash",
+                "reference": null,
+                "notes": "Deposit received at lease signing."
+            }
+        ],
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:41+00:00"
+    }
+}

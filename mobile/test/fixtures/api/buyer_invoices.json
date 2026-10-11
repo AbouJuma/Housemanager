@@ -1,0 +1,143 @@
+{
+    "data": [
+        {
+            "uuid": "24afb493-ccf8-461a-b9a7-b042bfd7f5c8",
+            "invoice_number": "INV-000005",
+            "status": "sent",
+            "issue_date": "2026-10-11",
+            "due_date": "2027-02-11",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "notes": null,
+            "sale": {
+                "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+                "unit": {
+                    "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+                    "unit_number": "066W8",
+                    "building": {
+                        "name": "Block sV",
+                        "property": {
+                            "name": "Stella Square Complex"
+                        }
+                    }
+                }
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        },
+        {
+            "uuid": "ced7f56b-b667-4ceb-9732-b8580492bb74",
+            "invoice_number": "INV-000004",
+            "status": "sent",
+            "issue_date": "2026-10-11",
+            "due_date": "2027-01-11",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "notes": null,
+            "sale": {
+                "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+                "unit": {
+                    "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+                    "unit_number": "066W8",
+                    "building": {
+                        "name": "Block sV",
+                        "property": {
+                            "name": "Stella Square Complex"
+                        }
+                    }
+                }
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        },
+        {
+            "uuid": "76bd0d04-5771-43b4-82b0-9d0aa7b9d53d",
+            "invoice_number": "INV-000003",
+            "status": "sent",
+            "issue_date": "2026-10-11",
+            "due_date": "2026-12-11",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "notes": null,
+            "sale": {
+                "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+                "unit": {
+                    "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+                    "unit_number": "066W8",
+                    "building": {
+                        "name": "Block sV",
+                        "property": {
+                            "name": "Stella Square Complex"
+                        }
+                    }
+                }
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        },
+        {
+            "uuid": "d8fc1ab7-cc3b-4204-a5f7-1c1d725fc1ef",
+            "invoice_number": "INV-000002",
+            "status": "paid",
+            "issue_date": "2026-10-11",
+            "due_date": "2026-11-11",
+            "total_amount": 6000000,
+            "amount_paid": 6000000,
+            "balance_due": 0,
+            "notes": null,
+            "sale": {
+                "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+                "unit": {
+                    "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+                    "unit_number": "066W8",
+                    "building": {
+                        "name": "Block sV",
+                        "property": {
+                            "name": "Stella Square Complex"
+                        }
+                    }
+                }
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/v1/portal/buyer/invoices?page=1",
+        "last": "http://localhost/api/v1/portal/buyer/invoices?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/v1/portal/buyer/invoices?page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/v1/portal/buyer/invoices",
+        "per_page": 15,
+        "to": 4,
+        "total": 4
+    }
+}

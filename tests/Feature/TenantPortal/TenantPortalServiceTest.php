@@ -35,14 +35,16 @@ class TenantPortalServiceTest extends TestCase
         $this->assertTrue(Hash::check($plainPassword, $tenant->fresh()->password));
     }
 
-    public function test_enable_access_requires_an_email_address(): void
+    public function test_enable_access_works_without_an_email_and_starts_with_the_phone_number(): void
     {
+        // Username or phone number are enough to sign in - no email needed.
         $company = Company::factory()->create();
-        $tenant = Tenant::factory()->create(['company_id' => $company->id, 'email' => null]);
+        $tenant = Tenant::factory()->create(['company_id' => $company->id, 'email' => null, 'phone' => '0712 345 678']);
 
-        $this->expectException(ValidationException::class);
+        $password = $this->service->enableAccess($tenant);
 
-        $this->service->enableAccess($tenant);
+        $this->assertSame('0712345678', $password);
+        $this->assertNotNull(\App\Core\Auth\LoginIdentity::attempt(Tenant::class, $tenant->fresh()->username, '0712345678'));
     }
 
     public function test_enable_access_rejects_an_email_already_used_by_another_portal_enabled_tenant(): void

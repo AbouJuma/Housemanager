@@ -35,9 +35,14 @@ return [
         ],
     ],
 
+    // Platform-wide SMS fallback used by App\Modules\Sms\Services\
+    // SmsManager when a company has no active SMS Integration of its
+    // own configured (see Module 7's Integrations Center) - no
+    // committed default secret; unset means the fallback simply isn't
+    // available rather than silently sending under a shared key.
     'beems' => [
-        'api_key' => env('BEEMS_API_KEY', '48a8c40076933db5'),
-        'secret_key' => env('BEEMS_SECRET_KEY', 'ZjE4NjQxMzBhODIwMmQzNjZjMWE5YjJmODY3YzEyZmM0NzliODI1NDE3Y2U0NjAzYmUyOWE3NWU4ODcxYzVkYg=='),
+        'api_key' => env('BEEMS_API_KEY'),
+        'secret_key' => env('BEEMS_SECRET_KEY'),
         'sender_name' => env('BEEMS_SENDER_NAME', 'DocTouch'),
     ],
 

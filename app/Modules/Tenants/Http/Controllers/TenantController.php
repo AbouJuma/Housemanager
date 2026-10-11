@@ -41,7 +41,7 @@ class TenantController extends Controller
     {
         $tenant = $this->service->create($request->validated());
 
-        return redirect()->route('tenants.show', $tenant)->with('success', "Tenant \"{$tenant->name}\" created.");
+        return redirect()->route('tenants.show', $tenant)->with('success', __('Tenant ":name" created. Portal login - username: :username, password: :password', ['name' => $tenant->name, 'username' => $tenant->username, 'password' => $this->service->issuedPassword()]));
     }
 
     public function show(Tenant $tenant): View

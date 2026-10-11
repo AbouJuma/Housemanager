@@ -22,13 +22,20 @@ class SubscriptionPlanFactory extends Factory
             'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1000, 9999),
             'description' => fake()->sentence(),
             'price' => fake()->randomElement([0, 29, 79, 199]),
-            'billing_cycle' => fake()->randomElement(['monthly', 'yearly']),
+            // Deterministic - a random cycle made every MRR assertion flaky
+            // (a yearly plan counts as price / 12). Use ->yearly() for yearly.
+            'billing_cycle' => 'monthly',
             'max_properties' => fake()->randomElement([5, 25, null]),
             'max_units' => fake()->randomElement([50, 250, null]),
             'max_users' => fake()->randomElement([3, 15, null]),
             'is_active' => true,
             'sort_order' => fake()->numberBetween(0, 10),
         ];
+    }
+
+    public function yearly(): static
+    {
+        return $this->state(fn () => ['billing_cycle' => 'yearly']);
     }
 
     public function inactive(): static

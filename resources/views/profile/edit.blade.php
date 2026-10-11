@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Profile')
+@section('title', __('Profile'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Profile</h1>
+    <h1 class="h4 mb-0">{{ __('Profile') }}</h1>
 @endsection
 
 @section('content')

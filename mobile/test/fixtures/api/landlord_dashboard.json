@@ -1,0 +1,28 @@
+{
+    "unit_counts": {
+        "total": 3,
+        "occupied": 1,
+        "vacant": 2
+    },
+    "total_collected": 450000,
+    "total_expenses": 619.87,
+    "net_amount": 449380.13,
+    "recent_maintenance_requests": [
+        {
+            "uuid": "dead66b7-7394-4b94-88b5-8b058acd1dc7",
+            "title": "Power outlet not working",
+            "description": "Corrupti quibusdam autem dolorem enim ratione cupiditate quia magnam.",
+            "category": "other",
+            "priority": "medium",
+            "status": "open",
+            "reported_date": "2026-09-13",
+            "scheduled_date": null,
+            "completed_date": null,
+            "estimated_cost": null,
+            "actual_cost": null,
+            "notes": null,
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        }
+    ]
+}

@@ -13,18 +13,18 @@
     </style>
 </head>
 <body>
-    <h1>AR Aging</h1>
+    <h1>{{ __('AR Aging') }}</h1>
     <p>Generated {{ now()->toFormattedDateString() }} &middot; Total outstanding: {{ number_format($grand_total, 2) }}</p>
     @php($bucketLabels = ['current' => 'Current', '1_30' => '1-30 Days', '31_60' => '31-60 Days', '61_90' => '61-90 Days', 'over_90' => 'Over 90 Days'])
     <table>
         <thead>
             <tr>
-                <th>Bucket</th>
+                <th>{{ __('Bucket') }}</th>
                 <th>Invoice #</th>
-                <th>Tenant</th>
-                <th>Due Date</th>
-                <th class="text-end">Days Overdue</th>
-                <th class="text-end">Balance</th>
+                <th>{{ __('Tenant') }}</th>
+                <th>{{ __('Due Date') }}</th>
+                <th class="text-end">{{ __('Days Overdue') }}</th>
+                <th class="text-end">{{ __('Balance') }}</th>
             </tr>
         </thead>
         <tbody>

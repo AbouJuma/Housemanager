@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Subscription Plan')
+@section('title', __('New Subscription Plan'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Subscription Plan</h1>
+    <h1 class="h4 mb-0">{{ __('New Subscription Plan') }}</h1>
 @endsection
 
 @section('content')
@@ -15,7 +15,7 @@
 
                 <div class="mt-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Create Plan</button>
-                    <a href="{{ route('subscription-plans.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('subscription-plans.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

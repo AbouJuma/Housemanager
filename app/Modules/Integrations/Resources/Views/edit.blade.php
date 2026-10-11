@@ -13,7 +13,7 @@
             <p class="text-secondary mb-0">{{ $typeLabel }}</p>
         </div>
         <a href="{{ route('integrations.index') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> All Integrations
+            <i class="bi bi-arrow-left me-1"></i> {{ __('All Integrations') }}
         </a>
     </div>
 
@@ -27,21 +27,21 @@
 
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" value="1" @checked(old('is_active', $integration->is_active))>
-                            <label class="form-check-label" for="is_active">Enabled</label>
+                            <label class="form-check-label" for="is_active">{{ __('Enabled') }}</label>
                         </div>
 
                         <div class="mb-3" style="max-width: 240px;">
-                            <label class="form-label">Environment</label>
+                            <label class="form-label">{{ __('Environment') }}</label>
                             <select name="mode" class="form-select @error('mode') is-invalid @enderror">
-                                <option value="sandbox" @selected(old('mode', $integration->mode) === 'sandbox')>Sandbox</option>
-                                <option value="live" @selected(old('mode', $integration->mode) === 'live')>Production</option>
+                                <option value="sandbox" @selected(old('mode', $integration->mode) === 'sandbox')>{{ __('Sandbox') }}</option>
+                                <option value="live" @selected(old('mode', $integration->mode) === 'live')>{{ __('Production') }}</option>
                             </select>
                             @error('mode') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
                         @if ($requiresCredentials)
                             <hr>
-                            <h2 class="h6 mb-3">Credentials</h2>
+                            <h2 class="h6 mb-3">{{ __('Credentials') }}</h2>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -96,7 +96,7 @@
                         @endif
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
                         </div>
                     </form>
                 </div>
@@ -104,9 +104,18 @@
         </div>
 
         <div class="col-lg-4">
+            @if ($usingPlatformSmsFallback)
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>{{ __('No SMS provider configured for your company.') }}</strong>
+                    Automated SMS (welcome messages, payment confirmations, rent reminders) are currently sent through
+                    the platform's shared account instead. Configure your own provider below to take full control of
+                    delivery, sender ID, and cost.
+                </div>
+            @endif
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h3 class="h6 mb-3">Connection Status</h3>
+                    <h3 class="h6 mb-3">{{ __('Connection Status') }}</h3>
 
                     @if ($integration->exists)
                         <span class="badge text-bg-{{ match ($integration->status) {
@@ -121,7 +130,7 @@
 
                         <form method="POST" action="{{ route('integrations.test', [$integration->type, $integration->provider]) }}">
                             @csrf
-                            <button type="submit" class="btn btn-outline-secondary w-100">Test Connection</button>
+                            <button type="submit" class="btn btn-outline-secondary w-100">{{ __('Test Connection') }}</button>
                         </form>
                     @else
                         <p class="text-secondary small mb-0">Save this integration first to test the connection.</p>

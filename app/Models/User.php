@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Auth\HasLoginIdentity;
 use App\Core\Concerns\BelongsToCompany;
 use App\Core\Concerns\HasUuid;
 use App\Core\Tenancy\PermissionsTeam;
@@ -18,6 +19,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use BelongsToCompany;
+    use HasLoginIdentity;
     use HasApiTokens;
     use HasFactory;
     use HasRoles;
@@ -32,6 +34,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'phone',
         'password',

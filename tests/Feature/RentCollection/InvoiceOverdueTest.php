@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\RentCollection;
 
+use App\Models\MessageTemplate;
 use App\Modules\Companies\Models\Company;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Leases\Models\Lease;
@@ -16,6 +17,23 @@ use Tests\TestCase;
 class InvoiceOverdueTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * See InvoiceDueSoonTest::seedTemplate() - content only renders once
+     * a real MessageTemplate row exists for this type.
+     */
+    protected function seedTemplate(): void
+    {
+        MessageTemplate::create([
+            'company_id' => null,
+            'type' => 'invoice_overdue',
+            'name' => 'Rent Invoice Overdue',
+            'sms_template' => 'Overdue: Invoice {invoice_number} for Tsh {amount} was due {due_date}.',
+            'email_subject' => 'Overdue - Invoice {invoice_number}',
+            'email_template' => "Hi {tenant_name},\n\nInvoice {invoice_number} for Tsh {amount} was due on {due_date} and remains unpaid.",
+            'is_active' => true,
+        ]);
+    }
 
     protected function makeInvoice(): Invoice
     {
@@ -53,6 +71,7 @@ class InvoiceOverdueTest extends TestCase
 
     public function test_to_company_mail_addresses_the_tenant_by_name(): void
     {
+        $this->seedTemplate();
         $invoice = $this->makeInvoice();
         $tenant = $invoice->lease->tenant;
 
@@ -60,5 +79,15 @@ class InvoiceOverdueTest extends TestCase
 
         $this->assertStringContainsString($tenant->name, $mail['body']);
         $this->assertStringContainsString('INV-000002', $mail['subject']);
+    }
+
+    public function test_to_company_mail_is_empty_without_a_configured_template(): void
+    {
+        $invoice = $this->makeInvoice();
+        $tenant = $invoice->lease->tenant;
+
+        $mail = (new InvoiceOverdue($invoice))->toCompanyMail($tenant);
+
+        $this->assertSame('', $mail['body']);
     }
 }

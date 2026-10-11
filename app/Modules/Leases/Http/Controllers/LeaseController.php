@@ -101,6 +101,8 @@ class LeaseController extends Controller
             ->where('status', 'vacant')
             ->with('building.property')
             ->orderBy('unit_number')
-            ->get(['id', 'uuid', 'unit_number', 'building_id']);
+            // rent_amount feeds the form's data-rent-amount, which
+            // prefills Rent Amount when a unit is picked.
+            ->get(['id', 'uuid', 'unit_number', 'building_id', 'rent_amount']);
     }
 }

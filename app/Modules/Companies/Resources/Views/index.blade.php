@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Companies')
+@section('title', __('Companies'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Companies</h1>
+    <h1 class="h4 mb-0">{{ __('Companies') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Companies</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Companies') }}</h1>
             <p class="text-secondary mb-0">{{ $companies->total() }} {{ Str::plural('company', $companies->total()) }}</p>
         </div>
         @can('create', \App\Modules\Companies\Models\Company::class)
             <a href="{{ route('companies.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Company
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Company') }}
             </a>
         @endcan
     </div>
@@ -31,19 +31,19 @@
             @if ($companies->isEmpty())
                 <div class="text-center py-5">
                     <i class="bi bi-building display-4 text-secondary"></i>
-                    <p class="mt-3 mb-1 fw-semibold">No companies yet</p>
-                    <p class="text-secondary">Companies you onboard will show up here.</p>
+                    <p class="mt-3 mb-1 fw-semibold">{{ __('No companies yet') }}</p>
+                    <p class="text-secondary">{{ __('Companies you onboard will show up here.') }}</p>
                 </div>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Company</th>
-                                <th>Status</th>
-                                <th>Currency</th>
-                                <th>Created</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Company') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Currency') }}</th>
+                                <th>{{ __('Created') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

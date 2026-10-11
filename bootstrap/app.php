@@ -1,7 +1,12 @@
 <?php
 
 use App\Core\Http\Middleware\IdentifyCompany;
+use App\Core\Http\Middleware\NormalizeMoneyInput;
+use App\Http\Middleware\SetLocale;
+use App\Modules\BuyerPortal\Http\Middleware\EnsureTokenIsBuyer;
+use App\Modules\LandlordPortal\Http\Middleware\EnsureTokenIsLandlord;
 use App\Modules\Subscriptions\Http\Middleware\EnsureCompanyIsActive;
+use App\Modules\TenantPortal\Http\Middleware\EnsureTokenIsTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,8 +18,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // "1,250,000" -> "1250000" for money fields, web and API alike.
+        $middleware->append(NormalizeMoneyInput::class);
+
         $middleware->alias([
             'identify.company' => IdentifyCompany::class,
+            // Mobile API guard-check: which of the four Sanctum-token-
+            // capable models (User/Tenant/Landlord/Buyer) is allowed to
+            // hit a given portal's JSON routes - see each class's own
+            // docblock.
+            'ensure.tenant-token' => EnsureTokenIsTenant::class,
+            'ensure.landlord-token' => EnsureTokenIsLandlord::class,
+            'ensure.buyer-token' => EnsureTokenIsBuyer::class,
         ]);
 
         // Safe to append globally here: the session guard resolves the
@@ -24,7 +39,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // EnsureCompanyIsActive (Module 29, ARCHITECTURE.md §22) must
         // run after IdentifyCompany - it reads the CompanyContext that
         // middleware just set.
-        $middleware->web(append: [IdentifyCompany::class, EnsureCompanyIsActive::class]);
+        $middleware->web(append: [IdentifyCompany::class, EnsureCompanyIsActive::class, SetLocale::class]);
+        // The mobile app sends Accept-Language; validation messages follow it.
+        $middleware->api(append: [SetLocale::class]);
 
         // NOT safe to do the same for 'api': Sanctum only makes
         // $request->user() reflect the token-authenticated user AFTER

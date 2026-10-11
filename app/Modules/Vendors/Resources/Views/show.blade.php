@@ -18,7 +18,7 @@
             </a>
             @can('update', $vendor)
                 <a href="{{ route('vendors.edit', $vendor) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -28,32 +28,32 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Contact</h2>
+                    <h2 class="h6 mb-3">{{ __('Contact') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Email</div>
+                            <div class="text-secondary">{{ __('Email') }}</div>
                             <div>{{ $vendor->email ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Phone</div>
+                            <div class="text-secondary">{{ __('Phone') }}</div>
                             <div>{{ $vendor->phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Secondary Phone</div>
+                            <div class="text-secondary">{{ __('Secondary Phone') }}</div>
                             <div>{{ $vendor->secondary_phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-8">
-                            <div class="text-secondary">Address</div>
+                            <div class="text-secondary">{{ __('Address') }}</div>
                             <div>{{ collect([$vendor->address_line1, $vendor->address_line2, $vendor->city, $vendor->state, $vendor->postal_code, $vendor->country_code])->filter()->implode(', ') ?: '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Tax ID</div>
+                            <div class="text-secondary">{{ __('Tax ID') }}</div>
                             <div>{{ $vendor->tax_id ?? '—' }}</div>
                         </div>
                     </div>
                     @if ($vendor->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $vendor->notes }}</p>
                     @endif
                 </div>
@@ -62,26 +62,26 @@
             @if ($vendor->bank_details)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Bank Details</h2>
+                        <h2 class="h6 mb-3">{{ __('Bank Details') }}</h2>
                         <div class="row g-3 small">
                             <div class="col-md-4">
-                                <div class="text-secondary">Bank</div>
+                                <div class="text-secondary">{{ __('Bank') }}</div>
                                 <div>{{ $vendor->bankDetail('name') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Account Name</div>
+                                <div class="text-secondary">{{ __('Account Name') }}</div>
                                 <div>{{ $vendor->bankDetail('account_name') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Account Number</div>
+                                <div class="text-secondary">{{ __('Account Number') }}</div>
                                 <div>{{ $vendor->bankDetail('account_number') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">Branch</div>
+                                <div class="text-secondary">{{ __('Branch') }}</div>
                                 <div>{{ $vendor->bankDetail('branch') ?? '—' }}</div>
                             </div>
                             <div class="col-md-4">
-                                <div class="text-secondary">SWIFT / Branch Code</div>
+                                <div class="text-secondary">{{ __('SWIFT / Branch Code') }}</div>
                                 <div>{{ $vendor->bankDetail('swift_code') ?? '—' }}</div>
                             </div>
                         </div>
@@ -103,11 +103,11 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Amount</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Description') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th class="text-end">{{ __('Amount') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -131,7 +131,7 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Maintenance</h2>
+                    <h2 class="h6 mb-3">{{ __('Maintenance') }}</h2>
 
                     @if ($maintenanceRequests->isEmpty())
                         <p class="text-secondary small mb-0">No maintenance requests assigned to this vendor yet.</p>
@@ -140,10 +140,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Property</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Property') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -175,10 +175,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Property</th>
-                                        <th>On Hand</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Property') }}</th>
+                                        <th>{{ __('On Hand') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -202,10 +202,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Documents</h2>
+                        <h2 class="h6 mb-0">{{ __('Documents') }}</h2>
                         @can('create', \App\Modules\Documents\Models\Document::class)
                             <a href="{{ route('documents.create', ['documentable_type' => 'vendor', 'documentable_id' => $vendor->id]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Add Document
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Add Document') }}
                             </a>
                         @endcan
                     </div>
@@ -217,9 +217,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -243,11 +243,11 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Photo</h2>
+                    <h2 class="h6 mb-3">{{ __('Photo') }}</h2>
                     @if ($vendor->photoUrl())
                         <img src="{{ $vendor->photoUrl() }}" alt="{{ $vendor->name }}" class="img-fluid rounded-3">
                     @else
-                        <p class="text-secondary small mb-0">No photo uploaded yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No photo uploaded yet.') }}</p>
                     @endif
                 </div>
             </div>

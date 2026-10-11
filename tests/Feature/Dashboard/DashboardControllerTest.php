@@ -34,6 +34,24 @@ class DashboardControllerTest extends TestCase
         $response->assertViewHas('trialCompanies', 1);
     }
 
+    /**
+     * phpunit.xml forces BEEMS_API_KEY/SECRET_KEY empty for every test
+     * (see its own comment - avoids a real Beem API call from the
+     * platform-fallback SMS path during automated tests), so
+     * SmsManager::isPlatformFallbackAvailable() is false here and
+     * getPlatformSmsBalance() short-circuits without any network call -
+     * this asserts that failure path renders instead of throwing.
+     */
+    public function test_saas_owner_dashboard_reports_sms_balance_unavailable_without_credentials(): void
+    {
+        $owner = User::factory()->create();
+
+        $response = $this->actingAs($owner)->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertViewHas('smsBalance', fn ($smsBalance) => $smsBalance['success'] === false && $smsBalance['balance'] === null);
+    }
+
     public function test_company_user_sees_only_their_own_companys_kpis(): void
     {
         $ownCompany = Company::factory()->create();
@@ -108,7 +126,7 @@ class DashboardControllerTest extends TestCase
     public function test_saas_owner_sees_subscription_kpis(): void
     {
         $owner = User::factory()->create();
-        $plan = SubscriptionPlan::factory()->create(['price' => 100]);
+        $plan = SubscriptionPlan::factory()->create(['price' => 100, 'billing_cycle' => 'monthly']);
         $company = Company::factory()->create();
         $subscription = app(SubscriptionService::class)->subscribe($company, $plan, 'active');
         app(SubscriptionInvoiceService::class)->generate($subscription);

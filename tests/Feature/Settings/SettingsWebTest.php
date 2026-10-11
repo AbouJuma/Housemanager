@@ -52,6 +52,39 @@ class SettingsWebTest extends TestCase
         $this->assertSame('d/m/Y', app(SettingsService::class)->getForCompany($company->id, 'date_format'));
     }
 
+    public function test_a_company_admin_can_choose_and_save_the_payment_account(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $this->actingAs($admin)->get(route('settings.edit'))
+            ->assertOk()
+            ->assertSee('Company bank account')
+            ->assertSee('name="company_bank_account_name"', false);
+
+        $this->actingAs($admin)->put(route('settings.update'), [
+            'date_format' => 'M j, Y',
+            'payment_details_source' => 'company',
+            'company_bank_name' => 'CRDB Bank',
+            'company_bank_account_name' => 'Acme Estates Ltd',
+            'company_bank_account_number' => '0150111222',
+        ])->assertRedirect(route('settings.edit'));
+
+        $settings = app(SettingsService::class);
+        $this->assertSame('company', $settings->getForCompany($company->id, 'payment_details_source'));
+        $this->assertSame('Acme Estates Ltd', $settings->getForCompany($company->id, 'company_bank_account_name'));
+        $this->assertSame('0150111222', $settings->getForCompany($company->id, 'company_bank_account_number'));
+    }
+
+    public function test_an_unknown_payment_source_is_rejected(): void
+    {
+        $company = Company::factory()->create();
+        $admin = $this->makeCompanyAdmin($company);
+
+        $this->actingAs($admin)->put(route('settings.update'), ['date_format' => 'M j, Y', 'payment_details_source' => 'cash'])
+            ->assertSessionHasErrors('payment_details_source');
+    }
+
     public function test_a_company_admin_cannot_access_system_settings(): void
     {
         $company = Company::factory()->create();

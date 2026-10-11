@@ -38,35 +38,37 @@ class ReportController extends Controller
         return view('reports::index');
     }
 
-    public function rentRoll(RentRollReportService $service): View
+    public function rentRoll(Request $request, RentRollReportService $service): View
     {
         $this->authorize('reports.view');
+        $status = $request->string('status')->toString() ?: null;
 
-        return view('reports::rent-roll', ['rows' => $service->generate()]);
+        return view('reports::rent-roll', ['rows' => $service->generate($status), 'status' => $status, 'statuses' => RentRollReportService::STATUSES]);
     }
 
     public function rentRollExport(Request $request, RentRollReportService $service, string $format): Response
     {
         $this->authorize('reports.view');
 
-        $rows = $service->generate();
+        $rows = $service->generate($request->string('status')->toString() ?: null);
         $headings = ['Property', 'Building', 'Unit', 'Status', 'Tenant', 'Lease Start', 'Lease End', 'Rent Amount'];
 
         return $this->export($format, 'rent-roll', $headings, $rows->map(fn ($row) => array_values($row))->all(), 'reports::pdf.rent-roll', ['rows' => $rows]);
     }
 
-    public function occupancy(OccupancyReportService $service): View
+    public function occupancy(Request $request, OccupancyReportService $service): View
     {
         $this->authorize('reports.view');
+        $status = $request->string('status')->toString() ?: null;
 
-        return view('reports::occupancy', ['rows' => $service->generate()]);
+        return view('reports::occupancy', ['rows' => $service->generate($status), 'status' => $status, 'statuses' => OccupancyReportService::STATUSES]);
     }
 
     public function occupancyExport(Request $request, OccupancyReportService $service, string $format): Response
     {
         $this->authorize('reports.view');
 
-        $rows = $service->generate();
+        $rows = $service->generate($request->string('status')->toString() ?: null);
         $headings = ['Property', 'Total Units', 'Occupied', 'Vacant', 'Occupancy Rate (%)'];
 
         return $this->export($format, 'occupancy', $headings, $rows->map(fn ($row) => array_values($row))->all(), 'reports::pdf.occupancy', ['rows' => $rows]);
@@ -122,18 +124,19 @@ class ReportController extends Controller
         return view('reports::billing-status', ['rows' => $service->generate()]);
     }
 
-    public function arAging(ArAgingReportService $service): View
+    public function arAging(Request $request, ArAgingReportService $service): View
     {
         $this->authorize('reports.view');
+        $status = $request->string('status')->toString() ?: null;
 
-        return view('reports::ar-aging', $service->generate());
+        return view('reports::ar-aging', [...$service->generate($status), 'status' => $status, 'statuses' => ArAgingReportService::STATUSES]);
     }
 
     public function arAgingExport(Request $request, ArAgingReportService $service, string $format): Response
     {
         $this->authorize('reports.view');
 
-        $data = $service->generate();
+        $data = $service->generate($request->string('status')->toString() ?: null);
 
         $rows = [];
         $bucketLabels = ['current' => 'Current', '1_30' => '1-30 Days', '31_60' => '31-60 Days', '61_90' => '61-90 Days', 'over_90' => 'Over 90 Days'];

@@ -1,21 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'Rent Roll')
+@section('title', __('Rent Roll'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Rent Roll</h1>
+    <h1 class="h4 mb-0">{{ __('Rent Roll') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Rent Roll</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Rent Roll') }}</h1>
             <p class="text-secondary mb-0">{{ $rows->count() }} {{ Str::plural('unit', $rows->count()) }}</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('reports.rent-roll.export', 'pdf') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</a>
-            <a href="{{ route('reports.rent-roll.export', 'xlsx') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-excel me-1"></i> Excel</a>
-            <a href="{{ route('reports.rent-roll.export', 'csv') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i> CSV</a>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            @include('reports::partials.status-filter')
+            <a href="{{ route('reports.rent-roll.export', ['format' => 'pdf', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</a>
+            <a href="{{ route('reports.rent-roll.export', ['format' => 'xlsx', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-excel me-1"></i> Excel</a>
+            <a href="{{ route('reports.rent-roll.export', ['format' => 'csv', 'status' => $status]) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-filetype-csv me-1"></i> CSV</a>
         </div>
     </div>
 
@@ -28,14 +29,14 @@
                     <table id="rentRollTable" class="table table-striped table-hover table-sm align-middle datatable">
                         <thead>
                             <tr>
-                                <th>Property</th>
-                                <th>Building</th>
-                                <th>Unit</th>
-                                <th>Status</th>
-                                <th>Tenant</th>
-                                <th>Lease Start</th>
-                                <th>Lease End</th>
-                                <th class="text-end">Rent</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('Building') }}</th>
+                                <th>{{ __('Unit') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Tenant') }}</th>
+                                <th>{{ __('Lease Start') }}</th>
+                                <th>{{ __('Lease End') }}</th>
+                                <th class="text-end">{{ __('Rent') }}</th>
                             </tr>
                         </thead>
                         <tbody>

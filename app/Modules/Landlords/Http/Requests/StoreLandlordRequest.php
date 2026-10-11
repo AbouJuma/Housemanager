@@ -2,6 +2,7 @@
 
 namespace App\Modules\Landlords\Http\Requests;
 
+use App\Core\Auth\UsernameRules;
 use App\Modules\Landlords\Models\Landlord;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -17,6 +18,8 @@ class StoreLandlordRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            // Optional - generated from the name when blank.
+            'username' => UsernameRules::for(Landlord::class, null),
             'type' => ['required', Rule::in(['individual', 'company'])],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
             'email' => ['nullable', 'email', 'max:255'],
@@ -36,5 +39,10 @@ class StoreLandlordRequest extends FormRequest
             'bank_swift_code' => ['nullable', 'string', 'max:32'],
             'notes' => ['nullable', 'string'],
         ];
+    }
+
+    public function messages(): array
+    {
+        return UsernameRules::messages();
     }
 }

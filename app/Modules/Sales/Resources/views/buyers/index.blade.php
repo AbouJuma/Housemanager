@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Buyers')
+@section('title', __('Buyers'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Buyers</h1>
+    <h1 class="h4 mb-0">{{ __('Buyers') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Buyers</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Buyers') }}</h1>
         </div>
         <div class="d-flex gap-2">
             @can('create', \App\Modules\Sales\Models\Buyer::class)
                 <a href="{{ route('buyers.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> New Buyer
+                    <i class="bi bi-plus-lg me-1"></i> {{ __('New Buyer') }}
                 </a>
             @endcan
         </div>
@@ -28,13 +28,13 @@
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-secondary w-100">Filter</button>
+                    <button type="submit" class="btn btn-outline-secondary w-100">{{ __('Filter') }}</button>
                 </div>
             </form>
 
@@ -50,11 +50,11 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Email') }}</th>
+                                <th>{{ __('Phone') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

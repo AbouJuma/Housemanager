@@ -7,6 +7,7 @@ use App\Modules\Landlords\Http\Requests\StoreLandlordRequest;
 use App\Modules\Landlords\Http\Requests\UpdateLandlordRequest;
 use App\Modules\Landlords\Models\Landlord;
 use App\Modules\Landlords\Services\LandlordService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -37,11 +38,22 @@ class LandlordController extends Controller
         return view('landlords::create');
     }
 
-    public function store(StoreLandlordRequest $request): RedirectResponse
+    public function store(StoreLandlordRequest $request): RedirectResponse|JsonResponse
     {
         $landlord = $this->service->create($request->validated());
 
-        return redirect()->route('landlords.show', $landlord)->with('success', "Landlord \"{$landlord->name}\" created.");
+        // The property form's "Add New" modal (properties::properties._form)
+        // creates a landlord via fetch() without leaving the page - same
+        // JSON-on-request pattern as BuyerController::store().
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'landlord' => $landlord,
+                'message' => 'Landlord created successfully.',
+            ]);
+        }
+
+        return redirect()->route('landlords.show', $landlord)->with('success', __('Landlord ":name" created. Portal login - username: :username, password: :password', ['name' => $landlord->name, 'username' => $landlord->username, 'password' => $this->service->issuedPassword()]));
     }
 
     public function show(Landlord $landlord): View

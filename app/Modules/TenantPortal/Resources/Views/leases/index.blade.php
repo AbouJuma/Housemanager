@@ -1,9 +1,9 @@
 @extends('tenant-portal::layout')
 
-@section('title', 'My Leases')
+@section('title', __('My Leases'))
 
 @section('content')
-    <h1 class="h4 mb-4">My Leases</h1>
+    <h1 class="h4 mb-4">{{ __('My Leases') }}</h1>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -14,11 +14,11 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Unit</th>
-                                <th>Dates</th>
-                                <th>Rent</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Unit') }}</th>
+                                <th>{{ __('Dates') }}</th>
+                                <th>{{ __('Rent') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

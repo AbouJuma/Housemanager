@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Income Statement')
+@section('title', __('Income Statement'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Income Statement</h1>
+    <h1 class="h4 mb-0">{{ __('Income Statement') }}</h1>
 @endsection
 
 @section('content')
@@ -26,7 +26,7 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h2 class="h6 mb-3">Income</h2>
+            <h2 class="h6 mb-3">{{ __('Income') }}</h2>
             <table class="table align-middle">
                 <tbody>
                     @forelse ($income as $account)
@@ -38,13 +38,13 @@
                         <tr><td colspan="2" class="text-secondary small">No income posted in this period.</td></tr>
                     @endforelse
                     <tr class="fw-semibold border-top">
-                        <td>Total Income</td>
+                        <td>{{ __('Total Income') }}</td>
                         <td class="text-end">{{ number_format($total_income, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2 class="h6 mb-3 mt-4">Expenses</h2>
+            <h2 class="h6 mb-3 mt-4">{{ __('Expenses') }}</h2>
             <table class="table align-middle">
                 <tbody>
                     @forelse ($expenses as $account)
@@ -56,7 +56,7 @@
                         <tr><td colspan="2" class="text-secondary small">No expenses posted in this period.</td></tr>
                     @endforelse
                     <tr class="fw-semibold border-top">
-                        <td>Total Expenses</td>
+                        <td>{{ __('Total Expenses') }}</td>
                         <td class="text-end">{{ number_format($total_expenses, 2) }}</td>
                     </tr>
                 </tbody>
@@ -64,7 +64,7 @@
 
             <hr>
             <div class="d-flex justify-content-between fs-5 fw-semibold">
-                <span>Net Income</span>
+                <span>{{ __('Net Income') }}</span>
                 <span class="{{ $net_income < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($net_income, 2) }}</span>
             </div>
         </div>

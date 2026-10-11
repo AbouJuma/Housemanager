@@ -7,12 +7,14 @@ use App\Modules\Invoices\Events\InvoicePaymentRecorded;
 use App\Modules\Invoices\Events\InvoiceSent;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Invoices\Models\InvoicePayment;
+use App\Modules\Invoices\Notifications\BuyerInvoicePaymentConfirmation;
+use App\Modules\Invoices\Notifications\LandlordPaymentConfirmation;
+use App\Modules\Invoices\Notifications\LandlordSalePaymentConfirmation;
+use App\Modules\Invoices\Notifications\TenantPaymentConfirmation;
 use App\Modules\Invoices\Repositories\InvoiceRepositoryInterface;
-use App\Modules\Tenants\Services\BeemsSmsService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -21,16 +23,18 @@ use Illuminate\Validation\ValidationException;
  */
 class InvoiceService extends BaseService
 {
-    protected BeemsSmsService $smsService;
-
-    public function __construct(InvoiceRepositoryInterface $repository, BeemsSmsService $smsService)
+    public function __construct(InvoiceRepositoryInterface $repository)
     {
         parent::__construct($repository);
-        $this->smsService = $smsService;
     }
 
-    public function paginate(?string $search, ?string $status, int $perPage = 15): LengthAwarePaginator
-    {
+    public function paginate(
+        ?string $search,
+        ?string $status,
+        int $perPage = 15,
+        ?string $from = null,
+        ?string $to = null,
+    ): LengthAwarePaginator {
         return $this->repository->query()
             ->with(['lease.tenant', 'lease.unit.building.property', 'sale.buyer', 'sale.unit.building.property'])
             ->when($search, fn ($query) => $query->where(function ($query) use ($search): void {
@@ -41,6 +45,8 @@ class InvoiceService extends BaseService
                     ->orWhereHas('sale.unit', fn ($q) => $q->where('unit_number', 'like', "%{$search}%"));
             }))
             ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($from, fn ($query) => $query->whereDate('due_date', '>=', $from))
+            ->when($to, fn ($query) => $query->whereDate('due_date', '<=', $to))
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
@@ -157,7 +163,6 @@ class InvoiceService extends BaseService
             return $payment;
         });
 
-        // Send payment notifications
         $this->sendPaymentNotifications($invoice, $payment);
 
         // Same "after commit, outside the transaction" discipline as
@@ -168,24 +173,20 @@ class InvoiceService extends BaseService
     }
 
     /**
-     * Send payment notifications based on invoice type
+     * Notifies tenant+landlord for a lease invoice, or buyer+landlord
+     * for a sale invoice.
      */
     protected function sendPaymentNotifications(Invoice $invoice, InvoicePayment $payment): void
     {
-        // If it's a lease invoice, send to tenant and landlord
         if ($invoice->lease) {
             $this->sendLeasePaymentNotifications($invoice, $payment);
         }
-        
-        // If it's a sale invoice, send to buyer and landlord
+
         if ($invoice->sale) {
-            $this->sendBuyerPaymentNotifications($invoice, $payment);
+            $this->sendSalePaymentNotifications($invoice, $payment);
         }
     }
 
-    /**
-     * Send payment notifications for lease invoices
-     */
     protected function sendLeasePaymentNotifications(Invoice $invoice, InvoicePayment $payment): void
     {
         $lease = $invoice->lease;
@@ -194,97 +195,30 @@ class InvoiceService extends BaseService
         $property = $unit->building->property;
         $landlord = $property->landlord;
 
-        // Send notification to tenant
-        $this->sendTenantPaymentNotification($invoice, $tenant, $unit, $property, $payment);
+        $tenant->notify(new TenantPaymentConfirmation([
+            'tenant_name' => $tenant->name,
+            'invoice_number' => $invoice->invoice_number,
+            'amount' => number_format($payment->amount, 0),
+            'unit_number' => $unit->unit_number,
+            'property_name' => $property->name,
+            'payment_date' => $payment->paid_on->format('M j, Y'),
+            'balance' => number_format($invoice->balanceDue(), 0),
+        ]));
 
-        // Send notification to landlord
         if ($landlord) {
-            $this->sendLandlordLeasePaymentNotification($invoice, $tenant, $unit, $property, $landlord, $payment);
-        }
-    }
-
-    /**
-     * Send payment notification to tenant
-     */
-    protected function sendTenantPaymentNotification(Invoice $invoice, $tenant, $unit, $property, InvoicePayment $payment): void
-    {
-        try {
-            $data = [
-                'amount' => number_format($payment->amount, 0),
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'payment_date' => $payment->paid_on,
+            $landlord->notify(new LandlordPaymentConfirmation([
+                'invoice_number' => $invoice->invoice_number,
                 'balance' => number_format($invoice->balanceDue(), 0),
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'tenant_payment_notification')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$tenant->phone) {
-                Log::warning('Cannot send tenant payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $tenant->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            Log::info('Sending payment notification to tenant', ['phone' => $tenant->phone, 'message' => $smsMessage]);
-            $this->smsService->send($tenant->phone, $smsMessage);
-        } catch (\Exception $e) {
-            Log::error('Error sending tenant payment notification', [
-                'invoice_id' => $invoice->id,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send payment notification to landlord for lease payment
-     */
-    protected function sendLandlordLeasePaymentNotification(Invoice $invoice, $tenant, $unit, $property, $landlord, InvoicePayment $payment): void
-    {
-        try {
-            $data = [
                 'amount' => number_format($payment->amount, 0),
                 'tenant_name' => $tenant->name,
                 'unit_number' => $unit->unit_number,
                 'property_name' => $property->name,
-                'payment_date' => $payment->paid_on,
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'landlord_payment_notification')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$landlord->phone) {
-                Log::warning('Cannot send landlord lease payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $landlord->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            Log::info('Sending lease payment notification to landlord', ['phone' => $landlord->phone, 'message' => $smsMessage]);
-            $this->smsService->send($landlord->phone, $smsMessage);
-        } catch (\Exception $e) {
-            Log::error('Error sending landlord lease payment notification', [
-                'invoice_id' => $invoice->id,
-                'error' => $e->getMessage()
-            ]);
+                'payment_date' => $payment->paid_on->format('M j, Y'),
+            ]));
         }
     }
 
-    /**
-     * Send payment notifications for buyer invoices
-     */
-    protected function sendBuyerPaymentNotifications(Invoice $invoice, InvoicePayment $payment): void
+    protected function sendSalePaymentNotifications(Invoice $invoice, InvoicePayment $payment): void
     {
         $sale = $invoice->sale;
         $buyer = $sale->buyer;
@@ -292,93 +226,21 @@ class InvoiceService extends BaseService
         $property = $unit->building->property;
         $landlord = $property->landlord;
 
-        // Send notification to buyer
-        $this->sendBuyerInvoicePaymentNotification($invoice, $buyer, $unit, $property, $payment);
+        // Sale-wide figures (what's left to pay, installments remaining)
+        // plus this payment's own details - same data for buyer and
+        // landlord, each rendered through their own template.
+        $data = [
+            ...$sale->messagePlaceholders(),
+            'amount' => number_format($payment->amount, 0),
+            'payment_date' => $payment->paid_on->format('M j, Y'),
+            'installment_number' => $invoice->installment->installment_number,
+            'installment_balance' => number_format($invoice->balanceDue(), 0),
+            'invoice_number' => $invoice->invoice_number,
+        ];
 
-        // Send notification to landlord
-        if ($landlord) {
-            $this->sendLandlordBuyerPaymentNotification($invoice, $buyer, $unit, $property, $landlord, $payment);
-        }
-    }
+        $buyer->notify(new BuyerInvoicePaymentConfirmation($data));
 
-    /**
-     * Send payment notification to buyer for invoice payment
-     */
-    protected function sendBuyerInvoicePaymentNotification(Invoice $invoice, $buyer, $unit, $property, InvoicePayment $payment): void
-    {
-        try {
-            $data = [
-                'amount' => number_format($payment->amount, 0),
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'payment_date' => $payment->paid_on,
-                'balance' => number_format($invoice->balanceDue(), 0),
-                'payment_terms' => $invoice->payment_terms ?? 'N/A',
-                'invoice_number' => $invoice->invoice_number,
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'buyer_invoice')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$buyer->phone) {
-                Log::warning('Cannot send buyer invoice payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $buyer->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            Log::info('Sending invoice payment notification to buyer', ['phone' => $buyer->phone, 'message' => $smsMessage]);
-            $this->smsService->send($buyer->phone, $smsMessage);
-        } catch (\Exception $e) {
-            Log::error('Error sending buyer invoice payment notification', [
-                'invoice_id' => $invoice->id,
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send payment notification to landlord for buyer payment
-     */
-    protected function sendLandlordBuyerPaymentNotification(Invoice $invoice, $buyer, $unit, $property, $landlord, InvoicePayment $payment): void
-    {
-        try {
-            $data = [
-                'amount' => number_format($payment->amount, 0),
-                'tenant_name' => $buyer->name,
-                'unit_number' => $unit->unit_number,
-                'property_name' => $property->name,
-                'payment_date' => $payment->paid_on,
-            ];
-
-            // Get message template
-            $template = \App\Models\MessageTemplate::whereNull('company_id')
-                ->where('type', 'landlord_payment_notification')
-                ->where('is_active', true)
-                ->first();
-
-            if (!$template || !$landlord->phone) {
-                Log::warning('Cannot send landlord buyer payment notification', [
-                    'has_template' => $template !== null,
-                    'has_phone' => $landlord->phone !== null
-                ]);
-                return;
-            }
-
-            $smsMessage = $template->renderSmsTemplate($data);
-            Log::info('Sending buyer payment notification to landlord', ['phone' => $landlord->phone, 'message' => $smsMessage]);
-            $this->smsService->send($landlord->phone, $smsMessage);
-        } catch (\Exception $e) {
-            Log::error('Error sending landlord buyer payment notification', [
-                'invoice_id' => $invoice->id,
-                'error' => $e->getMessage()
-            ]);
-        }
+        $landlord?->notify(new LandlordSalePaymentConfirmation($data));
     }
 
     /**

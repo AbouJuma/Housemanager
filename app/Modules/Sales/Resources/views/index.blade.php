@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Sales')
+@section('title', __('Sales'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Sales</h1>
+    <h1 class="h4 mb-0">{{ __('Sales') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Sales</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Sales') }}</h1>
         </div>
         <div class="d-flex gap-2">
             @can('create', \App\Modules\Sales\Models\Sale::class)
                 <a href="{{ route('sales.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> New Sale
+                    <i class="bi bi-plus-lg me-1"></i> {{ __('New Sale') }}
                 </a>
             @endcan
         </div>
@@ -28,23 +28,23 @@
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select name="property_id" class="form-select">
-                        <option value="">All Properties</option>
+                        <option value="">{{ __('All Properties') }}</option>
                         @foreach ($properties as $property)
                             <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>{{ $property->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-secondary w-100">Filter</button>
+                    <button type="submit" class="btn btn-outline-secondary w-100">{{ __('Filter') }}</button>
                 </div>
             </form>
 
@@ -60,13 +60,13 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Unit</th>
-                                <th>Buyer</th>
-                                <th>Sale Date</th>
-                                <th>Total Price</th>
-                                <th>Paid</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Unit') }}</th>
+                                <th>{{ __('Buyer') }}</th>
+                                <th>{{ __('Sale Date') }}</th>
+                                <th>{{ __('Total Price') }}</th>
+                                <th>{{ __('Paid') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

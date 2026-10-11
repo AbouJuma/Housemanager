@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class PortalMaintenanceRequestController extends Controller
 {
-    public function __construct(protected MaintenanceRequestService $service)
-    {
-    }
+    public function __construct(protected MaintenanceRequestService $service) {}
 
     public function index(): View
     {

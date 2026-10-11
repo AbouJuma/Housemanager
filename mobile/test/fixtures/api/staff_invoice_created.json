@@ -1,0 +1,35 @@
+{
+    "data": {
+        "uuid": "bd450af4-7854-4fb4-885f-fadd721ebe78",
+        "invoice_number": "INV-000007",
+        "status": "draft",
+        "issue_date": "2026-10-11",
+        "due_date": "2026-10-25",
+        "total_amount": 25000,
+        "amount_paid": 0,
+        "balance_due": 25000,
+        "notes": null,
+        "lease": {
+            "uuid": "68629f37-8a67-494b-8a9f-e8e68ae50275",
+            "tenant": {
+                "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+                "name": "Amina Tenant"
+            },
+            "unit": {
+                "uuid": "f36e853b-c521-4fd4-92ed-7d1a96a9f1bc",
+                "unit_number": "697E4"
+            }
+        },
+        "items": [
+            {
+                "uuid": "f0f6fbac-f067-4aa6-aede-59dc90cda940",
+                "description": "Water",
+                "quantity": 1,
+                "unit_price": 25000,
+                "amount": 25000
+            }
+        ],
+        "created_at": "2026-10-11T19:05:42+00:00",
+        "updated_at": "2026-10-11T19:05:42+00:00"
+    }
+}

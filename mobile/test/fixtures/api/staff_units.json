@@ -1,0 +1,68 @@
+{
+    "data": [
+        {
+            "uuid": "f36e853b-c521-4fd4-92ed-7d1a96a9f1bc",
+            "unit_number": "697E4",
+            "type": "apartment",
+            "status": "occupied",
+            "bedrooms": 4,
+            "bathrooms": 1,
+            "area": "268.73",
+            "area_unit": "sqm",
+            "rent_amount": "450000.00",
+            "description": null,
+            "tenant": {
+                "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+                "name": "Amina Tenant",
+                "phone": "0712000333"
+            },
+            "sale": null,
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        },
+        {
+            "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
+            "unit_number": "066W8",
+            "type": "apartment",
+            "status": "vacant",
+            "bedrooms": 2,
+            "bathrooms": 1,
+            "area": "59.78",
+            "area_unit": "sqm",
+            "rent_amount": "300000.00",
+            "description": null,
+            "tenant": null,
+            "sale": {
+                "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
+                "status": "active",
+                "buyer": {
+                    "uuid": "d679366c-f296-4c54-b8dc-6d9bb69d5eaf",
+                    "name": "Asha Buyer",
+                    "phone": "0788000444"
+                },
+                "total_price": 30000000,
+                "total_paid": 12000000,
+                "remaining_balance": 18000000,
+                "completion_percentage": 40
+            },
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        },
+        {
+            "uuid": "a2f5da02-6893-446d-b68d-5ddfb3cbfe1a",
+            "unit_number": "699D9",
+            "type": "office",
+            "status": "vacant",
+            "bedrooms": 2,
+            "bathrooms": 1,
+            "area": "100.46",
+            "area_unit": "sqm",
+            "rent_amount": "500000.00",
+            "description": null,
+            "tenant": null,
+            "sale": null,
+            "created_at": "2026-10-11T19:05:41+00:00",
+            "updated_at": "2026-10-11T19:05:41+00:00"
+        }
+    ]
+}

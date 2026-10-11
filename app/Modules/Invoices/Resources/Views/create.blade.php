@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Invoice')
+@section('title', __('New Invoice'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Invoice</h1>
+    <h1 class="h4 mb-0">{{ __('New Invoice') }}</h1>
 @endsection
 
 @section('content')
@@ -14,8 +14,8 @@
                 @include('invoices::_form')
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create Invoice</button>
-                    <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Create Invoice') }}</button>
+                    <a href="{{ route('invoices.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

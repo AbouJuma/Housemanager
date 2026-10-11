@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'New Landlord')
+@section('title', __('New Landlord'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">New Landlord</h1>
+    <h1 class="h4 mb-0">{{ __('New Landlord') }}</h1>
 @endsection
 
 @section('content')
@@ -14,8 +14,8 @@
                 @include('landlords::_form')
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create Landlord</button>
-                    <a href="{{ route('landlords.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Create Landlord') }}</button>
+                    <a href="{{ route('landlords.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

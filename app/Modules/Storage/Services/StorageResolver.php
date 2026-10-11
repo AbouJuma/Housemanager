@@ -58,8 +58,19 @@ class StorageResolver
         if (! in_array($integration->provider, self::S3_COMPATIBLE_PROVIDERS, true)) {
             throw new RuntimeException(
                 "Storage provider [{$integration->provider}] isn't wired up yet — ".
-                'pick Local Storage, Amazon S3, Cloudflare R2, or DigitalOcean Spaces for now.'
+                'pick Local Storage, Amazon S3, Cloudflare R2, DigitalOcean Spaces or Google Cloud Storage for now.'
             );
+        }
+
+        // Without these the S3 driver dies with a bare TypeError deep in
+        // Flysystem - fail with something a user can act on instead.
+        foreach (['merchant_id' => 'bucket', 'api_key' => 'access key', 'api_secret' => 'secret key'] as $field => $label) {
+            if (blank($integration->credential($field))) {
+                throw new RuntimeException(
+                    "Storage provider [{$integration->provider}] isn't fully set up yet - its {$label} is missing. ".
+                    'Add it under Integrations, or switch back to Local Storage.'
+                );
+            }
         }
 
         Config::set('filesystems.disks.'.self::COMPANY_DISK, $this->buildDiskConfig($integration));

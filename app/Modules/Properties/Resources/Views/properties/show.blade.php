@@ -19,11 +19,11 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('properties.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-1"></i> All Properties
+                <i class="bi bi-arrow-left me-1"></i> {{ __('All Properties') }}
             </a>
             @can('update', $property)
                 <a href="{{ route('properties.edit', $property) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -33,19 +33,19 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Details</h2>
+                    <h2 class="h6 mb-3">{{ __('Details') }}</h2>
                     @if ($property->description)
                         <p>{{ $property->description }}</p>
                     @endif
                     <div class="row g-3 small">
                         <div class="col-md-6">
-                            <div class="text-secondary">Address</div>
+                            <div class="text-secondary">{{ __('Address') }}</div>
                             <div>
                                 {{ collect([$property->address_line1, $property->address_line2, $property->city, $property->state, $property->postal_code, $property->country_code])->filter()->implode(', ') ?: '—' }}
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="text-secondary">Landlord</div>
+                            <div class="text-secondary">{{ __('Landlord') }}</div>
                             <div>
                                 @if ($property->landlord)
                                     <a href="{{ route('landlords.show', $property->landlord) }}">{{ $property->landlord->name }}</a>
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="text-secondary">Total Area</div>
+                            <div class="text-secondary">{{ __('Total Area') }}</div>
                             <div>{{ $property->total_area ? number_format($property->total_area, 2).' '.strtoupper($property->area_unit) : '—' }}</div>
                         </div>
                         <div class="col-md-3">
@@ -69,7 +69,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Buildings</h2>
+                        <h2 class="h6 mb-0">{{ __('Buildings') }}</h2>
                         @can('create', [\App\Modules\Properties\Models\Building::class, $property])
                             <a href="{{ route('buildings.create', $property) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-plus-lg me-1"></i> Add Building
@@ -87,11 +87,11 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Building</th>
-                                        <th>Floors</th>
-                                        <th>Units</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Building') }}</th>
+                                        <th>{{ __('Floors') }}</th>
+                                        <th>{{ __('Units') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -118,25 +118,25 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Maintenance</h2>
+                        <h2 class="h6 mb-0">{{ __('Maintenance') }}</h2>
                         @can('create', \App\Modules\Maintenance\Models\MaintenanceRequest::class)
                             <a href="{{ route('maintenance-requests.create', ['property_id' => $property->uuid]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> New Request
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('New Request') }}
                             </a>
                         @endcan
                     </div>
 
                     @if ($maintenanceRequests->isEmpty())
-                        <p class="text-secondary small mb-0">No maintenance requests yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No maintenance requests yet.') }}</p>
                     @else
                         <div class="table-responsive">
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Priority</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Priority') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -160,10 +160,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Inventory</h2>
+                        <h2 class="h6 mb-0">{{ __('Inventory') }}</h2>
                         @can('create', \App\Modules\Inventory\Models\InventoryItem::class)
                             <a href="{{ route('inventory-items.create', ['property_id' => $property->uuid]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> New Item
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('New Item') }}
                             </a>
                         @endcan
                     </div>
@@ -175,9 +175,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>On Hand</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('On Hand') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,7 +187,7 @@
                                             <td>
                                                 {{ rtrim(rtrim(number_format($item->quantity_on_hand, 2), '0'), '.') }} {{ $item->unit_of_measure }}
                                                 @if ($item->isLowStock())
-                                                    <span class="badge text-bg-warning ms-1">Low</span>
+                                                    <span class="badge text-bg-warning ms-1">{{ __('Low') }}</span>
                                                 @endif
                                             </td>
                                             <td class="text-end">
@@ -205,10 +205,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Documents</h2>
+                        <h2 class="h6 mb-0">{{ __('Documents') }}</h2>
                         @can('create', \App\Modules\Documents\Models\Document::class)
                             <a href="{{ route('documents.create', ['documentable_type' => 'property', 'documentable_id' => $property->id]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Add Document
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Add Document') }}
                             </a>
                         @endcan
                     </div>
@@ -220,9 +220,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -245,10 +245,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Visitors</h2>
+                        <h2 class="h6 mb-0">{{ __('Visitors') }}</h2>
                         @can('create', \App\Modules\VisitorManagement\Models\Visitor::class)
                             <a href="{{ route('visitors.create', ['property_id' => $property->uuid]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Check In Visitor
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Check In Visitor') }}
                             </a>
                         @endcan
                     </div>
@@ -260,10 +260,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Visitor</th>
-                                        <th>Check In</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Visitor') }}</th>
+                                        <th>{{ __('Check In') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -273,9 +273,9 @@
                                             <td class="small">{{ $item->check_in_at->format('M j, g:i A') }}</td>
                                             <td>
                                                 @if ($item->isCheckedIn())
-                                                    <span class="badge text-bg-success">Checked In</span>
+                                                    <span class="badge text-bg-success">{{ __('Checked In') }}</span>
                                                 @else
-                                                    <span class="badge text-bg-secondary">Checked Out</span>
+                                                    <span class="badge text-bg-secondary">{{ __('Checked Out') }}</span>
                                                 @endif
                                             </td>
                                             <td class="text-end">

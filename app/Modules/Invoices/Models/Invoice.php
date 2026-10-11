@@ -7,6 +7,7 @@ use App\Core\Concerns\HasUuid;
 use App\Modules\Invoices\Database\Factories\InvoiceFactory;
 use App\Modules\Leases\Models\Lease;
 use App\Modules\RentCollection\Models\InvoicePaymentAttempt;
+use App\Modules\Sales\Models\Installment;
 use App\Modules\Sales\Models\Sale;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class Invoice extends Model
         'company_id',
         'lease_id',
         'sale_id',
+        'installment_id',
         'invoice_number',
         'issue_date',
         'due_date',
@@ -63,6 +65,11 @@ class Invoice extends Model
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    public function installment(): BelongsTo
+    {
+        return $this->belongsTo(Installment::class);
     }
 
     public function items(): HasMany

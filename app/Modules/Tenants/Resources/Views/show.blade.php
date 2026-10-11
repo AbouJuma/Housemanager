@@ -21,7 +21,7 @@
             </a>
             @can('update', $tenant)
                 <a href="{{ route('tenants.edit', $tenant) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-pencil me-1"></i> Edit
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
                 </a>
             @endcan
         </div>
@@ -37,32 +37,32 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Contact</h2>
+                    <h2 class="h6 mb-3">{{ __('Contact') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Email</div>
+                            <div class="text-secondary">{{ __('Email') }}</div>
                             <div>{{ $tenant->email ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Phone</div>
+                            <div class="text-secondary">{{ __('Phone') }}</div>
                             <div>{{ $tenant->phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Secondary Phone</div>
+                            <div class="text-secondary">{{ __('Secondary Phone') }}</div>
                             <div>{{ $tenant->secondary_phone ?? '—' }}</div>
                         </div>
                         <div class="col-md-8">
-                            <div class="text-secondary">Address</div>
+                            <div class="text-secondary">{{ __('Address') }}</div>
                             <div>{{ collect([$tenant->address_line1, $tenant->address_line2, $tenant->city, $tenant->state, $tenant->postal_code, $tenant->country_code])->filter()->implode(', ') ?: '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Date of Birth</div>
+                            <div class="text-secondary">{{ __('Date of Birth') }}</div>
                             <div>{{ $tenant->date_of_birth?->format(setting('date_format')) ?? '—' }}</div>
                         </div>
                     </div>
                     @if ($tenant->notes)
                         <hr>
-                        <div class="text-secondary small mb-1">Notes</div>
+                        <div class="text-secondary small mb-1">{{ __('Notes') }}</div>
                         <p class="mb-0">{{ $tenant->notes }}</p>
                     @endif
                 </div>
@@ -73,11 +73,11 @@
                     <h2 class="h6 mb-3">Identification</h2>
                     <div class="row g-3 small">
                         <div class="col-md-4">
-                            <div class="text-secondary">Type</div>
+                            <div class="text-secondary">{{ __('Type') }}</div>
                             <div>{{ $tenant->identification_type ? ucfirst(str_replace('_', ' ', $tenant->identification_type)) : '—' }}</div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-secondary">Number</div>
+                            <div class="text-secondary">{{ __('Number') }}</div>
                             <div>{{ $tenant->identification_number ?? '—' }}</div>
                         </div>
                     </div>
@@ -86,14 +86,14 @@
 
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Emergency Contact</h2>
+                    <h2 class="h6 mb-3">{{ __('Emergency Contact') }}</h2>
                     <div class="row g-3 small">
                         <div class="col-md-6">
-                            <div class="text-secondary">Name</div>
+                            <div class="text-secondary">{{ __('Name') }}</div>
                             <div>{{ $tenant->emergency_contact_name ?? '—' }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-secondary">Phone</div>
+                            <div class="text-secondary">{{ __('Phone') }}</div>
                             <div>{{ $tenant->emergency_contact_phone ?? '—' }}</div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Leases</h2>
+                    <h2 class="h6 mb-3">{{ __('Leases') }}</h2>
 
                     @if ($leases->isEmpty())
                         <div class="text-center py-4">
@@ -114,10 +114,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Unit</th>
-                                        <th>Dates</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Unit') }}</th>
+                                        <th>{{ __('Dates') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -146,10 +146,10 @@
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h6 mb-0">Documents</h2>
+                        <h2 class="h6 mb-0">{{ __('Documents') }}</h2>
                         @can('create', \App\Modules\Documents\Models\Document::class)
                             <a href="{{ route('documents.create', ['documentable_type' => 'tenant', 'documentable_id' => $tenant->id]) }}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-plus-lg me-1"></i> Add Document
+                                <i class="bi bi-plus-lg me-1"></i> {{ __('Add Document') }}
                             </a>
                         @endcan
                     </div>
@@ -161,9 +161,9 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -185,7 +185,7 @@
 
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Visitors</h2>
+                    <h2 class="h6 mb-3">{{ __('Visitors') }}</h2>
 
                     @if ($visitors->isEmpty())
                         <p class="text-secondary small mb-0">No visitors have come to see this tenant yet.</p>
@@ -194,10 +194,10 @@
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Visitor</th>
-                                        <th>Check In</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
+                                        <th>{{ __('Visitor') }}</th>
+                                        <th>{{ __('Check In') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -207,9 +207,9 @@
                                             <td class="small">{{ $item->check_in_at->format('M j, g:i A') }}</td>
                                             <td>
                                                 @if ($item->isCheckedIn())
-                                                    <span class="badge text-bg-success">Checked In</span>
+                                                    <span class="badge text-bg-success">{{ __('Checked In') }}</span>
                                                 @else
-                                                    <span class="badge text-bg-secondary">Checked Out</span>
+                                                    <span class="badge text-bg-secondary">{{ __('Checked Out') }}</span>
                                                 @endif
                                             </td>
                                             <td class="text-end">
@@ -229,7 +229,7 @@
             @can('update', $tenant)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h2 class="h6 mb-3">Portal Access</h2>
+                        <h2 class="h6 mb-3">{{ __('Portal Access') }}</h2>
 
                         @if (session('portal_password'))
                             <div class="alert alert-warning small">
@@ -239,22 +239,22 @@
                         @endif
 
                         @if ($tenant->hasPortalAccess())
-                            <p class="small text-secondary mb-3"><span class="badge text-bg-success">Enabled</span> {{ $tenant->email }} can sign in to the tenant portal.</p>
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-success">{{ __('Enabled') }}</span> {{ $tenant->email }} can sign in to the tenant portal.</p>
                             <div class="d-flex gap-2">
                                 <form action="{{ route('tenants.portal-access.enable', $tenant) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Reset Password</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">{{ __('Reset Password') }}</button>
                                 </form>
                                 <form action="{{ route('tenants.portal-access.disable', $tenant) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Disable Access</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('Disable Access') }}</button>
                                 </form>
                             </div>
                         @else
-                            <p class="small text-secondary mb-3"><span class="badge text-bg-secondary">Not Enabled</span> This tenant cannot sign in to the portal.</p>
+                            <p class="small text-secondary mb-3"><span class="badge text-bg-secondary">{{ __('Not Enabled') }}</span> This tenant cannot sign in to the portal.</p>
                             <form action="{{ route('tenants.portal-access.enable', $tenant) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-primary" {{ $tenant->email ? '' : 'disabled' }}>Enable Portal Access</button>
+                                <button type="submit" class="btn btn-sm btn-primary" {{ $tenant->email ? '' : 'disabled' }}>{{ __('Enable Portal Access') }}</button>
                             </form>
                             @unless ($tenant->email)
                                 <div class="form-text">Add an email address to this tenant first.</div>
@@ -266,11 +266,11 @@
 
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">Photo</h2>
+                    <h2 class="h6 mb-3">{{ __('Photo') }}</h2>
                     @if ($tenant->photoUrl())
                         <img src="{{ $tenant->photoUrl() }}" alt="{{ $tenant->name }}" class="img-fluid rounded-3">
                     @else
-                        <p class="text-secondary small mb-0">No photo uploaded yet.</p>
+                        <p class="text-secondary small mb-0">{{ __('No photo uploaded yet.') }}</p>
                     @endif
                 </div>
             </div>

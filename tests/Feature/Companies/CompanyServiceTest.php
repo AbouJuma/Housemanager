@@ -101,7 +101,7 @@ class CompanyServiceTest extends TestCase
         $logo = UploadedFile::fake()->image('logo.png');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches('/gcs.*wired up/');
+        $this->expectExceptionMessageMatches('/gcs.*isn.t fully set up/');
 
         $this->service->updateBranding($company, $logo, null, null);
     }

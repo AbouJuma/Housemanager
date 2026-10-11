@@ -2,6 +2,7 @@
 
 namespace App\Modules\Landlords\Models;
 
+use App\Core\Auth\HasLoginIdentity;
 use App\Core\Concerns\BelongsToCompany;
 use App\Core\Concerns\HasUuid;
 use App\Modules\Documents\Models\Document;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
@@ -26,19 +29,29 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * (ARCHITECTURE.md §19), for the identical reason: Module 27 (Landlord
  * Portal) needs Landlord to be a real Authenticatable for its own
  * 'landlord' guard.
+ *
+ * Notifiable added alongside the messaging consolidation so landlords
+ * can receive welcome/new-tenant/payment notifications the same way
+ * Tenant already does (`email`/`phone` match Laravel's default
+ * notification routing, and CompanySmsChannel reads `company` directly
+ * via BelongsToCompany, so no routeNotificationFor*() overrides needed).
  */
 class Landlord extends Authenticatable implements HasMedia
 {
     use BelongsToCompany;
+    use HasLoginIdentity;
+    use HasApiTokens;
     use HasFactory;
     use HasUuid;
     use InteractsWithMedia;
     use LogsActivity;
+    use Notifiable;
     use SoftDeletes;
 
     protected $fillable = [
         'company_id',
         'name',
+        'username',
         'type',
         'email',
         'phone',

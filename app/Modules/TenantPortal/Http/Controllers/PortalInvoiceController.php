@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class PortalInvoiceController extends Controller
 {
-    public function __construct(protected RentCollectionService $rentCollection)
-    {
-    }
+    public function __construct(protected RentCollectionService $rentCollection) {}
 
     public function index(): View
     {

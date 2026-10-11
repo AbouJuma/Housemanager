@@ -1,26 +1,26 @@
 @extends('tenant-portal::layout')
 
-@section('title', 'My Invoices')
+@section('title', __('My Invoices'))
 
 @section('content')
-    <h1 class="h4 mb-4">My Invoices</h1>
+    <h1 class="h4 mb-4">{{ __('My Invoices') }}</h1>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             @if ($invoices->isEmpty())
-                <p class="text-secondary small mb-0">No invoices yet.</p>
+                <p class="text-secondary small mb-0">{{ __('No invoices yet.') }}</p>
             @else
                 <div class="table-responsive">
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Number</th>
-                                <th>Property</th>
-                                <th>Due</th>
-                                <th>Total</th>
-                                <th>Balance</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Number') }}</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('Due') }}</th>
+                                <th>{{ __('Total') }}</th>
+                                <th>{{ __('Balance') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

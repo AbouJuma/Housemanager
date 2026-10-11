@@ -22,7 +22,7 @@ class InvoiceResource extends JsonResource
             'amount_paid' => (float) $this->amount_paid,
             'balance_due' => $this->balanceDue(),
             'notes' => $this->notes,
-            'lease' => $this->whenLoaded('lease', fn () => [
+            'lease' => $this->whenLoaded('lease', fn () => $this->lease ? [
                 'uuid' => $this->lease->uuid,
                 'tenant' => $this->lease->relationLoaded('tenant') ? [
                     'uuid' => $this->lease->tenant->uuid,
@@ -32,7 +32,24 @@ class InvoiceResource extends JsonResource
                     'uuid' => $this->lease->unit->uuid,
                     'unit_number' => $this->lease->unit->unit_number,
                 ] : null,
-            ]),
+            ] : null),
+            // Added alongside the buyer mobile portal - a sale-linked
+            // invoice has no `lease`, only `sale` (Invoice belongs to
+            // exactly one of the two, see the model's own lease_id/
+            // sale_id columns).
+            'sale' => $this->whenLoaded('sale', fn () => $this->sale ? [
+                'uuid' => $this->sale->uuid,
+                'unit' => $this->sale->relationLoaded('unit') ? [
+                    'uuid' => $this->sale->unit->uuid,
+                    'unit_number' => $this->sale->unit->unit_number,
+                    'building' => $this->sale->unit->relationLoaded('building') ? [
+                        'name' => $this->sale->unit->building->name,
+                        'property' => $this->sale->unit->building->relationLoaded('property') ? [
+                            'name' => $this->sale->unit->building->property->name,
+                        ] : null,
+                    ] : null,
+                ] : null,
+            ] : null),
             'items' => InvoiceItemResource::collection($this->whenLoaded('items')),
             'payments' => InvoicePaymentResource::collection($this->whenLoaded('payments')),
             // Plain inline mapping, not a dedicated Resource class - a

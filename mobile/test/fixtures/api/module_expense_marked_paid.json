@@ -1,0 +1,28 @@
+{
+    "data": {
+        "uuid": "74ff3851-5f09-4398-a438-7d3e276cb98c",
+        "description": "Plumbing repair",
+        "vendor_name": "Stokes and Sons",
+        "vendor_display_name": "Stokes and Sons",
+        "amount": 619.87,
+        "expense_date": "2026-08-15",
+        "payment_status": "paid",
+        "payment_method": "mobile_money",
+        "paid_on": "2026-10-11",
+        "reference": null,
+        "notes": null,
+        "status": "active",
+        "account": {
+            "uuid": "4ade31a8-9c7a-458a-a474-864750413ff6",
+            "code": "9951",
+            "name": "Accounts Receivable"
+        },
+        "property": {
+            "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
+            "name": "Stella Square Complex"
+        },
+        "vendor": null,
+        "created_at": "2026-10-11T19:05:41+00:00",
+        "updated_at": "2026-10-11T19:05:42+00:00"
+    }
+}

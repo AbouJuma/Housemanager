@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Leases')
+@section('title', __('Leases'))
 
 @section('page-heading')
-    <h1 class="h4 mb-0">Leases</h1>
+    <h1 class="h4 mb-0">{{ __('Leases') }}</h1>
 @endsection
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h4 mb-0 d-lg-none">Leases</h1>
+            <h1 class="h4 mb-0 d-lg-none">{{ __('Leases') }}</h1>
             <p class="text-secondary mb-0">{{ $leases->total() }} {{ Str::plural('lease', $leases->total()) }}</p>
         </div>
         @can('create', \App\Modules\Leases\Models\Lease::class)
             <a href="{{ route('leases.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i> New Lease
+                <i class="bi bi-plus-lg me-1"></i> {{ __('New Lease') }}
             </a>
         @endcan
     </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-auto">
                     <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['active', 'expired', 'terminated'] as $status)
                             <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
@@ -49,12 +49,12 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Tenant</th>
-                                <th>Unit</th>
-                                <th>Dates</th>
-                                <th>Rent</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th>{{ __('Tenant') }}</th>
+                                <th>{{ __('Unit') }}</th>
+                                <th>{{ __('Dates') }}</th>
+                                <th>{{ __('Rent') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-end">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

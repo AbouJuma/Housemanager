@@ -2,13 +2,12 @@
 
 namespace App\Modules\LandlordPortal\Http\Controllers;
 
+use App\Core\Auth\WebSignIn;
 use App\Http\Controllers\Controller;
-use App\Modules\Landlords\Models\Landlord;
 use App\Modules\LandlordPortal\Http\Requests\LandlordPortalLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -34,19 +33,16 @@ class LandlordPortalAuthController extends Controller
     {
         $credentials = $request->validated();
 
-        $landlord = Landlord::withoutGlobalScope('company')
-            ->whereNotNull('password')
-            ->where('email', $credentials['email'])
-            ->first();
+        // Email, username or phone - and if these are a staff member's or
+        // another portal's details, sign them in there instead
+        // (App\Core\Auth\WebSignIn).
+        $redirect = WebSignIn::attempt($request, 'landlord', $credentials['email'], $credentials['password']);
 
-        if (! $landlord || ! Hash::check($credentials['password'], $landlord->password)) {
-            throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
+        if (! $redirect) {
+            throw ValidationException::withMessages(['email' => __('These credentials do not match our records.')]);
         }
 
-        Auth::guard('landlord')->login($landlord, $request->boolean('remember'));
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('landlord-portal.dashboard'));
+        return $redirect;
     }
 
     public function logout(Request $request): RedirectResponse

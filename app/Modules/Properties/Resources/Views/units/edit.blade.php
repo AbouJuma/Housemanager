@@ -15,8 +15,8 @@
                 @include('properties::units._form')
 
                 <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a href="{{ route('units.show', $unit) }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                    <a href="{{ route('units.show', $unit) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                 </div>
             </form>
         </div>

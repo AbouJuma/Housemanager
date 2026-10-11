@@ -118,7 +118,7 @@
     <div class="container">
         <div class="header">
             <div>
-                <div class="invoice-title">INVOICE</div>
+                <div class="invoice-title">{{ __('INVOICE') }}</div>
                 <div class="invoice-number">#{{ $invoice->invoice_number }}</div>
             </div>
             <div style="text-align: right;">
@@ -126,9 +126,9 @@
                 <div><strong>Due Date:</strong> {{ $invoice->due_date->format('M j, Y') }}</div>
                 <div><strong>Status:</strong>
                     @if($invoice->status === 'paid')
-                        <span class="status-paid">PAID</span>
+                        <span class="status-paid">{{ __('PAID') }}</span>
                     @elseif($invoice->status === 'sent' && $invoice->due_date->isPast())
-                        <span class="status-overdue">OVERDUE</span>
+                        <span class="status-overdue">{{ __('OVERDUE') }}</span>
                     @else
                         <span class="status-pending">{{ strtoupper($invoice->status) }}</span>
                     @endif
@@ -140,7 +140,7 @@
             <div class="info-grid">
                 @if($invoice->lease)
                     <div>
-                        <div class="info-label">Bill To</div>
+                        <div class="info-label">{{ __('Bill To') }}</div>
                         <div class="info-value"><strong>{{ $invoice->lease->tenant->name }}</strong></div>
                         @if($invoice->lease->tenant->email)
                         <div class="info-value">{{ $invoice->lease->tenant->email }}</div>
@@ -148,7 +148,7 @@
                         <div class="info-value">{{ $invoice->lease->tenant->phone }}</div>
                     </div>
                     <div>
-                        <div class="info-label">Property</div>
+                        <div class="info-label">{{ __('Property') }}</div>
                         <div class="info-value"><strong>Unit {{ $invoice->lease->unit->unit_number }}</strong></div>
                         <div class="info-value">{{ $invoice->lease->unit->building->name }}</div>
                         <div class="info-value">{{ $invoice->lease->unit->building->property->name }}</div>
@@ -157,7 +157,7 @@
 
                 @if($invoice->sale)
                     <div>
-                        <div class="info-label">Bill To</div>
+                        <div class="info-label">{{ __('Bill To') }}</div>
                         <div class="info-value"><strong>{{ $invoice->sale->buyer->name }}</strong></div>
                         @if($invoice->sale->buyer->email)
                         <div class="info-value">{{ $invoice->sale->buyer->email }}</div>
@@ -165,7 +165,7 @@
                         <div class="info-value">{{ $invoice->sale->buyer->phone }}</div>
                     </div>
                     <div>
-                        <div class="info-label">Property</div>
+                        <div class="info-label">{{ __('Property') }}</div>
                         <div class="info-value"><strong>Unit {{ $invoice->sale->unit->unit_number }}</strong></div>
                         <div class="info-value">{{ $invoice->sale->unit->building->name }}</div>
                         <div class="info-value">{{ $invoice->sale->unit->building->property->name }}</div>
@@ -177,10 +177,10 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th class="text-right">Quantity</th>
-                    <th class="text-right">Unit Price</th>
-                    <th class="text-right">Total</th>
+                    <th>{{ __('Description') }}</th>
+                    <th class="text-right">{{ __('Quantity') }}</th>
+                    <th class="text-right">{{ __('Unit Price') }}</th>
+                    <th class="text-right">{{ __('Total') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -212,13 +212,13 @@
 
         @if($invoice->notes)
         <div class="info-section" style="margin-top: 20px;">
-            <div class="info-label">Notes</div>
+            <div class="info-label">{{ __('Notes') }}</div>
             <div class="info-value">{{ $invoice->notes }}</div>
         </div>
         @endif
 
         <div class="footer">
-            <p>Thank you for your business!</p>
+            <p>{{ __('Thank you for your business!') }}</p>
             <p>Generated on {{ now()->format('M j, Y g:i A') }}</p>
         </div>
     </div>
