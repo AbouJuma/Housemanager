@@ -5,7 +5,12 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h4 mb-0">{{ $property->name }}</h1>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2">
+            @if ($canAddUnits)
+                <a href="{{ route('landlord-portal.buildings.create', $property) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-building-add me-1"></i> {{ __('Add Building') }}
+                </a>
+            @endif
             @if ($canUpdate)
                 <a href="{{ route('landlord-portal.properties.edit', $property) }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
@@ -71,10 +76,18 @@
         <div class="card-body">
             <h2 class="h6 mb-3">Buildings &amp; Units</h2>
             @if ($property->buildings->isEmpty())
-                <p class="text-secondary small mb-0">No buildings on file.</p>
+                <p class="text-secondary small mb-2">{{ __('No buildings on file.') }}</p>
+                @if ($canAddUnits)
+                    <a href="{{ route('landlord-portal.buildings.create', $property) }}" class="btn btn-primary btn-sm"><i class="bi bi-building-add me-1"></i>{{ __('Add the first building') }}</a>
+                @endif
             @else
                 @foreach ($property->buildings as $building)
-                    <h3 class="h6 text-secondary mt-3">{{ $building->name }}</h3>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <h3 class="h6 text-secondary mb-0">{{ $building->name }}</h3>
+                        @if ($canAddUnits)
+                            <a href="{{ route('landlord-portal.units.create', $building) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg me-1"></i>{{ __('Add Unit') }}</a>
+                        @endif
+                    </div>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead>
@@ -84,7 +97,8 @@
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Rent') }}</th>
                                     <th>{{ __('Tenant') }}</th>
-                                    <th>Buyer / Payment</th>
+                                    <th>{{ __('Buyer / Payment') }}</th>
+                                    @if ($canEditUnits)<th></th>@endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,6 +135,9 @@
                                                 <span class="text-secondary">&mdash;</span>
                                             @endif
                                         </td>
+                                        @if ($canEditUnits)
+                                            <td class="text-end"><a href="{{ route('landlord-portal.units.edit', $unit) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('Edit') }}"><i class="bi bi-pencil"></i></a></td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

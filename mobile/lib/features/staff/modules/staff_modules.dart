@@ -16,6 +16,7 @@ import '../../../core/widgets/paginated_list_view.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/toast.dart';
 import '../../auth/providers/auth_provider.dart';
+import 'vendor_form_screen.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -73,6 +74,8 @@ class StaffModule {
     this.fields = const [],
     this.body,
     this.actions = const [],
+    this.form,
+    this.deletable = false,
   });
 
   final String id;
@@ -92,6 +95,13 @@ class StaffModule {
   final List<ModuleField> fields;
   final String? Function(Json)? body;
   final List<ModuleAction> actions;
+
+  /// Add / edit form (null record = add), shown with the module's
+  /// `.create` / `.update` permission. Pops `true` when saved.
+  final Widget Function(Json? record)? form;
+
+  /// Records can be deleted (with the `.delete` permission).
+  final bool deletable;
 
   Future<PageResult<Json>> page(ApiClient api, int page, ListFilters filters) async {
     final response = await api.dio.get(endpoint, queryParameters: {
@@ -325,6 +335,8 @@ final staffModules = <String, StaffModule>{
       ModuleField('Expenses', (r) => _number(r['expenses_count'])),
       ModuleField('Notes', (r) => _str(r['notes'])),
     ],
+    form: (record) => VendorFormScreen(vendor: record),
+    deletable: true,
   ),
   'documents': StaffModule(
     id: 'documents',
@@ -509,8 +521,20 @@ class _ModuleListScreenState extends ConsumerState<ModuleListScreen> {
     final module = widget.module;
     final api = ref.watch(apiClientProvider);
 
+    final form = module.form;
+
     return AppScaffold(
       title: module.title,
+      floatingActionButton: form == null || !hasPermission(ref, '${module.id}.create')
+          ? null
+          : FloatingActionButton(
+              tooltip: context.tr('Add'),
+              onPressed: () async {
+                final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => form(null)));
+                if (saved == true) moduleRecordsChanged.value++;
+              },
+              child: const Icon(Icons.add),
+            ),
       body: PaginatedListView<Json>(
         key: ValueKey(moduleRecordsChanged.value),
         fetchPage: (page, filters) => module.page(api, page, filters),
@@ -615,14 +639,64 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
     }
   }
 
+  Future<void> _delete(Json record) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.tr('Delete')),
+        content: Text('${dialogContext.tr('Delete this record?')}\n${widget.module.heading(record)}'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(dialogContext.tr('Cancel'))),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(dialogContext.tr('Delete'))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      await ref.read(apiClientProvider).dio.delete('${widget.module.endpoint}/${widget.uuid}');
+      moduleRecordsChanged.value++;
+      if (!mounted) return;
+      showToast(context, context.tr('Deleted.'), type: ToastType.success);
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) showToast(context, friendlyErrorMessage(e), type: ToastType.error);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final module = widget.module;
     final key = (module.id, widget.uuid);
     final record = ref.watch(_moduleRecordProvider(key));
 
+    final loaded = record.value;
+
     return AppScaffold(
       title: module.recordTitle,
+      actions: [
+        if (loaded != null && module.form != null && hasPermission(ref, '${module.id}.update'))
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: context.tr('Edit'),
+            onPressed: () async {
+              final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => module.form!(loaded)));
+              if (saved == true) {
+                ref.invalidate(_moduleRecordProvider(key));
+                moduleRecordsChanged.value++;
+              }
+            },
+          ),
+        if (loaded != null && module.deletable && hasPermission(ref, '${module.id}.delete'))
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: context.tr('Delete'),
+            onPressed: _busy ? null : () => _delete(loaded),
+          ),
+      ],
       body: record.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(_moduleRecordProvider(key))),

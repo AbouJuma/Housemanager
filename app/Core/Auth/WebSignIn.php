@@ -4,6 +4,7 @@ namespace App\Core\Auth;
 
 use App\Models\User;
 use App\Modules\Landlords\Models\Landlord;
+use App\Modules\Sales\Models\Buyer;
 use App\Modules\Tenants\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class WebSignIn
         'staff' => [User::class, 'web', 'dashboard'],
         'tenant' => [Tenant::class, 'tenant', 'portal.dashboard'],
         'landlord' => [Landlord::class, 'landlord', 'landlord-portal.dashboard'],
+        'buyer' => [Buyer::class, 'buyer', 'buyer-portal.dashboard'],
     ];
 
     public static function attempt(Request $request, string $preferred, string $identifier, string $password): ?RedirectResponse

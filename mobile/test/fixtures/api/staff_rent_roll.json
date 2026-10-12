@@ -1,19 +1,19 @@
 {
     "data": [
         {
-            "property": "Goyette Mount Plaza",
-            "building": "Block aL",
-            "unit": "056R4",
-            "status": "occupied",
-            "tenant": "Amina Tenant",
-            "lease_start": "2026-10-12",
-            "lease_end": "2027-10-12",
-            "rent_amount": 450000
+            "property": "Koepp Spring Residences",
+            "building": "Block cS",
+            "unit": "159A1",
+            "status": "vacant",
+            "tenant": null,
+            "lease_start": null,
+            "lease_end": null,
+            "rent_amount": 500000
         },
         {
-            "property": "Goyette Mount Plaza",
-            "building": "Block aL",
-            "unit": "200S7",
+            "property": "Koepp Spring Residences",
+            "building": "Block cS",
+            "unit": "327J0",
             "status": "vacant",
             "tenant": null,
             "lease_start": null,
@@ -21,14 +21,14 @@
             "rent_amount": 300000
         },
         {
-            "property": "Goyette Mount Plaza",
-            "building": "Block aL",
-            "unit": "792N2",
-            "status": "vacant",
-            "tenant": null,
-            "lease_start": null,
-            "lease_end": null,
-            "rent_amount": 500000
+            "property": "Koepp Spring Residences",
+            "building": "Block cS",
+            "unit": "710B2",
+            "status": "occupied",
+            "tenant": "Amina Tenant",
+            "lease_start": "2026-10-12",
+            "lease_end": "2027-10-12",
+            "rent_amount": 450000
         }
     ],
     "statuses": [

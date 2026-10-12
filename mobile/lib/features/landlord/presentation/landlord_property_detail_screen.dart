@@ -12,6 +12,7 @@ import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/formatters.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../data/landlord_providers.dart';
+import 'landlord_unit_form_screen.dart';
 
 class LandlordPropertyDetailScreen extends ConsumerWidget {
   const LandlordPropertyDetailScreen({super.key, required this.uuid});
@@ -43,6 +44,15 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
           final units = buildings.expand((b) => b.units).toList();
           final occupied = units.where((u) => u.tenantName != null).length;
           final sold = units.where((u) => u.sale != null).length;
+          final canAdd = hasPermission(ref, 'units.create');
+          final canEditUnits = hasPermission(ref, 'units.update');
+          Future<void> openUnit(String buildingUuid, UnitDetail? unit) async {
+            await Navigator.of(context).push(MaterialPageRoute<bool>(
+              builder: (_) => LandlordUnitFormScreen(buildingUuid: buildingUuid, unit: unit),
+            ));
+            // Also after "Save & add another".
+            ref.invalidate(landlordPropertyProvider(uuid));
+          }
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -86,13 +96,29 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 20),
+              if (canAdd)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.add_business_outlined),
+                    label: Text(context.tr('Add building')),
+                    onPressed: () async {
+                      if (await addBuilding(context, ref, uuid)) ref.invalidate(landlordPropertyProvider(uuid));
+                    },
+                  ),
+                ),
+              const SizedBox(height: 12),
               if (buildings.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: Text('No buildings or units on file yet.', style: TextStyle(color: context.mutedText))),
+                  child: Center(child: Text(context.tr('No buildings or units on file yet.'), style: TextStyle(color: context.mutedText))),
                 )
               else
-                ...buildings.map((building) => _BuildingSection(building: building)),
+                ...buildings.map((building) => _BuildingSection(
+                      building: building,
+                      onAddUnit: canAdd ? () => openUnit(building.uuid, null) : null,
+                      onEditUnit: canEditUnits ? (unit) => openUnit(building.uuid, unit) : null,
+                    )),
             ],
           );
         },
@@ -117,9 +143,11 @@ class _StatColumn extends StatelessWidget {
 }
 
 class _BuildingSection extends StatelessWidget {
-  const _BuildingSection({required this.building});
+  const _BuildingSection({required this.building, this.onAddUnit, this.onEditUnit});
 
   final PropertyBuildingDetail building;
+  final VoidCallback? onAddUnit;
+  final ValueChanged<UnitDetail>? onEditUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -128,15 +156,20 @@ class _BuildingSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(building.name, style: Theme.of(context).textTheme.titleSmall),
+          Row(
+            children: [
+              Expanded(child: Text(building.name, style: Theme.of(context).textTheme.titleSmall)),
+              if (onAddUnit != null) TextButton.icon(onPressed: onAddUnit, icon: const Icon(Icons.add, size: 18), label: Text(context.tr('Add unit'))),
+            ],
+          ),
           const SizedBox(height: 8),
           if (building.units.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('No units in this building yet.', style: TextStyle(color: context.mutedText)),
+              child: Text(context.tr('No units in this building yet.'), style: TextStyle(color: context.mutedText)),
             )
           else
-            ...building.units.map((unit) => _UnitTile(unit: unit)),
+            ...building.units.map((unit) => _UnitTile(unit: unit, onTap: onEditUnit == null ? null : () => onEditUnit!(unit))),
         ],
       ),
     );
@@ -144,9 +177,10 @@ class _BuildingSection extends StatelessWidget {
 }
 
 class _UnitTile extends StatelessWidget {
-  const _UnitTile({required this.unit});
+  const _UnitTile({required this.unit, this.onTap});
 
   final UnitDetail unit;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -162,12 +196,13 @@ class _UnitTile extends StatelessWidget {
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
+              onTap: onTap,
               leading: CircleAvatar(
                 backgroundColor: occupied ? Colors.green.shade100 : Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Icon(occupied ? Icons.person : Icons.meeting_room_outlined, color: occupied ? Colors.green.shade700 : context.mutedText),
               ),
               title: Text('${unit.unitNumber} · ${formatMoney(unit.rentAmount)}'),
-              subtitle: Text(occupied ? '${unit.tenantName}${unit.tenantPhone != null ? ' · ${unit.tenantPhone}' : ''}' : 'Vacant'),
+              subtitle: Text(occupied ? '${unit.tenantName}${unit.tenantPhone != null ? ' · ${unit.tenantPhone}' : ''}' : context.tr('Free')),
               trailing: StatusChip(unit.status),
             ),
             if (sale != null) ...[

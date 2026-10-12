@@ -1,0 +1,18 @@
+{
+    "data": {
+        "uuid": "ff2e30c2-298e-4319-8ec5-b148f2a60883",
+        "unit_number": "A1",
+        "type": "apartment",
+        "status": "vacant",
+        "bedrooms": null,
+        "bathrooms": null,
+        "area": null,
+        "area_unit": null,
+        "rent_amount": "450000.00",
+        "description": null,
+        "tenant": null,
+        "sale": null,
+        "created_at": "2026-10-12T10:14:51+00:00",
+        "updated_at": "2026-10-12T10:14:51+00:00"
+    }
+}

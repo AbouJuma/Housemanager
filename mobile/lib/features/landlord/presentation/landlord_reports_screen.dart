@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/api/json_helpers.dart';
 import '../../../core/l10n/l10n.dart';
@@ -50,18 +49,18 @@ class LandlordReportsScreen extends ConsumerWidget {
   }
 }
 
-String _iso(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
+/// Named periods the server understands - (label, period).
+const _periods = [
+  ('Today', 'today'),
+  ('This week', 'this_week'),
+  ('This month', 'this_month'),
+  ('Last month', 'last_month'),
+  ('This year', 'this_year'),
+  ('Last year', 'last_year'),
+];
 
-/// Quick periods - (label, from, to); null dates = this year so far.
-List<(String, String?, String?)> _periods() {
-  final now = DateTime.now();
-  return [
-    ('This month', _iso(DateTime(now.year, now.month)), _iso(now)),
-    ('3 months', _iso(DateTime(now.year, now.month - 2)), _iso(now)),
-    ('This year', null, null),
-    ('Last year', _iso(DateTime(now.year - 1)), _iso(DateTime(now.year - 1, 12, 31))),
-  ];
-}
+/// Breakdown - null lets the server pick from the period's length.
+const _groups = [('Daily', 'day'), ('Weekly', 'week'), ('Monthly', 'month')];
 
 class LandlordProfitLossScreen extends ConsumerStatefulWidget {
   const LandlordProfitLossScreen({super.key});
@@ -71,13 +70,13 @@ class LandlordProfitLossScreen extends ConsumerStatefulWidget {
 }
 
 class _LandlordProfitLossScreenState extends ConsumerState<LandlordProfitLossScreen> {
-  int _period = 2;
+  String _period = 'this_month';
+  String? _group;
 
   @override
   Widget build(BuildContext context) {
-    final periods = _periods();
-    final (_, from, to) = periods[_period];
-    final report = ref.watch(landlordProfitLossProvider((from, to)));
+    final key = (_period, _group);
+    final report = ref.watch(landlordProfitLossProvider(key));
 
     return AppScaffold(
       title: 'Profit & Loss',
@@ -88,22 +87,34 @@ class _LandlordProfitLossScreenState extends ConsumerState<LandlordProfitLossScr
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Row(
               children: [
-                for (var i = 0; i < periods.length; i++)
+                for (final (label, period) in _periods)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text(context.tr(periods[i].$1)),
-                      selected: _period == i,
-                      onSelected: (_) => setState(() => _period = i),
+                      label: Text(context.tr(label)),
+                      selected: _period == period,
+                      onSelected: (_) => setState(() {
+                        _period = period;
+                        _group = null;
+                      }),
                     ),
                   ),
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+            child: SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: [for (final (label, group) in _groups) ButtonSegment(value: group, label: Text(context.tr(label)))],
+              selected: {_group ?? (report.value?['group'] as String? ?? 'day')},
+              onSelectionChanged: (s) => setState(() => _group = s.first),
+            ),
+          ),
           Expanded(
             child: report.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(landlordProfitLossProvider((from, to)))),
+              error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(landlordProfitLossProvider(key))),
               data: (data) => _ProfitLossBody(data: data),
             ),
           ),
@@ -123,7 +134,8 @@ class _ProfitLossBody extends StatelessWidget {
     final income = data['income'] as Map<String, dynamic>;
     final expenses = data['expenses'] as Map<String, dynamic>;
     final net = asDouble(data['net']);
-    final monthly = (data['monthly'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final monthly = (data['breakdown'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final byTitle = switch (data['group']) { 'day' => 'By day', 'week' => 'By week', _ => 'By month' };
     final byProperty = (data['by_property'] as List<dynamic>).cast<Map<String, dynamic>>();
     final byCategory = (expenses['by_category'] as List<dynamic>).cast<Map<String, dynamic>>();
     final good = StatusChip.colorFor(context, 'paid');
@@ -164,7 +176,7 @@ class _ProfitLossBody extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _Section(
-          title: 'By month',
+          title: byTitle,
           children: [
             for (final row in monthly)
               Padding(
@@ -174,7 +186,7 @@ class _ProfitLossBody extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: Text(DateFormat.yMMM().format(DateTime.parse('${row['month']}-01')))),
+                        Expanded(child: Text(row['label'] as String? ?? '')),
                         Text(formatMoney(asDouble(row['net'])), style: TextStyle(fontWeight: FontWeight.w700, color: asDouble(row['net']) >= 0 ? good : bad)),
                       ],
                     ),

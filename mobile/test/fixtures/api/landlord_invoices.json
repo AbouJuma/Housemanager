@@ -1,0 +1,125 @@
+{
+    "data": [
+        {
+            "uuid": "4332fd2a-28ce-4ea3-aa8d-91f7fd6dd100",
+            "invoice_number": "INV-000001",
+            "kind": "rent",
+            "status": "paid",
+            "issue_date": "2026-10-12",
+            "due_date": "2026-10-12",
+            "total_amount": 450000,
+            "amount_paid": 450000,
+            "balance_due": 0,
+            "is_overdue": false,
+            "person": {
+                "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
+                "name": "Amina Tenant",
+                "phone": "0712000333"
+            },
+            "unit_number": "710B2",
+            "property": {
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
+            }
+        },
+        {
+            "uuid": "46948da2-eff9-4890-9d9d-65c1dc5184cc",
+            "invoice_number": "INV-000002",
+            "kind": "sale",
+            "status": "paid",
+            "issue_date": "2026-10-12",
+            "due_date": "2026-11-12",
+            "total_amount": 6000000,
+            "amount_paid": 6000000,
+            "balance_due": 0,
+            "is_overdue": false,
+            "person": {
+                "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+                "name": "Asha Buyer",
+                "phone": "0788000444"
+            },
+            "unit_number": "327J0",
+            "property": {
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
+            }
+        },
+        {
+            "uuid": "27e360a8-789e-4d3f-96a9-ee283cf3f0a7",
+            "invoice_number": "INV-000003",
+            "kind": "sale",
+            "status": "sent",
+            "issue_date": "2026-10-12",
+            "due_date": "2026-12-12",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "is_overdue": false,
+            "person": {
+                "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+                "name": "Asha Buyer",
+                "phone": "0788000444"
+            },
+            "unit_number": "327J0",
+            "property": {
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
+            }
+        },
+        {
+            "uuid": "fc3aba1b-11ac-46fa-8ec7-1c8211375f7a",
+            "invoice_number": "INV-000004",
+            "kind": "sale",
+            "status": "sent",
+            "issue_date": "2026-10-12",
+            "due_date": "2027-01-12",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "is_overdue": false,
+            "person": {
+                "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+                "name": "Asha Buyer",
+                "phone": "0788000444"
+            },
+            "unit_number": "327J0",
+            "property": {
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
+            }
+        },
+        {
+            "uuid": "af583b4a-d7a3-4111-a8bc-4c1ad49d11d7",
+            "invoice_number": "INV-000005",
+            "kind": "sale",
+            "status": "sent",
+            "issue_date": "2026-10-12",
+            "due_date": "2027-02-12",
+            "total_amount": 6000000,
+            "amount_paid": 0,
+            "balance_due": 6000000,
+            "is_overdue": false,
+            "person": {
+                "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+                "name": "Asha Buyer",
+                "phone": "0788000444"
+            },
+            "unit_number": "327J0",
+            "property": {
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
+            }
+        }
+    ],
+    "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "total": 5
+    },
+    "summary": {
+        "status": "all",
+        "count": 5,
+        "total": 24450000,
+        "balance": 18000000
+    }
+}

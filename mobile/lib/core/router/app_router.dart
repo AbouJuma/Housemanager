@@ -15,6 +15,7 @@ import '../../features/documents/presentation/documents_screen.dart';
 import '../../features/landlord/presentation/landlord_expenses_screen.dart';
 import '../../features/landlord/presentation/landlord_maintenance_screen.dart';
 import '../../features/landlord/presentation/landlord_property_detail_screen.dart';
+import '../../features/landlord/presentation/landlord_people_screens.dart';
 import '../../features/landlord/presentation/landlord_properties_screen.dart';
 import '../../features/landlord/presentation/landlord_property_form_screen.dart';
 import '../../features/landlord/presentation/landlord_reports_screen.dart';
@@ -204,7 +205,9 @@ class LandlordLayout {
         reports = permissions.contains('reports.view') || permissions.contains('properties.viewAny'),
         expenses = permissions.contains('expenses.viewAny'),
         maintenance = permissions.contains('maintenance.viewAny'),
-        documents = permissions.contains('documents.viewAny');
+        documents = permissions.contains('documents.viewAny'),
+        buyers = permissions.contains('buyers.viewAny'),
+        invoices = permissions.contains('invoices.viewAny');
 
   final bool properties;
   final bool tenants;
@@ -212,6 +215,8 @@ class LandlordLayout {
   final bool expenses;
   final bool maintenance;
   final bool documents;
+  final bool buyers;
+  final bool invoices;
 }
 
 List<StatefulShellBranch> _landlordBranches(LandlordLayout can) => [
@@ -259,6 +264,8 @@ List<StatefulShellBranch> _landlordBranches(LandlordLayout can) => [
           builder: (c, s) => MoreScreen(
             documentsRoute: can.documents ? '/landlord/more/documents' : null,
             extraLinks: [
+              if (can.invoices) const MoreScreenLink(icon: Icons.receipt_long_outlined, label: 'Invoices', route: '/landlord/more/invoices'),
+              if (can.buyers) const MoreScreenLink(icon: Icons.house_outlined, label: 'My Buyers', route: '/landlord/more/buyers'),
               if (can.expenses) const MoreScreenLink(icon: Icons.receipt_outlined, label: 'Expenses', route: '/landlord/more/expenses'),
               if (can.maintenance) const MoreScreenLink(icon: Icons.build_outlined, label: 'Maintenance', route: '/landlord/more/maintenance'),
             ],
@@ -266,6 +273,13 @@ List<StatefulShellBranch> _landlordBranches(LandlordLayout can) => [
           routes: [
             if (can.documents) GoRoute(path: 'documents', builder: (c, s) => const DocumentsScreen(role: 'landlord')),
             if (can.expenses) GoRoute(path: 'expenses', builder: (c, s) => const LandlordExpensesScreen()),
+            if (can.invoices) GoRoute(path: 'invoices', builder: (c, s) => const LandlordInvoicesScreen()),
+            if (can.buyers)
+              GoRoute(
+                path: 'buyers',
+                builder: (c, s) => const LandlordBuyersScreen(),
+                routes: [GoRoute(path: ':uuid', builder: (c, s) => LandlordBuyerDetailScreen(uuid: s.pathParameters['uuid']!))],
+              ),
             if (can.maintenance) GoRoute(path: 'maintenance', builder: (c, s) => const LandlordMaintenanceScreen()),
             GoRoute(path: 'profile', builder: (c, s) => const ProfileScreen()),
           ],

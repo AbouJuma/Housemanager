@@ -1,21 +1,21 @@
 {
     "data": {
-        "uuid": "c1f93530-c2ef-4980-8f14-04646ffbb42e",
-        "title": "Utility Bill",
-        "category": "id_document",
-        "description": "A libero ducimus consectetur libero.",
-        "expiry_date": "2028-03-12",
+        "uuid": "c3c45fba-1dd8-4946-80c6-ceca21171012",
+        "title": "Signed Lease Agreement",
+        "category": "other",
+        "description": "Voluptatem dolorem enim non nihil quis.",
+        "expiry_date": null,
         "is_expired": false,
         "is_expiring_soon": false,
         "documentable_type": "tenant",
         "documentable": {
-            "uuid": "e8668ba2-8a2e-4c2f-8edf-e5dba067dc9b",
+            "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
             "name": "Amina Tenant"
         },
         "file_url": null,
         "file_name": null,
         "uploaded_by": null,
-        "created_at": "2026-10-12T08:27:38+00:00",
-        "updated_at": "2026-10-12T08:27:38+00:00"
+        "created_at": "2026-10-12T10:14:51+00:00",
+        "updated_at": "2026-10-12T10:14:51+00:00"
     }
 }

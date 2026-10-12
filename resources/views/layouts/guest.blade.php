@@ -55,7 +55,7 @@
                 @yield('content')
             </div>
 
-            @if (request()->routeIs('login', 'portal.login', 'landlord-portal.login'))
+            @if (request()->routeIs('login', 'portal.login', 'landlord-portal.login', 'buyer-portal.login'))
                 <div class="auth-card mt-4">
                     @include('partials.app-download')
                 </div>

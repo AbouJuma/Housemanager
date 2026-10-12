@@ -4,7 +4,12 @@ namespace App\Modules\LandlordPortal\Http\Controllers\Api\V1;
 
 use App\Core\Http\Concerns\HasListFilters;
 use App\Http\Controllers\Controller;
+use App\Modules\LandlordPortal\Http\Requests\LandlordBuildingRequest;
 use App\Modules\LandlordPortal\Http\Requests\LandlordPropertyRequest;
+use App\Modules\LandlordPortal\Http\Requests\LandlordUnitRequest;
+use App\Modules\Properties\Http\Resources\UnitResource;
+use App\Modules\Properties\Models\Building;
+use App\Modules\Properties\Models\Unit;
 use App\Modules\LandlordPortal\Services\LandlordManagementService;
 use App\Modules\Properties\Http\Resources\PropertyResource;
 use App\Modules\Properties\Models\Property;
@@ -63,8 +68,35 @@ class PropertyController extends Controller
         return response()->json([
             'types' => LandlordPropertyRequest::TYPES,
             'statuses' => LandlordPropertyRequest::STATUSES,
+            'unit_types' => LandlordUnitRequest::TYPES,
+            'unit_statuses' => LandlordUnitRequest::STATUSES,
             'regions' => config('tanzania.regions'),
             'areas' => config('tanzania.areas', []),
         ]);
+    }
+
+    public function storeBuilding(LandlordBuildingRequest $request, Property $property): JsonResponse
+    {
+        $building = $this->service->createBuilding($property, $request->validated());
+
+        return response()->json(['data' => [
+            'uuid' => $building->uuid,
+            'name' => $building->name,
+            'floor_count' => $building->floor_count,
+            'status' => $building->status,
+            'units' => [],
+        ]], 201);
+    }
+
+    public function storeUnit(LandlordUnitRequest $request, Building $building): JsonResponse
+    {
+        $unit = $this->service->createUnit($building, $request->validated());
+
+        return UnitResource::make($unit)->response()->setStatusCode(201);
+    }
+
+    public function updateUnit(LandlordUnitRequest $request, Unit $unit): UnitResource
+    {
+        return UnitResource::make($this->service->updateUnit($unit, $request->validated()));
     }
 }

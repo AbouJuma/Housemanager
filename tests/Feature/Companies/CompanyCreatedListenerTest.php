@@ -28,7 +28,7 @@ class CompanyCreatedListenerTest extends TestCase
 
         $admin = PermissionsTeam::runAs($company->id, fn () => Role::where('name', 'Admin')->firstOrFail());
 
-        $this->assertSame(Permission::count(), $admin->permissions->count());
+        $this->assertSame(Permission::where('guard_name', 'web')->count(), $admin->permissions->count());
     }
 
     public function test_the_staff_role_only_gets_view_permissions(): void

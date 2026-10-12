@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "e8668ba2-8a2e-4c2f-8edf-e5dba067dc9b",
+        "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
         "name": "Amina Tenant",
         "username": "amina.tenant",
         "type": "individual",
@@ -10,33 +10,33 @@
         "added_by_you": false,
         "leases_count": 1,
         "current_lease": {
-            "uuid": "053c718a-1553-4a7c-ad91-3f2b382b3efc",
+            "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
             "status": "active",
             "start_date": "2026-10-12",
             "end_date": "2027-10-12",
             "rent_amount": 450000,
-            "unit_number": "056R4",
-            "building": "Block aL",
+            "unit_number": "710B2",
+            "building": "Block cS",
             "property": {
-                "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                "name": "Goyette Mount Plaza"
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences"
             }
         },
-        "created_at": "2026-10-12T08:27:38+00:00",
+        "created_at": "2026-10-12T10:14:51+00:00",
         "emergency_contact_name": null,
         "emergency_contact_phone": null,
         "leases": [
             {
-                "uuid": "053c718a-1553-4a7c-ad91-3f2b382b3efc",
+                "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
                 "status": "active",
                 "start_date": "2026-10-12",
                 "end_date": "2027-10-12",
                 "rent_amount": 450000,
-                "unit_number": "056R4",
-                "building": "Block aL",
+                "unit_number": "710B2",
+                "building": "Block cS",
                 "property": {
-                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                    "name": "Goyette Mount Plaza"
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
                 }
             }
         ]

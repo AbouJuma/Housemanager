@@ -3,6 +3,7 @@
 namespace App\Modules\LandlordPortal\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Modules\LandlordPortal\Http\Requests\LandlordContactUpdateRequest;
 use App\Modules\LandlordPortal\Http\Requests\LandlordTenantRequest;
 use App\Modules\LandlordPortal\Services\LandlordManagementService;
 use App\Modules\LandlordPortal\Support\LandlordTenantPresenter;
@@ -60,5 +61,13 @@ class TenantController extends Controller
             // Shown once so the landlord can pass it on; the tenant is also sent it.
             'login' => ['username' => $tenant->username, 'password' => $password],
         ], 201);
+    }
+
+    public function update(LandlordContactUpdateRequest $request, Tenant $tenant): JsonResponse
+    {
+        $landlord = $request->user();
+        $tenant->update($request->validatedDetails());
+
+        return response()->json(['data' => LandlordTenantPresenter::detail($tenant->fresh()->load(LandlordTenantPresenter::with($landlord)), $landlord)]);
     }
 }

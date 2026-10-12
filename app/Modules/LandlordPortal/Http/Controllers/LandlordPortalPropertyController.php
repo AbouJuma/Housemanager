@@ -55,6 +55,8 @@ class LandlordPortalPropertyController extends Controller
         return view('landlord-portal::properties.show', [
             'property' => $property->load('buildings.units.leases.tenant', 'buildings.units.sales.buyer'),
             'canUpdate' => LandlordAccess::can($landlord, 'properties.update'),
+            'canAddUnits' => LandlordAccess::can($landlord, 'units.create'),
+            'canEditUnits' => LandlordAccess::can($landlord, 'units.update'),
         ]);
     }
 

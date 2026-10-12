@@ -52,7 +52,7 @@ class WebPagesSmokeTest extends TestCase
 
         $company = Company::factory()->create(['name' => 'Smoke Homes']);
         $admin = PermissionsTeam::runAs($company->id, function () use ($company) {
-            Role::findOrCreate('Admin', 'web')->syncPermissions(Permission::pluck('name'));
+            Role::findOrCreate('Admin', 'web')->syncPermissions(Permission::where('guard_name', 'web')->pluck('name'));
             $admin = User::factory()->create(['company_id' => $company->id]);
             $admin->assignRole('Admin');
 

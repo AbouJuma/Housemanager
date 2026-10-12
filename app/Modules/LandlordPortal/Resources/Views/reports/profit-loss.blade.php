@@ -4,14 +4,8 @@
 
 @section('content')
     @php
-        $today = company_now();
-        $presets = [
-            __('This month') => [$today->copy()->startOfMonth()->toDateString(), $today->toDateString()],
-            __('Last 3 months') => [$today->copy()->subMonthsNoOverflow(2)->startOfMonth()->toDateString(), $today->toDateString()],
-            __('This year') => [$today->copy()->startOfYear()->toDateString(), $today->toDateString()],
-            __('Last year') => [$today->copy()->subYear()->startOfYear()->toDateString(), $today->copy()->subYear()->endOfYear()->toDateString()],
-        ];
         $money = fn ($value) => number_format((float) $value, 2);
+        $groupTitle = ['day' => __('By day'), 'week' => __('By week'), 'month' => __('By month')][$report['group']];
     @endphp
 
     <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
@@ -21,25 +15,7 @@
 
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <div class="d-flex flex-wrap gap-2 mb-3">
-                @foreach ($presets as $label => [$from, $to])
-                    <a href="{{ route('landlord-portal.reports.profit-loss', ['from' => $from, 'to' => $to]) }}"
-                       class="btn btn-sm {{ $report['from'] === $from && $report['to'] === $to ? 'btn-primary' : 'btn-outline-primary' }}">{{ $label }}</a>
-                @endforeach
-            </div>
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-sm-4 col-md-3">
-                    <label class="form-label small">{{ __('From') }}</label>
-                    <input type="date" name="from" value="{{ $report['from'] }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-sm-4 col-md-3">
-                    <label class="form-label small">{{ __('To') }}</label>
-                    <input type="date" name="to" value="{{ $report['to'] }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-sm-4 col-md-2">
-                    <button class="btn btn-sm btn-primary w-100">{{ __('Apply') }}</button>
-                </div>
-            </form>
+            @include('partials.period-filter', ['route' => 'landlord-portal.reports.profit-loss', 'period' => $period, 'from' => $report['from'], 'to' => $report['to'], 'group' => $report['group']])
         </div>
     </div>
 
@@ -72,14 +48,14 @@
         <div class="col-lg-7">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h2 class="h6 mb-3">{{ __('By month') }}</h2>
+                    <h2 class="h6 mb-3">{{ $groupTitle }}</h2>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0">
-                            <thead><tr><th>{{ __('Month') }}</th><th class="text-end">{{ __('Income') }}</th><th class="text-end">{{ __('Expenses') }}</th><th class="text-end">{{ __('Net') }}</th></tr></thead>
+                            <thead><tr><th>{{ __('Period') }}</th><th class="text-end">{{ __('Income') }}</th><th class="text-end">{{ __('Expenses') }}</th><th class="text-end">{{ __('Net') }}</th></tr></thead>
                             <tbody>
-                                @foreach ($report['monthly'] as $row)
+                                @foreach ($report['breakdown'] as $row)
                                     <tr>
-                                        <td>{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d', $row['month'].'-01')->translatedFormat('M Y') }}</td>
+                                        <td>{{ $row['label'] }}</td>
                                         <td class="text-end">{{ $money($row['income']) }}</td>
                                         <td class="text-end">{{ $money($row['expenses']) }}</td>
                                         <td class="text-end fw-semibold {{ $row['net'] >= 0 ? 'text-success' : 'text-danger' }}">{{ $money($row['net']) }}</td>

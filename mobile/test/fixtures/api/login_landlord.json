@@ -1,7 +1,7 @@
 {
-    "token": "3|Q7Mpb1tOA87qfsjfqeDE950AVEJSgIt6nXmpCgvRf3d04023",
+    "token": "3|q5DjIK4EKz0rKDHkuQZv7M0UHWHcogRlHCTqUTRC8bf7d8f4",
     "landlord": {
-        "uuid": "0d8c0ff7-c4f9-426d-9fca-a059c10de10c",
+        "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
         "name": "Juma Landlord",
         "type": "individual",
         "status": "active",
@@ -26,19 +26,27 @@
         },
         "notes": null,
         "photo_url": null,
-        "created_at": "2026-10-12T08:27:38+00:00",
-        "updated_at": "2026-10-12T08:27:38+00:00"
+        "created_at": "2026-10-12T10:14:51+00:00",
+        "updated_at": "2026-10-12T10:14:51+00:00"
     },
     "permissions": [
+        "buyers.update",
+        "buyers.viewAny",
         "documents.viewAny",
+        "expenses.create",
+        "expenses.update",
         "expenses.viewAny",
+        "invoices.viewAny",
         "maintenance.viewAny",
         "properties.create",
         "properties.update",
         "properties.viewAny",
         "reports.view",
         "tenants.create",
-        "tenants.viewAny"
+        "tenants.update",
+        "tenants.viewAny",
+        "units.create",
+        "units.update"
     ],
     "branding": {
         "company_name": "Contract Homes",

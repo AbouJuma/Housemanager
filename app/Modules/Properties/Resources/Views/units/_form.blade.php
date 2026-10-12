@@ -18,11 +18,16 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">{{ __('Status') }}</label>
+        {{-- Landlords can't mark a unit rented by hand - its lease does that. --}}
+        @if (($forLandlord ?? false) && $unit?->status === 'occupied')
+            <input type="text" class="form-control" value="{{ __('Rented (follows its lease)') }}" disabled>
+        @else
         <select name="status" class="form-select @error('status') is-invalid @enderror">
-            @foreach (['vacant', 'occupied', 'under_maintenance', 'reserved'] as $status)
+            @foreach (($forLandlord ?? false) ? ['vacant', 'under_maintenance', 'reserved'] : ['vacant', 'occupied', 'under_maintenance', 'reserved'] as $status)
                 <option value="{{ $status }}" @selected(old('status', $unit?->status ?? 'vacant') === $status)>{{ __(ucfirst(str_replace('_', ' ', $status))) }}</option>
             @endforeach
         </select>
+        @endif
         @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Modules\LandlordPortal\Http\Controllers\Api\V1;
 
+use App\Core\Support\Period;
 use App\Http\Controllers\Controller;
 use App\Modules\LandlordPortal\Services\LandlordReportService;
 use Illuminate\Http\JsonResponse;
@@ -15,9 +16,10 @@ class ReportController extends Controller
     public function profitLoss(Request $request): JsonResponse
     {
         $request->validate(['from' => ['nullable', 'date'], 'to' => ['nullable', 'date']]);
-        [$from, $to] = LandlordReportService::period($request->query('from'), $request->query('to'));
+        // ?period=today|this_week|this_month|... or ?from=&to=, and ?group=day|week|month.
+        [$from, $to, $period] = Period::resolve($request->query('period'), $request->query('from'), $request->query('to'));
 
-        return response()->json(['data' => $this->reports->profitAndLoss($request->user(), $from, $to)]);
+        return response()->json(['data' => ['period' => $period, ...$this->reports->profitAndLoss($request->user(), $from, $to, $request->query('group'))]]);
     }
 
     public function units(Request $request): JsonResponse

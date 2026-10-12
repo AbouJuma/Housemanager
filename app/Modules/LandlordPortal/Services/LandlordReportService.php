@@ -2,6 +2,7 @@
 
 namespace App\Modules\LandlordPortal\Services;
 
+use App\Core\Support\Period;
 use App\Modules\Expenses\Models\Expense;
 use App\Modules\Invoices\Models\InvoicePayment;
 use App\Modules\Landlords\Models\Landlord;
@@ -23,17 +24,10 @@ class LandlordReportService
 {
     public const UNIT_STATUSES = ['occupied', 'vacant', 'reserved', 'under_maintenance'];
 
-    /** @return array{0: Carbon, 1: Carbon} */
-    public static function period(?string $from, ?string $to): array
+    /** @param  ?string  $group  day / week / month (null = picked from the range length) */
+    public function profitAndLoss(Landlord $landlord, Carbon $from, Carbon $to, ?string $group = null): array
     {
-        $end = $to ? Carbon::parse($to)->endOfDay() : company_now()->endOfDay();
-        $start = $from ? Carbon::parse($from)->startOfDay() : $end->copy()->startOfYear();
-
-        return $start->greaterThan($end) ? [$end->copy()->startOfDay(), $start->copy()->endOfDay()] : [$start, $end];
-    }
-
-    public function profitAndLoss(Landlord $landlord, Carbon $from, Carbon $to): array
-    {
+        $group = Period::group($group, $from, $to);
         $properties = $landlord->properties()->get(['id', 'uuid', 'name'])->keyBy('id');
         $propertyIds = $properties->keys()->all();
 
@@ -42,7 +36,8 @@ class LandlordReportService
             ->with('account:id,name')
             ->whereIn('property_id', $propertyIds ?: [0])
             ->where('status', '!=', 'voided')
-            ->whereBetween('expense_date', [$from->toDateString(), $to->toDateString()])
+            ->whereDate('expense_date', '>=', $from->toDateString())
+            ->whereDate('expense_date', '<=', $to->toDateString())
             ->get(['id', 'property_id', 'account_id', 'amount', 'expense_date']);
 
         $rent = $payments->where('source', 'rent')->sum('amount');
@@ -61,12 +56,12 @@ class LandlordReportService
             ->map(fn (Collection $rows, string $name) => ['category' => $name, 'amount' => (float) $rows->sum('amount')])
             ->sortByDesc('amount')->values()->all();
 
-        $months = [];
-        for ($month = $from->copy()->startOfMonth(); $month->lessThanOrEqualTo($to); $month->addMonth()) {
-            $key = $month->format('Y-m');
-            $in = (float) $payments->filter(fn ($p) => $p['month'] === $key)->sum('amount');
-            $out = (float) $expenses->filter(fn ($e) => Carbon::parse($e->expense_date)->format('Y-m') === $key)->sum('amount');
-            $months[] = ['month' => $key, 'income' => $in, 'expenses' => $out, 'net' => $in - $out];
+        // Day / week / month breakdown of the same figures.
+        $breakdown = [];
+        foreach (Period::buckets($from, $to, $group) as $bucket) {
+            $in = (float) $payments->filter(fn ($p) => Period::bucket($p['date'], $group) === $bucket['key'])->sum('amount');
+            $out = (float) $expenses->filter(fn ($e) => Period::bucket(Carbon::parse($e->expense_date), $group) === $bucket['key'])->sum('amount');
+            $breakdown[] = [...$bucket, 'income' => $in, 'expenses' => $out, 'net' => $in - $out];
         }
 
         return [
@@ -77,7 +72,8 @@ class LandlordReportService
             'net' => (float) $income - $spent,
             'margin' => $income > 0 ? round((($income - $spent) / $income) * 100, 1) : null,
             'by_property' => $byProperty,
-            'monthly' => $months,
+            'group' => $group,
+            'breakdown' => $breakdown,
         ];
     }
 
@@ -141,7 +137,8 @@ class LandlordReportService
         return InvoicePayment::query()
             ->with(['invoice:id,lease_id,sale_id', 'invoice.lease:id,unit_id', 'invoice.lease.unit:id,building_id', 'invoice.lease.unit.building:id,property_id',
                 'invoice.sale:id,unit_id', 'invoice.sale.unit:id,building_id', 'invoice.sale.unit.building:id,property_id'])
-            ->whereBetween('paid_on', [$from->toDateString(), $to->toDateString()])
+            ->whereDate('paid_on', '>=', $from->toDateString())
+            ->whereDate('paid_on', '<=', $to->toDateString())
             ->whereHas('invoice', fn (Builder $invoice) => $invoice
                 ->whereHas('lease.unit.building', $inProperties)
                 ->orWhereHas('sale.unit.building', $inProperties))
@@ -155,7 +152,7 @@ class LandlordReportService
                     'amount' => (float) $payment->amount,
                     'source' => $isRent ? 'rent' : 'sale',
                     'property_id' => $building?->property_id,
-                    'month' => Carbon::parse($payment->paid_on)->format('Y-m'),
+                    'date' => Carbon::parse($payment->paid_on),
                 ];
             });
     }

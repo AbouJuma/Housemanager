@@ -34,15 +34,29 @@ class LandlordAccess
             'properties.create' => 'Add new properties',
             'properties.update' => 'Edit their properties',
         ],
+        'units' => [
+            'units.create' => 'Add buildings and units to their properties',
+            'units.update' => 'Edit their units (rent, type, availability)',
+        ],
         'tenants' => [
             'tenants.viewAny' => 'See the tenants in their properties',
             'tenants.create' => 'Add new tenants',
+            'tenants.update' => 'Edit their tenants\' details',
+        ],
+        'buyers' => [
+            'buyers.viewAny' => 'See the buyers of their units',
+            'buyers.update' => 'Edit their buyers\' details',
+        ],
+        'invoices' => [
+            'invoices.viewAny' => 'See invoices for their units (who still owes)',
         ],
         'reports' => [
             'reports.view' => 'See profit & loss and occupancy reports',
         ],
         'expenses' => [
             'expenses.viewAny' => 'See expenses on their properties',
+            'expenses.create' => 'Add expenses to their properties',
+            'expenses.update' => 'Edit their expenses',
         ],
         'maintenance' => [
             'maintenance.viewAny' => 'See maintenance requests on their properties',

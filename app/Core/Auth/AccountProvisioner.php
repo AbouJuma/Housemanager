@@ -47,8 +47,8 @@ class AccountProvisioner
             'tenant' => route('portal.login'),
             'landlord' => route('landlord-portal.login'),
             'staff' => route('login'),
-            // Buyers sign in through the mobile app only.
-            default => config('company.mobile_app_url') ?: url('/'),
+            'buyer' => route('buyer-portal.login'),
+            default => url('/'),
         };
     }
 }

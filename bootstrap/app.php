@@ -67,6 +67,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('landlord-portal*')) {
                 return route('landlord-portal.login');
             }
+            if ($request->is('buyer-portal*')) {
+                return route('buyer-portal.login');
+            }
 
             return $request->is('portal*') ? route('portal.login') : route('login');
         });

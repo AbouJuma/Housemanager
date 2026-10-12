@@ -1,6 +1,6 @@
 {
     "profile": {
-        "uuid": "0d8c0ff7-c4f9-426d-9fca-a059c10de10c",
+        "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
         "name": "Juma Landlord",
         "username": "juma.landlord",
         "email": null,
@@ -13,14 +13,22 @@
         "accent_color": "#5EEAD4"
     },
     "permissions": [
+        "buyers.update",
+        "buyers.viewAny",
         "documents.viewAny",
+        "expenses.create",
+        "expenses.update",
         "expenses.viewAny",
+        "invoices.viewAny",
         "maintenance.viewAny",
         "properties.create",
         "properties.update",
         "properties.viewAny",
         "reports.view",
         "tenants.create",
-        "tenants.viewAny"
+        "tenants.update",
+        "tenants.viewAny",
+        "units.create",
+        "units.update"
     ]
 }

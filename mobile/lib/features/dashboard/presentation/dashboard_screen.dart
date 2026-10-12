@@ -552,8 +552,10 @@ class _LandlordDashboard extends ConsumerWidget {
         final tiles = [
           if (can('properties.viewAny')) const _Tile(Icons.apartment_outlined, 'Properties', 'Units & tenants', '/landlord/properties'),
           if (can('tenants.viewAny')) const _Tile(Icons.people_outline, 'Tenants', 'Who rents from you', '/landlord/tenants'),
+          if (can('invoices.viewAny')) const _Tile(Icons.receipt_long_outlined, 'Invoices', 'Who still owes', '/landlord/more/invoices'),
           if (can('reports.view')) const _Tile(Icons.trending_up, 'Profit & Loss', 'Income vs expenses', '/landlord/reports/profit-loss'),
           if (can('properties.viewAny')) const _Tile(Icons.meeting_room_outlined, 'Units', 'Rented & free', '/landlord/reports/units'),
+          if (can('buyers.viewAny')) const _Tile(Icons.house_outlined, 'Buyers', 'Unit purchases', '/landlord/more/buyers'),
           if (can('expenses.viewAny')) const _Tile(Icons.trending_down, 'Expenses', 'Where it went', '/landlord/more/expenses'),
           if (can('maintenance.viewAny')) const _Tile(Icons.build_outlined, 'Maintenance', 'Open requests', '/landlord/more/maintenance'),
           if (can('documents.viewAny')) const _Tile(Icons.folder_open_outlined, 'Documents', 'Contracts & files', '/landlord/more/documents'),

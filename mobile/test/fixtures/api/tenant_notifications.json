@@ -2,12 +2,12 @@
     "unread_count": 1,
     "data": [
         {
-            "id": "edb6f792-853c-4dc6-a775-a1812cc1b965",
+            "id": "6e7c20e0-99bd-46c6-acb7-fa957536a96b",
             "kind": "general",
             "title": "Welcome message sent",
             "message": "Welcome message sent to Amina Tenant.",
             "read": false,
-            "created_at": "2026-10-12T08:27:40+00:00",
+            "created_at": "2026-10-12T10:14:52+00:00",
             "created_ago": "0 seconds ago"
         }
     ],

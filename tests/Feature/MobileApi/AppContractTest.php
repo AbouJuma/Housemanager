@@ -58,7 +58,7 @@ class AppContractTest extends TestCase
 
         // --- Staff (created the way an admin creates one - default password = phone)
         $staff = PermissionsTeam::runAs($company->id, function () use ($company) {
-            Role::findOrCreate('Admin', 'web')->syncPermissions(Permission::pluck('name'));
+            Role::findOrCreate('Admin', 'web')->syncPermissions(Permission::where('guard_name', 'web')->pluck('name'));
 
             return app(UserService::class)->create([
                 'name' => 'Sara Staff', 'phone' => '0711000111', 'company_id' => $company->id, 'roles' => ['Admin'],
@@ -131,6 +131,9 @@ class AppContractTest extends TestCase
                 'landlord_profit_loss' => '/portal/landlord/reports/profit-loss',
                 'landlord_units' => '/portal/landlord/reports/units',
                 'landlord_property_options' => '/portal/landlord/property-options',
+                'landlord_invoices' => '/portal/landlord/invoices?status=all',
+                'landlord_buyers' => '/portal/landlord/buyers',
+                'landlord_buyer' => "/portal/landlord/buyers/{$buyer->uuid}",
             ],
             'buyer' => [
                 'buyer_dashboard' => '/portal/buyer/dashboard',
@@ -171,6 +174,23 @@ class AppContractTest extends TestCase
         $newTenant = $this->api('landlord')->postJson('/api/v1/portal/landlord/tenants', ['name' => 'Neema Mpangaji', 'type' => 'individual', 'phone' => '0716000555']);
         $this->assertSame(201, $newTenant->status(), 'POST landlord tenants: '.$newTenant->getContent());
         $this->saveFixture('landlord_tenant_created', $newTenant->json());
+        $this->assertSame(200, $this->api('landlord')->putJson('/api/v1/portal/landlord/tenants/'.$newTenant->json('data.uuid'), ['name' => 'Neema M.', 'phone' => '0716000555'])->status());
+        $block = $this->api('landlord')->postJson('/api/v1/portal/landlord/properties/'.$newProperty->json('data.uuid').'/buildings', ['name' => 'Block A']);
+        $this->assertSame(201, $block->status(), 'POST buildings: '.$block->getContent());
+        $this->saveFixture('landlord_building_created', $block->json());
+        $newUnit = $this->api('landlord')->postJson('/api/v1/portal/landlord/buildings/'.$block->json('data.uuid').'/units', ['unit_number' => 'A1', 'type' => 'apartment', 'rent_amount' => 450000]);
+        $this->assertSame(201, $newUnit->status(), 'POST units: '.$newUnit->getContent());
+        $this->saveFixture('landlord_unit_saved', $newUnit->json());
+        $this->assertSame(200, $this->api('landlord')->putJson('/api/v1/portal/landlord/units/'.$newUnit->json('data.uuid'), ['unit_number' => 'A1', 'type' => 'apartment', 'status' => 'reserved'])->status());
+        Account::factory()->create(['company_id' => $company->id, 'type' => 'expense', 'name' => 'Repairs', 'is_active' => true]);
+        $options = $this->api('landlord')->getJson('/api/v1/portal/landlord/expense-options')->json();
+        $this->saveFixture('landlord_expense_options', $options);
+        $newExpense = $this->api('landlord')->postJson('/api/v1/portal/landlord/expenses', ['property_id' => $options['properties'][0]['id'], 'account_id' => $options['categories'][0]['id'], 'description' => 'Gate repair', 'amount' => 150000, 'expense_date' => now()->toDateString(), 'payment_status' => 'unpaid']);
+        $this->assertSame(201, $newExpense->status(), 'POST landlord expenses: '.$newExpense->getContent());
+        $this->saveFixture('landlord_expense_saved', $newExpense->json());
+        $this->assertSame(200, $this->api('landlord')->putJson('/api/v1/portal/landlord/expenses/'.$newExpense->json('data.uuid'), ['property_id' => $options['properties'][0]['id'], 'description' => 'Main gate repair'])->status());
+        $this->saveFixture('landlord_expenses_today', $this->api('landlord')->getJson('/api/v1/portal/landlord/expenses?period=today')->json());
+        $this->saveFixture('landlord_profit_loss_month', $this->api('landlord')->getJson('/api/v1/portal/landlord/reports/profit-loss?period=this_month&group=week')->json());
 
         // --- Every create/update the app sends, with the app's exact payloads
         $newTenant = $this->api('staff')->postJson('/api/v1/tenants', ['name' => 'New Tenant', 'type' => 'individual', 'status' => 'active', 'phone' => '0713000555']);

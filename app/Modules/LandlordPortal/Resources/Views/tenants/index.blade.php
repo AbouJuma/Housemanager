@@ -36,6 +36,7 @@
                                 <th>{{ __('Property / Unit') }}</th>
                                 <th>{{ __('Rent') }}</th>
                                 <th>{{ __('Lease') }}</th>
+                                @if ($canUpdate)<th></th>@endif
                             </tr>
                         </thead>
                         <tbody>
@@ -65,6 +66,9 @@
                                             —
                                         @endif
                                     </td>
+                                    @if ($canUpdate)
+                                        <td class="text-end"><a href="{{ route('landlord-portal.tenants.edit', $row['uuid']) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('Edit') }}"><i class="bi bi-pencil"></i></a></td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>

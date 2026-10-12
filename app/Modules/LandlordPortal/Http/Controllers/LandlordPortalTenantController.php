@@ -3,7 +3,9 @@
 namespace App\Modules\LandlordPortal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\LandlordPortal\Http\Requests\LandlordContactUpdateRequest;
 use App\Modules\LandlordPortal\Http\Requests\LandlordTenantRequest;
+use App\Modules\Tenants\Models\Tenant;
 use App\Modules\LandlordPortal\Services\LandlordManagementService;
 use App\Modules\LandlordPortal\Support\LandlordAccess;
 use App\Modules\LandlordPortal\Support\LandlordTenantPresenter;
@@ -34,6 +36,7 @@ class LandlordPortalTenantController extends Controller
             'tenants' => $tenants,
             'rows' => $tenants->getCollection()->map(fn ($tenant) => LandlordTenantPresenter::row($tenant, $landlord)),
             'canCreate' => LandlordAccess::can($landlord, 'tenants.create'),
+            'canUpdate' => LandlordAccess::can($landlord, 'tenants.update'),
         ]);
     }
 
@@ -52,5 +55,21 @@ class LandlordPortalTenantController extends Controller
             'Tenant ":name" added. Portal login - username: :username, password: :password',
             ['name' => $tenant->name, 'username' => $tenant->username, 'password' => $password],
         ));
+    }
+
+    public function edit(Tenant $tenant): View
+    {
+        $landlord = Auth::guard('landlord')->user();
+        LandlordAccess::authorize($landlord, 'tenants.update');
+        abort_unless($landlord->tenantsQuery()->whereKey($tenant->id)->exists(), 404);
+
+        return view('landlord-portal::contacts.edit', ['person' => $tenant, 'kind' => 'tenant']);
+    }
+
+    public function update(LandlordContactUpdateRequest $request, Tenant $tenant): RedirectResponse
+    {
+        $tenant->update($request->validatedDetails());
+
+        return redirect()->route('landlord-portal.tenants.index')->with('success', __(':name updated.', ['name' => $tenant->name]));
     }
 }

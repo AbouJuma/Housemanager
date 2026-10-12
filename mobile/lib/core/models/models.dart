@@ -196,6 +196,8 @@ class UnitDetail {
   final String type;
   final String status;
   final double rentAmount;
+  final int? bedrooms;
+  final int? bathrooms;
   final String? tenantName;
   final String? tenantPhone;
   // A unit is either rented (tenant, above) or sold (this) - rarely both.
@@ -207,6 +209,8 @@ class UnitDetail {
     required this.type,
     required this.status,
     required this.rentAmount,
+    this.bedrooms,
+    this.bathrooms,
     this.tenantName,
     this.tenantPhone,
     this.sale,
@@ -222,6 +226,8 @@ class UnitDetail {
       type: json['type'] as String,
       status: json['status'] as String,
       rentAmount: asDouble(json['rent_amount']),
+      bedrooms: asIntOrNull(json['bedrooms']),
+      bathrooms: asIntOrNull(json['bathrooms']),
       tenantName: tenant?['name'] as String?,
       tenantPhone: tenant?['phone'] as String?,
       sale: sale != null ? UnitSaleSummary.fromJson(sale) : null,

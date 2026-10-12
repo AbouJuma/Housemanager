@@ -1,31 +1,31 @@
 {
     "data": [
         {
-            "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-            "name": "Goyette Mount Plaza",
-            "type": "residential",
+            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+            "name": "Koepp Spring Residences",
+            "type": "hostel",
             "status": "active",
             "description": null,
             "address": {
-                "line1": "3831 Littel Springs Apt. 311",
+                "line1": "15560 Sanford Ramp",
                 "line2": null,
                 "city": "Kinondoni",
                 "area": "Masaki",
                 "state": "Dar es Salaam",
-                "postal_code": "16490-0822",
-                "country_code": "GR"
+                "postal_code": "07903",
+                "country_code": "VI"
             },
             "latitude": null,
             "longitude": null,
-            "total_area": "2118.84",
+            "total_area": "9686.46",
             "area_unit": "sqm",
             "cover_photo_url": null,
             "buildings_count": 1,
             "units_count": 3,
             "occupied_units_count": 1,
             "vacant_units_count": 2,
-            "created_at": "2026-10-12T08:27:38+00:00",
-            "updated_at": "2026-10-12T08:27:38+00:00"
+            "created_at": "2026-10-12T10:14:51+00:00",
+            "updated_at": "2026-10-12T10:14:51+00:00"
         }
     ],
     "links": {

@@ -8,9 +8,11 @@ use App\Core\Concerns\HasUuid;
 use App\Modules\Documents\Models\Document;
 use App\Modules\Expenses\Models\Expense;
 use App\Modules\Landlords\Database\Factories\LandlordFactory;
+use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Maintenance\Models\MaintenanceRequest;
 use App\Modules\Properties\Models\Property;
 use App\Modules\Properties\Models\Unit;
+use App\Modules\Sales\Models\Buyer;
 use App\Modules\Tenants\Models\Tenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -119,6 +121,22 @@ class Landlord extends Authenticatable implements HasMedia
         return Tenant::query()->where(fn (Builder $query) => $query
             ->where('tenants.landlord_id', $this->id)
             ->orWhereHas('leases.unit.building.property', fn (Builder $property) => $property->where('landlord_id', $this->id)));
+    }
+
+    /** People who bought (or are buying) units in this landlord's properties. */
+    public function buyersQuery(): Builder
+    {
+        return Buyer::query()->whereHas('sales.unit.building.property', fn (Builder $property) => $property->where('landlord_id', $this->id));
+    }
+
+    /** Rent and sale invoices for units in this landlord's properties. */
+    public function invoicesQuery(): Builder
+    {
+        $mine = fn (Builder $property) => $property->where('landlord_id', $this->id);
+
+        return Invoice::query()->where(fn (Builder $query) => $query
+            ->whereHas('lease.unit.building.property', $mine)
+            ->orWhereHas('sale.unit.building.property', $mine));
     }
 
     /** Units in this landlord's properties. */

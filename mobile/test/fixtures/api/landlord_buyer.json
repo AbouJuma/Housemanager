@@ -1,0 +1,28 @@
+{
+    "data": {
+        "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+        "name": "Asha Buyer",
+        "username": "asha.buyer",
+        "phone": "0788000444",
+        "email": null,
+        "status": "active",
+        "address": "8020 Reynolds Walks\nMaciberg, MI 32116",
+        "id_number": null,
+        "purchases": [
+            {
+                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "status": "active",
+                "sale_date": "2026-10-12",
+                "unit_number": "327J0",
+                "property": {
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
+                },
+                "total_price": 30000000,
+                "total_paid": 12000000,
+                "remaining_balance": 18000000,
+                "completion_percentage": 40
+            }
+        ]
+    }
+}

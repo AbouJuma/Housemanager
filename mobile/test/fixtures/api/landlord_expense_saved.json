@@ -1,0 +1,28 @@
+{
+    "data": {
+        "uuid": "7b82a888-03b6-4636-a28d-f1eae94c2993",
+        "description": "Gate repair",
+        "vendor_name": null,
+        "vendor_display_name": null,
+        "amount": 150000,
+        "expense_date": "2026-10-12",
+        "payment_status": "unpaid",
+        "payment_method": null,
+        "paid_on": null,
+        "reference": null,
+        "notes": null,
+        "status": "active",
+        "account": {
+            "uuid": "bb020f36-a678-4cd6-9f6f-46d80c049bb2",
+            "code": "9340",
+            "name": "Repairs"
+        },
+        "property": {
+            "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+            "name": "Juma Towers"
+        },
+        "vendor": null,
+        "created_at": "2026-10-12T10:14:52+00:00",
+        "updated_at": "2026-10-12T10:14:52+00:00"
+    }
+}

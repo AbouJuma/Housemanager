@@ -17,6 +17,20 @@
         "under_maintenance",
         "archived"
     ],
+    "unit_types": [
+        "apartment",
+        "studio",
+        "office",
+        "shop",
+        "warehouse_space",
+        "room",
+        "other"
+    ],
+    "unit_statuses": [
+        "vacant",
+        "under_maintenance",
+        "reserved"
+    ],
     "regions": {
         "Arusha": [
             "Arusha City",

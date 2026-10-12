@@ -1,92 +1,104 @@
 {
     "data": {
+        "period": "this_year",
         "from": "2026-01-01",
         "to": "2026-10-12",
         "income": {
-            "rent": 0,
-            "sales": 0,
-            "total": 0
+            "rent": 450000,
+            "sales": 6000000,
+            "total": 6450000
         },
         "expenses": {
-            "total": 377.04,
+            "total": 450.99,
             "by_category": [
                 {
-                    "category": "Cash",
-                    "amount": 377.04
+                    "category": "Maintenance Expense",
+                    "amount": 450.99
                 }
             ]
         },
-        "net": -377.04,
-        "margin": null,
+        "net": 6449549.01,
+        "margin": 100,
         "by_property": [
             {
-                "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                "name": "Goyette Mount Plaza",
-                "income": 0,
-                "expenses": 377.04,
-                "net": -377.04
+                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                "name": "Koepp Spring Residences",
+                "income": 6450000,
+                "expenses": 450.99,
+                "net": 6449549.01
             }
         ],
-        "monthly": [
+        "group": "month",
+        "breakdown": [
             {
-                "month": "2026-01",
+                "key": "2026-01",
+                "label": "Jan 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-02",
+                "key": "2026-02",
+                "label": "Feb 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-03",
+                "key": "2026-03",
+                "label": "Mar 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-04",
+                "key": "2026-04",
+                "label": "Apr 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-05",
+                "key": "2026-05",
+                "label": "May 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-06",
+                "key": "2026-06",
+                "label": "Jun 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-07",
+                "key": "2026-07",
+                "label": "Jul 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-08",
+                "key": "2026-08",
+                "label": "Aug 2026",
                 "income": 0,
                 "expenses": 0,
                 "net": 0
             },
             {
-                "month": "2026-09",
+                "key": "2026-09",
+                "label": "Sep 2026",
                 "income": 0,
-                "expenses": 377.04,
-                "net": -377.04
+                "expenses": 450.99,
+                "net": -450.99
             },
             {
-                "month": "2026-10",
-                "income": 0,
+                "key": "2026-10",
+                "label": "Oct 2026",
+                "income": 6450000,
                 "expenses": 0,
-                "net": 0
+                "net": 6450000
             }
         ]
     }

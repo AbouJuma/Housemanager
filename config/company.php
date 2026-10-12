@@ -8,7 +8,7 @@ return [
     */
     'default_timezone' => env('APP_DISPLAY_TIMEZONE', 'Africa/Dar_es_Salaam'),
 
-    // Where buyers (who have no web portal) get the mobile app - sent in/n    // their welcome message as {login_url}./n    /x27mobile_app_url/x27 => env(/x27MOBILE_APP_URL/x27),/n/n    // Offered on Settings -> Company Profile.
+    // Offered on Settings -> Company Profile.
     'currencies' => [
         'TZS' => 'Tanzanian Shilling (TZS)',
         'KES' => 'Kenyan Shilling (KES)',

@@ -1,24 +1,24 @@
 {
     "data": {
-        "uuid": "c23ff0f6-48c5-4e41-bfa4-0e6dd35fb77b",
-        "name": "Paint (White, 1L)",
-        "sku": null,
-        "category": "safety_equipment",
-        "unit_of_measure": "liter",
+        "uuid": "9a22e4ae-8fca-46fa-a9d4-042761d05b7a",
+        "name": "LED Light Bulb",
+        "sku": "SKU-0527QG",
+        "category": "cleaning_supply",
+        "unit_of_measure": "piece",
         "quantity_on_hand": 0,
-        "reorder_level": 3.49,
-        "unit_cost": null,
-        "is_low_stock": true,
+        "reorder_level": null,
+        "unit_cost": 73.81,
+        "is_low_stock": false,
         "status": "active",
         "notes": null,
         "property": {
-            "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-            "name": "Goyette Mount Plaza"
+            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+            "name": "Koepp Spring Residences"
         },
         "vendor": null,
         "transactions_count": 0,
         "recent_transactions": [],
-        "created_at": "2026-10-12T08:27:39+00:00",
-        "updated_at": "2026-10-12T08:27:39+00:00"
+        "created_at": "2026-10-12T10:14:52+00:00",
+        "updated_at": "2026-10-12T10:14:52+00:00"
     }
 }

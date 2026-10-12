@@ -1,0 +1,69 @@
+{
+    "data": [
+        {
+            "uuid": "7b82a888-03b6-4636-a28d-f1eae94c2993",
+            "description": "Main gate repair",
+            "vendor_name": null,
+            "vendor_display_name": null,
+            "amount": 150000,
+            "expense_date": "2026-10-12",
+            "payment_status": "unpaid",
+            "payment_method": null,
+            "paid_on": null,
+            "reference": null,
+            "notes": null,
+            "status": "active",
+            "account": {
+                "uuid": "bb020f36-a678-4cd6-9f6f-46d80c049bb2",
+                "code": "9340",
+                "name": "Repairs"
+            },
+            "property": {
+                "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+                "name": "Juma Towers"
+            },
+            "vendor": null,
+            "created_at": "2026-10-12T10:14:52+00:00",
+            "updated_at": "2026-10-12T10:14:52+00:00"
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/v1/portal/landlord/expenses?period=today&page=1",
+        "last": "http://localhost/api/v1/portal/landlord/expenses?period=today&page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/v1/portal/landlord/expenses?period=today&page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/v1/portal/landlord/expenses",
+        "per_page": 15,
+        "to": 1,
+        "total": 1
+    },
+    "summary": {
+        "total": 150000,
+        "unpaid": 150000
+    }
+}

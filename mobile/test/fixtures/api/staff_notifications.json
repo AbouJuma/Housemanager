@@ -2,12 +2,12 @@
     "unread_count": 1,
     "data": [
         {
-            "id": "60057c19-26d5-4240-8d6c-796ad36d5dc7",
+            "id": "5318ab26-1afa-4ae8-8bc2-67d381bcb201",
             "kind": "access",
             "title": "Your access was updated",
             "message": "Your role: Admin. You can now: Invoices: create. No longer allowed: Tenants: delete.",
             "read": false,
-            "created_at": "2026-10-12T08:27:40+00:00",
+            "created_at": "2026-10-12T10:14:52+00:00",
             "created_ago": "0 seconds ago"
         }
     ],

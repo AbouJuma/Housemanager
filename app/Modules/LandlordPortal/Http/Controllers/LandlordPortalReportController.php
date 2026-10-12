@@ -2,6 +2,7 @@
 
 namespace App\Modules\LandlordPortal\Http\Controllers;
 
+use App\Core\Support\Period;
 use App\Http\Controllers\Controller;
 use App\Modules\LandlordPortal\Services\LandlordReportService;
 use App\Modules\LandlordPortal\Support\LandlordAccess;
@@ -17,9 +18,12 @@ class LandlordPortalReportController extends Controller
     {
         $landlord = Auth::guard('landlord')->user();
         LandlordAccess::authorize($landlord, 'reports.view');
-        [$from, $to] = LandlordReportService::period($request->query('from'), $request->query('to'));
+        [$from, $to, $period] = Period::resolve($request->query('period'), $request->query('from'), $request->query('to'));
 
-        return view('landlord-portal::reports.profit-loss', ['report' => $this->reports->profitAndLoss($landlord, $from, $to)]);
+        return view('landlord-portal::reports.profit-loss', [
+            'report' => $this->reports->profitAndLoss($landlord, $from, $to, $request->query('group')),
+            'period' => $period,
+        ]);
     }
 
     public function units(Request $request): View

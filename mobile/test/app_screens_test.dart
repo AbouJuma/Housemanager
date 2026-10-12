@@ -81,6 +81,20 @@ class FixtureAdapter implements HttpClientAdapter {
     'GET /portal/landlord/maintenance-requests': 'landlord_maintenance',
     'GET /portal/landlord/documents': 'landlord_documents',
     'GET /portal/landlord/tenants': 'landlord_tenants',
+    'PUT /portal/landlord/tenants/{id}': 'landlord_tenant',
+    'GET /portal/landlord/invoices': 'landlord_invoices',
+    'GET /portal/landlord/expense-options': 'landlord_expense_options',
+    'POST /portal/landlord/expenses': 'landlord_expense_saved',
+    'PUT /portal/landlord/expenses/{id}': 'landlord_expense_saved',
+    'GET /portal/landlord/buyers': 'landlord_buyers',
+    'GET /portal/landlord/buyers/{id}': 'landlord_buyer',
+    'PUT /portal/landlord/buyers/{id}': 'landlord_buyer',
+    'POST /portal/landlord/properties/{id}/buildings': 'landlord_building_created',
+    'POST /portal/landlord/buildings/{id}/units': 'landlord_unit_saved',
+    'PUT /portal/landlord/units/{id}': 'landlord_unit_saved',
+    'POST /vendors': 'module_vendors_detail',
+    'PUT /vendors/{id}': 'module_vendors_detail',
+    'DELETE /vendors/{id}': 'empty',
     'GET /portal/landlord/tenants/{id}': 'landlord_tenant',
     'POST /portal/landlord/tenants': 'landlord_tenant_created',
     'GET /portal/landlord/reports/profit-loss': 'landlord_profit_loss',
@@ -230,6 +244,9 @@ Map<UserRole, List<String>> locations() => {
     '/landlord/reports/units',
     '/landlord/more',
     '/landlord/more/expenses',
+    '/landlord/more/invoices',
+    '/landlord/more/buyers',
+    '/landlord/more/buyers/${firstUuid('landlord_buyers')}',
     '/landlord/more/maintenance',
     '/landlord/more/documents',
     '/landlord/more/profile',
@@ -620,5 +637,126 @@ void main() {
       await tester.pumpAndSettle();
       expect(currentPath(router), isNot(blocked));
     }
+  });
+
+  // --- Landlords: buildings, units, expenses, buyers, invoices; vendors for staff.
+
+  testWidgets('a landlord adds a unit and records an expense', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.landlord);
+
+    // Add a unit to the property's first building.
+    await openPath(tester, router, '/landlord/properties/${firstUuid('landlord_properties')}');
+    await tester.tap(find.text('Add unit').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Unit number'), 'Z9');
+    await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Apartment').last);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add unit'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Add unit'));
+    await tester.pumpAndSettle();
+    expect((adapter.sent['POST /portal/landlord/buildings/{id}/units'] as Map)['unit_number'], 'Z9');
+
+    // Record an expense (once the "Unit added" toast has gone).
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pumpAndSettle();
+    await openPath(tester, router, '/landlord/more/expenses');
+    expect(find.text('Total spent'), findsOneWidget);
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(DropdownButtonFormField<int>, 'Property'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Juma Towers').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Description'), 'Gate repair');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Amount'), '150000');
+    await tester.ensureVisible(find.widgetWithText(DropdownButtonFormField<int>, 'Category'));
+    await tester.tap(find.widgetWithText(DropdownButtonFormField<int>, 'Category'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Repairs').last);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add expense'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Add expense'));
+    await tester.pumpAndSettle();
+    final sent = adapter.sent['POST /portal/landlord/expenses'] as Map;
+    expect(sent['description'], 'Gate repair');
+    expect(sent['amount'], 150000);
+    expect(sent['payment_status'], 'unpaid');
+    expect(adapter.unmatched, isEmpty);
+  });
+
+  testWidgets('a landlord sees pending invoices and edits a buyer', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.landlord);
+
+    await openPath(tester, router, '/landlord/more/invoices');
+    expect(find.text('Pending'), findsOneWidget);
+    expect(find.text('Still owed · 5 invoices'), findsOneWidget);
+
+    await openPath(tester, router, '/landlord/more/buyers/${firstUuid('landlord_buyers')}');
+    await tester.tap(find.byIcon(Icons.edit_outlined));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Asha B.');
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Save changes'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Save changes'));
+    await tester.pumpAndSettle();
+    expect((adapter.sent['PUT /portal/landlord/buyers/{id}'] as Map)['name'], 'Asha B.');
+  });
+
+  testWidgets('a landlord without the new rights sees none of those buttons', (tester) async {
+    final (router, _) = await pumpApp(tester, UserRole.landlord, permissions: ['properties.viewAny', 'expenses.viewAny']);
+
+    await openPath(tester, router, '/landlord/properties/${firstUuid('landlord_properties')}');
+    expect(find.text('Add unit'), findsNothing);
+    expect(find.text('Add building'), findsNothing);
+    await openPath(tester, router, '/landlord/more/expenses');
+    expect(find.byType(FloatingActionButton), findsNothing);
+    for (final blocked in ['/landlord/more/invoices', '/landlord/more/buyers']) {
+      router.go(blocked);
+      await tester.pumpAndSettle();
+      expect(currentPath(router), isNot(blocked));
+    }
+  });
+
+  testWidgets('staff add, edit and delete vendors', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.staff);
+
+    await openPath(tester, router, '/staff/more/vendors');
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Name'), 'Bomba Plumbers');
+    await tester.tap(find.widgetWithText(DropdownButtonFormField<String>, 'Category'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Plumbing').last);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add vendor'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Add vendor'));
+    await tester.pumpAndSettle();
+    expect((adapter.sent['POST /vendors'] as Map)['category'], 'plumbing');
+
+    await openPath(tester, router, '/staff/more/vendors/${firstUuid('module_vendors')}');
+    await tester.tap(find.byIcon(Icons.edit_outlined));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Save changes'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Save changes'));
+    await tester.pumpAndSettle();
+    expect(adapter.calls, contains('PUT /vendors/{id}'));
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+    expect(adapter.calls, contains('DELETE /vendors/{id}'));
+    expect(adapter.unmatched, isEmpty);
+  });
+
+  testWidgets('lists offer today / this week / this month / this year filters', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.tenant);
+
+    await openPath(tester, router, '/tenant/invoices');
+    expect(find.text('This week'), findsOneWidget);
+    await tester.tap(find.text('This month'));
+    await tester.pumpAndSettle();
+    expect(adapter.calls.where((c) => c == 'GET /portal/tenant/invoices').length, greaterThan(1), reason: 'reloaded with the period');
   });
 }

@@ -24,6 +24,7 @@ class PaginatedListView<T> extends StatefulWidget {
     required this.emptyLabel,
     this.statusOptions,
     this.showDateRange = true,
+    this.allLabel = 'All',
   });
 
   final PageFetcher<T> fetchPage;
@@ -31,6 +32,7 @@ class PaginatedListView<T> extends StatefulWidget {
   final String emptyLabel;
   final List<String>? statusOptions;
   final bool showDateRange;
+  final String allLabel;
 
   @override
   State<PaginatedListView<T>> createState() => _PaginatedListViewState<T>();
@@ -120,6 +122,7 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
             initial: _filters,
             onChanged: _onFiltersChanged,
             showDateRange: widget.showDateRange,
+            allLabel: widget.allLabel,
           ),
         Expanded(child: _buildBody()),
       ],

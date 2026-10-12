@@ -1,7 +1,7 @@
 {
     "data": [
         {
-            "uuid": "095445a8-fe4e-48e6-9020-8c9cf3377a3f",
+            "uuid": "4332fd2a-28ce-4ea3-aa8d-91f7fd6dd100",
             "invoice_number": "INV-000001",
             "status": "paid",
             "issue_date": "2026-10-12",
@@ -11,15 +11,15 @@
             "balance_due": 0,
             "notes": null,
             "lease": {
-                "uuid": "053c718a-1553-4a7c-ad91-3f2b382b3efc",
+                "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
                 "tenant": null,
                 "unit": {
-                    "uuid": "3bb150a0-7e00-4c7b-975b-4d3dc0c3c3b6",
-                    "unit_number": "056R4"
+                    "uuid": "42bec715-07a2-4ecc-b196-94f30bf515c9",
+                    "unit_number": "710B2"
                 }
             },
-            "created_at": "2026-10-12T08:27:38+00:00",
-            "updated_at": "2026-10-12T08:27:38+00:00"
+            "created_at": "2026-10-12T10:14:51+00:00",
+            "updated_at": "2026-10-12T10:14:51+00:00"
         }
     ],
     "links": {

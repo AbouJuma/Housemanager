@@ -1,0 +1,28 @@
+{
+    "properties": [
+        {
+            "id": 2,
+            "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+            "name": "Juma Towers"
+        },
+        {
+            "id": 1,
+            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+            "name": "Koepp Spring Residences"
+        }
+    ],
+    "categories": [
+        {
+            "id": 2,
+            "code": "9340",
+            "name": "Repairs"
+        }
+    ],
+    "payment_methods": [
+        "cash",
+        "bank_transfer",
+        "cheque",
+        "mobile_money",
+        "other"
+    ]
+}

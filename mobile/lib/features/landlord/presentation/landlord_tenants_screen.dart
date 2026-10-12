@@ -15,6 +15,7 @@ import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/toast.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../data/landlord_providers.dart';
+import 'landlord_people_screens.dart';
 
 /// The landlord's tenants: anyone renting one of their units, plus
 /// tenants they added themselves.
@@ -119,6 +120,19 @@ class LandlordTenantDetailScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Tenant',
+      actions: [
+        if (hasPermission(ref, 'tenants.update') && tenant.hasValue)
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: context.tr('Edit'),
+            onPressed: () async {
+              final saved = await Navigator.of(context).push<bool>(MaterialPageRoute(
+                builder: (_) => LandlordContactFormScreen(kind: 'tenant', person: tenant.value!),
+              ));
+              if (saved == true) ref.invalidate(landlordTenantProvider(uuid));
+            },
+          ),
+      ],
       body: tenant.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(landlordTenantProvider(uuid))),

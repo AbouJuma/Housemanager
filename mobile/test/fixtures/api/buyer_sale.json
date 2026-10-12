@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "94ca7d12-b778-4554-8386-7733e8452cf7",
+        "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
         "sale_date": "2026-10-12",
         "total_price": 30000000,
         "down_payment": 6000000,
@@ -12,20 +12,20 @@
         "completion_percentage": 40,
         "notes": null,
         "unit": {
-            "uuid": "2c0ce43f-fa6d-4fd4-9d37-32652ec117c2",
-            "unit_number": "200S7",
+            "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
+            "unit_number": "327J0",
             "building": {
-                "uuid": "b71c908f-9690-4f74-ad14-f9f71c15f26d",
-                "name": "Block aL",
+                "uuid": "6708054a-93cb-4681-8bd6-e22c8f26351d",
+                "name": "Block cS",
                 "property": {
-                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                    "name": "Goyette Mount Plaza"
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
                 }
             }
         },
         "installments": [
             {
-                "uuid": "19b76704-8e6e-49f5-841c-c53b6a9860ce",
+                "uuid": "372fdf77-0fda-431b-ba77-f7ef71230c4f",
                 "installment_number": 1,
                 "due_date": "2026-11-12",
                 "amount": 6000000,
@@ -36,7 +36,7 @@
                 "notes": null
             },
             {
-                "uuid": "58fbc921-2fed-4302-b0ac-81853cc30c71",
+                "uuid": "7c2ecbe6-24d4-46f1-9702-e8ab6b64bb20",
                 "installment_number": 2,
                 "due_date": "2026-12-12",
                 "amount": 6000000,
@@ -47,7 +47,7 @@
                 "notes": null
             },
             {
-                "uuid": "853c34cf-c65e-404a-b69a-e01d212781b1",
+                "uuid": "284b6c99-42d5-4c9d-9492-947e90fbcdb8",
                 "installment_number": 3,
                 "due_date": "2027-01-12",
                 "amount": 6000000,
@@ -58,7 +58,7 @@
                 "notes": null
             },
             {
-                "uuid": "677bb47d-8523-479e-a4da-f39f42877998",
+                "uuid": "39202f7d-7461-4eb0-9f67-27b15770d0f0",
                 "installment_number": 4,
                 "due_date": "2027-02-12",
                 "amount": 6000000,
@@ -69,7 +69,7 @@
                 "notes": null
             }
         ],
-        "created_at": "2026-10-12T08:27:38+00:00",
-        "updated_at": "2026-10-12T08:27:38+00:00"
+        "created_at": "2026-10-12T10:14:51+00:00",
+        "updated_at": "2026-10-12T10:14:51+00:00"
     }
 }

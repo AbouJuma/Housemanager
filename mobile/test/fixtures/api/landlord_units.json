@@ -11,53 +11,53 @@
         },
         "units": [
             {
-                "uuid": "3bb150a0-7e00-4c7b-975b-4d3dc0c3c3b6",
-                "unit_number": "056R4",
+                "uuid": "6c4fef4b-b307-4dcc-86a4-00373ab0a964",
+                "unit_number": "159A1",
+                "type": "shop",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 500000,
+                "building": "Block cS",
+                "property": {
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
+                },
+                "tenant": null,
+                "lease_end": null
+            },
+            {
+                "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
+                "unit_number": "327J0",
+                "type": "office",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 300000,
+                "building": "Block cS",
+                "property": {
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
+                },
+                "tenant": null,
+                "lease_end": null
+            },
+            {
+                "uuid": "42bec715-07a2-4ecc-b196-94f30bf515c9",
+                "unit_number": "710B2",
                 "type": "apartment",
                 "status": "occupied",
                 "is_rented": true,
                 "rent_amount": 450000,
-                "building": "Block aL",
+                "building": "Block cS",
                 "property": {
-                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                    "name": "Goyette Mount Plaza"
+                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
+                    "name": "Koepp Spring Residences"
                 },
                 "tenant": {
-                    "uuid": "e8668ba2-8a2e-4c2f-8edf-e5dba067dc9b",
+                    "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
                     "name": "Amina Tenant",
                     "phone": "0712000333"
                 },
                 "lease_end": "2027-10-12"
-            },
-            {
-                "uuid": "2c0ce43f-fa6d-4fd4-9d37-32652ec117c2",
-                "unit_number": "200S7",
-                "type": "studio",
-                "status": "vacant",
-                "is_rented": false,
-                "rent_amount": 300000,
-                "building": "Block aL",
-                "property": {
-                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                    "name": "Goyette Mount Plaza"
-                },
-                "tenant": null,
-                "lease_end": null
-            },
-            {
-                "uuid": "78e06907-8519-4cf8-a3d3-9ebf99684018",
-                "unit_number": "792N2",
-                "type": "studio",
-                "status": "vacant",
-                "is_rented": false,
-                "rent_amount": 500000,
-                "building": "Block aL",
-                "property": {
-                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
-                    "name": "Goyette Mount Plaza"
-                },
-                "tenant": null,
-                "lease_end": null
             }
         ]
     }
