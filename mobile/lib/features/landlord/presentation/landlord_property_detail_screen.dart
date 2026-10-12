@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../../core/widgets/error_view.dart';
+import '../../../core/l10n/l10n.dart';
 
 import '../../../core/theme/app_theme.dart';
 
@@ -21,6 +24,17 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Property',
+      actions: [
+        if (hasPermission(ref, 'properties.update'))
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit',
+            onPressed: () async {
+              final changed = await context.push<bool>('/landlord/properties/$uuid/edit');
+              if (changed == true) ref.invalidate(landlordPropertyProvider(uuid));
+            },
+          ),
+      ],
       body: property.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(landlordPropertyProvider(uuid))),
@@ -61,7 +75,8 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
                           children: [
                             _StatColumn(label: 'Buildings', value: '${buildings.length}'),
                             _StatColumn(label: 'Units', value: '${units.length}'),
-                            _StatColumn(label: 'Occupied', value: '$occupied / ${units.length}'),
+                            _StatColumn(label: 'Rented', value: '$occupied'),
+                            _StatColumn(label: 'Free', value: '${units.where((u) => u.tenantName == null && u.sale == null).length}'),
                             if (sold > 0) _StatColumn(label: 'Sold', value: '$sold'),
                           ],
                         ),
@@ -96,7 +111,7 @@ class _StatColumn extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         children: [
           Text(value, style: Theme.of(context).textTheme.titleMedium),
-          Text(label, style: TextStyle(color: context.mutedText, fontSize: 12)),
+          Text(context.tr(label), style: TextStyle(color: context.mutedText, fontSize: 12)),
         ],
       );
 }

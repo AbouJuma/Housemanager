@@ -52,6 +52,7 @@ class Tenant extends Authenticatable implements HasMedia
 
     protected $fillable = [
         'company_id',
+        'landlord_id',
         'name',
         'username',
         'type',

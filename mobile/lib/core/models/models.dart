@@ -122,8 +122,13 @@ class PropertyItem {
   final String type;
   final String status;
   final int? buildingsCount;
+  final int? unitsCount;
+  final int? occupiedUnits;
+  final int? vacantUnits;
   final String? addressLine1;
   final String? city;
+  final String? area;
+  final String? region;
   // Only present on the single-property detail call (the API only embeds
   // this when the controller eager-loads buildings.units - see
   // PropertyResource::toArray()'s whenLoaded('buildings', ...)), null on
@@ -136,8 +141,13 @@ class PropertyItem {
     required this.type,
     required this.status,
     this.buildingsCount,
+    this.unitsCount,
+    this.occupiedUnits,
+    this.vacantUnits,
     this.addressLine1,
     this.city,
+    this.area,
+    this.region,
     this.buildings,
   });
 
@@ -150,8 +160,13 @@ class PropertyItem {
       type: json['type'] as String,
       status: json['status'] as String,
       buildingsCount: asIntOrNull(json['buildings_count']),
+      unitsCount: asIntOrNull(json['units_count']),
+      occupiedUnits: asIntOrNull(json['occupied_units_count']),
+      vacantUnits: asIntOrNull(json['vacant_units_count']),
       addressLine1: address?['line1'] as String?,
       city: address?['city'] as String?,
+      area: address?['area'] as String?,
+      region: address?['state'] as String?,
       buildings: (json['buildings'] as List<dynamic>?)
           ?.map((e) => PropertyBuildingDetail.fromJson(e as Map<String, dynamic>))
           .toList(),

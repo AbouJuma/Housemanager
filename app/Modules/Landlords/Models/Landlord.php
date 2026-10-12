@@ -10,6 +10,9 @@ use App\Modules\Expenses\Models\Expense;
 use App\Modules\Landlords\Database\Factories\LandlordFactory;
 use App\Modules\Maintenance\Models\MaintenanceRequest;
 use App\Modules\Properties\Models\Property;
+use App\Modules\Properties\Models\Unit;
+use App\Modules\Tenants\Models\Tenant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -105,6 +108,23 @@ class Landlord extends Authenticatable implements HasMedia
     public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    /**
+     * Tenants this landlord deals with: anyone who has (or had) a lease on
+     * one of their units, plus tenants they added themselves.
+     */
+    public function tenantsQuery(): Builder
+    {
+        return Tenant::query()->where(fn (Builder $query) => $query
+            ->where('tenants.landlord_id', $this->id)
+            ->orWhereHas('leases.unit.building.property', fn (Builder $property) => $property->where('landlord_id', $this->id)));
+    }
+
+    /** Units in this landlord's properties. */
+    public function unitsQuery(): Builder
+    {
+        return Unit::query()->whereHas('building.property', fn (Builder $property) => $property->where('landlord_id', $this->id));
     }
 
     public function hasPortalAccess(): bool

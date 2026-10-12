@@ -1,9 +1,19 @@
 {
     "data": [
         {
-            "property": "Stella Square Complex",
-            "building": "Block sV",
-            "unit": "066W8",
+            "property": "Goyette Mount Plaza",
+            "building": "Block aL",
+            "unit": "056R4",
+            "status": "occupied",
+            "tenant": "Amina Tenant",
+            "lease_start": "2026-10-12",
+            "lease_end": "2027-10-12",
+            "rent_amount": 450000
+        },
+        {
+            "property": "Goyette Mount Plaza",
+            "building": "Block aL",
+            "unit": "200S7",
             "status": "vacant",
             "tenant": null,
             "lease_start": null,
@@ -11,19 +21,9 @@
             "rent_amount": 300000
         },
         {
-            "property": "Stella Square Complex",
-            "building": "Block sV",
-            "unit": "697E4",
-            "status": "occupied",
-            "tenant": "Amina Tenant",
-            "lease_start": "2026-10-11",
-            "lease_end": "2027-10-11",
-            "rent_amount": 450000
-        },
-        {
-            "property": "Stella Square Complex",
-            "building": "Block sV",
-            "unit": "699D9",
+            "property": "Goyette Mount Plaza",
+            "building": "Block aL",
+            "unit": "792N2",
             "status": "vacant",
             "tenant": null,
             "lease_start": null,

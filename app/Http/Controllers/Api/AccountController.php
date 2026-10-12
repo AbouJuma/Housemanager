@@ -7,6 +7,8 @@ use App\Core\Auth\UsernameRules;
 use App\Core\Tenancy\PermissionsTeam;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Landlords\Models\Landlord;
+use App\Modules\LandlordPortal\Support\LandlordAccess;
 use App\Modules\Companies\Support\BrandTheme;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -96,6 +98,10 @@ class AccountController extends Controller
         ];
 
         $payload = ['profile' => $profile, 'branding' => BrandTheme::forCompany($account->company)->toArray()];
+
+        if ($account instanceof Landlord) {
+            $payload['permissions'] = LandlordAccess::permissionsOf($account);
+        }
 
         if ($account instanceof User) {
             $payload['permissions'] = self::permissionsOf($account);

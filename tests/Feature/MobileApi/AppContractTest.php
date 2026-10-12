@@ -126,6 +126,11 @@ class AppContractTest extends TestCase
                 'landlord_expenses' => '/portal/landlord/expenses',
                 'landlord_maintenance' => '/portal/landlord/maintenance-requests',
                 'landlord_documents' => '/portal/landlord/documents',
+                'landlord_tenants' => '/portal/landlord/tenants',
+                'landlord_tenant' => "/portal/landlord/tenants/{$tenant->uuid}",
+                'landlord_profit_loss' => '/portal/landlord/reports/profit-loss',
+                'landlord_units' => '/portal/landlord/reports/units',
+                'landlord_property_options' => '/portal/landlord/property-options',
             ],
             'buyer' => [
                 'buyer_dashboard' => '/portal/buyer/dashboard',
@@ -156,6 +161,16 @@ class AppContractTest extends TestCase
                 $this->saveFixture($name, $response->json());
             }
         }
+
+        // --- A landlord adding/editing a property and adding a tenant (app forms).
+        $newProperty = $this->api('landlord')->postJson('/api/v1/portal/landlord/properties', ['name' => 'Juma Towers', 'type' => 'residential', 'state' => 'Dar es Salaam', 'city' => 'Kinondoni', 'area' => 'Mbezi Beach']);
+        $this->assertSame(201, $newProperty->status(), 'POST landlord properties: '.$newProperty->getContent());
+        $this->saveFixture('landlord_property_created', $newProperty->json());
+        $edited = $this->api('landlord')->putJson('/api/v1/portal/landlord/properties/'.$newProperty->json('data.uuid'), ['name' => 'Juma Towers', 'type' => 'residential', 'status' => 'active', 'description' => 'Near the beach']);
+        $this->assertSame(200, $edited->status(), 'PUT landlord properties: '.$edited->getContent());
+        $newTenant = $this->api('landlord')->postJson('/api/v1/portal/landlord/tenants', ['name' => 'Neema Mpangaji', 'type' => 'individual', 'phone' => '0716000555']);
+        $this->assertSame(201, $newTenant->status(), 'POST landlord tenants: '.$newTenant->getContent());
+        $this->saveFixture('landlord_tenant_created', $newTenant->json());
 
         // --- Every create/update the app sends, with the app's exact payloads
         $newTenant = $this->api('staff')->postJson('/api/v1/tenants', ['name' => 'New Tenant', 'type' => 'individual', 'status' => 'active', 'phone' => '0713000555']);

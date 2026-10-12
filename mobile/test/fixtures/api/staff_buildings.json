@@ -1,14 +1,14 @@
 {
     "data": [
         {
-            "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
-            "name": "Block sV",
-            "floor_count": 4,
+            "uuid": "b71c908f-9690-4f74-ad14-f9f71c15f26d",
+            "name": "Block aL",
+            "floor_count": 1,
             "description": null,
             "status": "active",
             "units_count": 3,
-            "created_at": "2026-10-11T19:05:41+00:00",
-            "updated_at": "2026-10-11T19:05:41+00:00"
+            "created_at": "2026-10-12T08:27:38+00:00",
+            "updated_at": "2026-10-12T08:27:38+00:00"
         }
     ]
 }

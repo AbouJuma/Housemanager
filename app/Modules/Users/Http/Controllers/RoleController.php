@@ -3,6 +3,7 @@
 namespace App\Modules\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\LandlordPortal\Support\LandlordAccess;
 use App\Modules\Users\Http\Requests\StoreRoleRequest;
 use App\Modules\Users\Http\Requests\UpdateRoleRequest;
 use App\Modules\Users\Services\RoleService;
@@ -18,6 +19,11 @@ class RoleController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Role::class);
+
+        // Make sure the company's Landlord role is listed (and editable).
+        if ($request->user()->company_id) {
+            LandlordAccess::role($request->user()->company_id);
+        }
 
         $roles = $this->service->paginate($request->user()->company_id, $request->string('search')->toString() ?: null);
 
@@ -44,7 +50,8 @@ class RoleController extends Controller
 
         return view('users::roles.edit', [
             'role' => $role,
-            'permissionGroups' => config('permissions'),
+            'forLandlords' => LandlordAccess::isLandlordRole($role),
+            'permissionGroups' => LandlordAccess::isLandlordRole($role) ? LandlordAccess::PERMISSIONS : config('permissions'),
             'assigned' => $role->permissions->pluck('name')->all(),
         ]);
     }

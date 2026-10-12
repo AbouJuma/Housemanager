@@ -1,9 +1,9 @@
 {
     "data": {
-        "uuid": "11fd914a-85a5-4f3e-9e36-6a724befa749",
+        "uuid": "b0f487ef-7970-4517-9d14-91d4baef85ac",
         "status": "active",
-        "start_date": "2026-10-11",
-        "end_date": "2027-10-11",
+        "start_date": "2026-10-12",
+        "end_date": "2027-10-12",
         "billing_cycle": "monthly",
         "rent_amount": 500000,
         "deposit_amount": 500000,
@@ -11,15 +11,15 @@
         "termination_reason": null,
         "notes": null,
         "tenant": {
-            "uuid": "6d74b6ad-d454-4924-8f0e-62d26e5bb0a6",
+            "uuid": "62602a01-6709-4e6d-95bc-54d9f6e93923",
             "name": "New Tenant Renamed"
         },
         "unit": {
-            "uuid": "a2f5da02-6893-446d-b68d-5ddfb3cbfe1a",
-            "unit_number": "699D9",
+            "uuid": "78e06907-8519-4cf8-a3d3-9ebf99684018",
+            "unit_number": "792N2",
             "building": null
         },
-        "created_at": "2026-10-11T19:05:42+00:00",
-        "updated_at": "2026-10-11T19:05:42+00:00"
+        "created_at": "2026-10-12T08:27:39+00:00",
+        "updated_at": "2026-10-12T08:27:39+00:00"
     }
 }

@@ -5,9 +5,46 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h4 mb-0">{{ $property->name }}</h1>
-        <a href="{{ route('landlord-portal.properties.index') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> {{ __('All Properties') }}
-        </a>
+        <div class="d-flex gap-2">
+            @if ($canUpdate)
+                <a href="{{ route('landlord-portal.properties.edit', $property) }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil me-1"></i> {{ __('Edit') }}
+                </a>
+            @endif
+            <a href="{{ route('landlord-portal.properties.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> {{ __('All Properties') }}
+            </a>
+        </div>
+    </div>
+
+    @php
+        $allUnits = $property->buildings->flatMap->units;
+    @endphp
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body">
+                <div class="text-secondary small">{{ __('Units') }}</div>
+                <div class="h4 mb-0">{{ $allUnits->count() }}</div>
+            </div></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body">
+                <div class="text-secondary small">{{ __('Rented') }}</div>
+                <div class="h4 mb-0 text-success">{{ $allUnits->where('status', 'occupied')->count() }}</div>
+            </div></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body">
+                <div class="text-secondary small">{{ __('Free') }}</div>
+                <div class="h4 mb-0 text-warning">{{ $allUnits->where('status', 'vacant')->count() }}</div>
+            </div></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100"><div class="card-body">
+                <div class="text-secondary small">{{ __('Monthly rent (rented units)') }}</div>
+                <div class="h5 mb-0">{{ number_format($allUnits->where('status', 'occupied')->sum('rent_amount'), 2) }}</div>
+            </div></div>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
@@ -57,7 +94,7 @@
                                     <tr>
                                         <td class="fw-semibold">{{ $unit->unit_number }}</td>
                                         <td class="text-capitalize">{{ str_replace('_', ' ', $unit->type) }}</td>
-                                        <td><span class="badge text-bg-{{ $unit->isVacant() ? 'warning' : 'success' }} text-capitalize">{{ $unit->status }}</span></td>
+                                        <td><span class="badge text-bg-{{ $unit->isVacant() ? 'warning' : ($unit->status === 'occupied' ? 'success' : 'secondary') }}">{{ $unit->status === 'occupied' ? __('Rented') : ($unit->isVacant() ? __('Free') : __(ucfirst(str_replace('_', ' ', $unit->status)))) }}</span></td>
                                         <td>{{ number_format($unit->rent_amount, 2) }}</td>
                                         <td>
                                             @if ($tenant)

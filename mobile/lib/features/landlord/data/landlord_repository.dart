@@ -75,4 +75,73 @@ class LandlordRepository {
         page: page,
         filters: filters,
       );
+
+  // --- Add / edit their own properties ---
+
+  /// Raw property JSON, for the edit form.
+  Future<Map<String, dynamic>> propertyJson(String uuid) async {
+    final response = await _apiClient.dio.get('/portal/landlord/properties/$uuid');
+    return unwrapObject(response.data);
+  }
+
+  Future<Map<String, dynamic>> createProperty(Map<String, dynamic> data) async {
+    final response = await _apiClient.dio.post('/portal/landlord/properties', data: data);
+    return unwrapObject(response.data);
+  }
+
+  Future<Map<String, dynamic>> updateProperty(String uuid, Map<String, dynamic> data) async {
+    final response = await _apiClient.dio.put('/portal/landlord/properties/$uuid', data: data);
+    return unwrapObject(response.data);
+  }
+
+  /// Property types, statuses and Tanzania regions -> districts (+ areas).
+  Future<Map<String, dynamic>> propertyOptions() async {
+    final response = await _apiClient.dio.get('/portal/landlord/property-options');
+    return response.data as Map<String, dynamic>;
+  }
+
+  // --- Their tenants ---
+
+  /// `filters.status`: 'with_lease' / 'no_lease' (null = all).
+  Future<PageResult<Map<String, dynamic>>> tenantsPage(int page, ListFilters filters, {String? search}) async {
+    final response = await _apiClient.dio.get('/portal/landlord/tenants', queryParameters: {
+      'page': page,
+      if (filters.status != null) 'status': filters.status,
+      if (search != null && search.isNotEmpty) 'search': search,
+    });
+    final body = response.data as Map<String, dynamic>;
+    final meta = body['meta'] as Map<String, dynamic>?;
+    return PageResult(
+      (body['data'] as List<dynamic>).cast<Map<String, dynamic>>(),
+      (asIntOrNull(meta?['current_page']) ?? page) < (asIntOrNull(meta?['last_page']) ?? page),
+    );
+  }
+
+  Future<Map<String, dynamic>> tenant(String uuid) async {
+    final response = await _apiClient.dio.get('/portal/landlord/tenants/$uuid');
+    return unwrapObject(response.data);
+  }
+
+  /// Returns the whole body: `data` (the tenant) and `login` (username + first password).
+  Future<Map<String, dynamic>> createTenant(Map<String, dynamic> data) async {
+    final response = await _apiClient.dio.post('/portal/landlord/tenants', data: data);
+    return response.data as Map<String, dynamic>;
+  }
+
+  // --- Reports ---
+
+  Future<Map<String, dynamic>> profitLoss({String? from, String? to}) async {
+    final response = await _apiClient.dio.get('/portal/landlord/reports/profit-loss', queryParameters: {
+      'from': ?from,
+      'to': ?to,
+    });
+    return unwrapObject(response.data);
+  }
+
+  Future<Map<String, dynamic>> units({String? status}) async {
+    final response = await _apiClient.dio.get('/portal/landlord/reports/units', queryParameters: {
+      'status': ?status,
+    });
+    return unwrapObject(response.data);
+  }
 }

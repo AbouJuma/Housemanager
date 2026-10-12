@@ -10,7 +10,7 @@
                         <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $name }}"
                                id="permission-{{ $name }}" @checked(in_array($name, $assigned, true))>
                         <label class="form-check-label" for="permission-{{ $name }}" title="{{ $description }}">
-                            {{ $name }}
+                            {{ ($forLandlords ?? false) ? __($description) : $name }}
                         </label>
                     </div>
                 </div>

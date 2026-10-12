@@ -47,6 +47,6 @@ class RolePolicy
 
     public function delete(User $user, Role $role): bool
     {
-        return $user->company_id === $role->company_id && $user->hasPermissionTo('roles.delete');
+        return $role->guard_name === 'web' && $user->company_id === $role->company_id && $user->hasPermissionTo('roles.delete');
     }
 }

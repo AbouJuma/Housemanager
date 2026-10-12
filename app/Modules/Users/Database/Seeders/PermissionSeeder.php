@@ -27,7 +27,7 @@ class PermissionSeeder extends Seeder
         Company::query()->each(function (Company $company): void {
             PermissionsTeam::runAs($company->id, function (): void {
                 $admin = Role::findOrCreate('Admin', 'web');
-                $admin->syncPermissions(Permission::all());
+                $admin->syncPermissions(Permission::query()->where('guard_name', 'web')->get());
             });
         });
     }

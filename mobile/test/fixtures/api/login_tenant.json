@@ -1,7 +1,7 @@
 {
-    "token": "2|hzjNQYdZcKDJtlBd2Lmiz8ECbg3N0ceXVm8xaOkj6d80a776",
+    "token": "2|daekY6a0WsQWUW264AaqSfHrFnRytsLpiO6GUWmo7c2391dd",
     "tenant": {
-        "uuid": "902ec389-07d4-49d1-90c9-0f810e3ce2ab",
+        "uuid": "e8668ba2-8a2e-4c2f-8edf-e5dba067dc9b",
         "name": "Amina Tenant",
         "type": "individual",
         "status": "active",
@@ -25,8 +25,8 @@
         },
         "notes": null,
         "photo_url": null,
-        "created_at": "2026-10-11T19:05:41+00:00",
-        "updated_at": "2026-10-11T19:05:41+00:00"
+        "created_at": "2026-10-12T08:27:38+00:00",
+        "updated_at": "2026-10-12T08:27:38+00:00"
     },
     "branding": {
         "company_name": "Contract Homes",

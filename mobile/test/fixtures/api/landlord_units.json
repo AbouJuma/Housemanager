@@ -1,0 +1,64 @@
+{
+    "data": {
+        "summary": {
+            "total": 3,
+            "occupied": 1,
+            "vacant": 2,
+            "other": 0,
+            "occupancy_rate": 33.3,
+            "monthly_rent_occupied": 450000,
+            "monthly_rent_vacant": 800000
+        },
+        "units": [
+            {
+                "uuid": "3bb150a0-7e00-4c7b-975b-4d3dc0c3c3b6",
+                "unit_number": "056R4",
+                "type": "apartment",
+                "status": "occupied",
+                "is_rented": true,
+                "rent_amount": 450000,
+                "building": "Block aL",
+                "property": {
+                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                    "name": "Goyette Mount Plaza"
+                },
+                "tenant": {
+                    "uuid": "e8668ba2-8a2e-4c2f-8edf-e5dba067dc9b",
+                    "name": "Amina Tenant",
+                    "phone": "0712000333"
+                },
+                "lease_end": "2027-10-12"
+            },
+            {
+                "uuid": "2c0ce43f-fa6d-4fd4-9d37-32652ec117c2",
+                "unit_number": "200S7",
+                "type": "studio",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 300000,
+                "building": "Block aL",
+                "property": {
+                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                    "name": "Goyette Mount Plaza"
+                },
+                "tenant": null,
+                "lease_end": null
+            },
+            {
+                "uuid": "78e06907-8519-4cf8-a3d3-9ebf99684018",
+                "unit_number": "792N2",
+                "type": "studio",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 500000,
+                "building": "Block aL",
+                "property": {
+                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                    "name": "Goyette Mount Plaza"
+                },
+                "tenant": null,
+                "lease_end": null
+            }
+        ]
+    }
+}

@@ -1,18 +1,18 @@
 {
     "data": [
         {
-            "uuid": "a7fa0187-f908-46a5-a68e-2124ec07e885",
-            "title": "Business License",
-            "category": "other",
-            "description": "Modi fuga natus deserunt a expedita maiores et.",
+            "uuid": "80b6e9a2-f1f3-4dda-9710-21c4acdf30a3",
+            "title": "Signed Lease Agreement",
+            "category": "insurance",
+            "description": null,
             "expiry_date": null,
             "is_expired": false,
             "is_expiring_soon": false,
             "documentable_type": "landlord",
             "file_url": null,
             "file_name": null,
-            "created_at": "2026-10-11T19:05:41+00:00",
-            "updated_at": "2026-10-11T19:05:41+00:00"
+            "created_at": "2026-10-12T08:27:38+00:00",
+            "updated_at": "2026-10-12T08:27:38+00:00"
         }
     ],
     "links": {

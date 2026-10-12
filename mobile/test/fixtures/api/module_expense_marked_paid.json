@@ -1,28 +1,28 @@
 {
     "data": {
-        "uuid": "74ff3851-5f09-4398-a438-7d3e276cb98c",
-        "description": "Plumbing repair",
-        "vendor_name": "Stokes and Sons",
-        "vendor_display_name": "Stokes and Sons",
-        "amount": 619.87,
-        "expense_date": "2026-08-15",
+        "uuid": "df0e4380-357f-44d4-88f0-c972ee54c75e",
+        "description": "Electrical repair",
+        "vendor_name": "Okuneva-Sporer",
+        "vendor_display_name": "Okuneva-Sporer",
+        "amount": 377.04,
+        "expense_date": "2026-09-23",
         "payment_status": "paid",
         "payment_method": "mobile_money",
-        "paid_on": "2026-10-11",
+        "paid_on": "2026-10-12",
         "reference": null,
         "notes": null,
         "status": "active",
         "account": {
-            "uuid": "4ade31a8-9c7a-458a-a474-864750413ff6",
-            "code": "9951",
-            "name": "Accounts Receivable"
+            "uuid": "9b533088-cf87-499c-a9ec-f1de2a5d41eb",
+            "code": "9728",
+            "name": "Cash"
         },
         "property": {
-            "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
-            "name": "Stella Square Complex"
+            "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+            "name": "Goyette Mount Plaza"
         },
         "vendor": null,
-        "created_at": "2026-10-11T19:05:41+00:00",
-        "updated_at": "2026-10-11T19:05:42+00:00"
+        "created_at": "2026-10-12T08:27:38+00:00",
+        "updated_at": "2026-10-12T08:27:40+00:00"
     }
 }

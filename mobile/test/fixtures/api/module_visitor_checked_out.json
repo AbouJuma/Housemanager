@@ -1,24 +1,24 @@
 {
     "data": {
-        "uuid": "18f539ad-0815-450d-9fc7-529cbfbf5178",
-        "visitor_name": "Juston Anderson",
-        "visitor_phone": null,
+        "uuid": "1a620675-21c7-47cf-9092-37d9e537bad5",
+        "visitor_name": "Prof. Brannon Bogan III",
+        "visitor_phone": "+1.614.987.0753",
         "host_display_name": null,
-        "purpose": "delivery",
+        "purpose": "interview",
         "vehicle_plate": null,
         "badge_number": null,
-        "check_in_at": "2026-10-09T15:05:42+00:00",
-        "check_out_at": "2026-10-11T19:05:42+00:00",
+        "check_in_at": "2026-10-11T05:27:39+00:00",
+        "check_out_at": "2026-10-12T08:27:40+00:00",
         "is_checked_in": false,
         "notes": null,
         "property": {
-            "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
-            "name": "Stella Square Complex"
+            "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+            "name": "Goyette Mount Plaza"
         },
         "unit": null,
         "tenant": null,
         "vendor": null,
-        "created_at": "2026-10-11T19:05:42+00:00",
-        "updated_at": "2026-10-11T19:05:42+00:00"
+        "created_at": "2026-10-12T08:27:39+00:00",
+        "updated_at": "2026-10-12T08:27:40+00:00"
     }
 }

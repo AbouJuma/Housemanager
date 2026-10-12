@@ -4,6 +4,8 @@ namespace App\Modules\Users\Services;
 
 use App\Core\Tenancy\PermissionsTeam;
 use App\Models\User;
+use App\Modules\Landlords\Models\Landlord;
+use App\Modules\LandlordPortal\Support\LandlordAccess;
 use App\Modules\Users\Notifications\AccessChanged;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -49,15 +51,26 @@ class RoleService
     {
         return PermissionsTeam::runAs($role->company_id, fn () => DB::transaction(function () use ($role, $attributes) {
             $before = $role->permissions->pluck('name')->all();
+            $forLandlords = LandlordAccess::isLandlordRole($role);
 
-            $role->update(['name' => $attributes['name']]);
-            $role->syncPermissions($attributes['permissions'] ?? []);
+            if ($forLandlords) {
+                // Fixed name; only landlord permissions can be ticked.
+                LandlordAccess::ensurePermissions();
+                $role->syncPermissions(array_values(array_intersect($attributes['permissions'] ?? [], LandlordAccess::names())));
+            } else {
+                $role->update(['name' => $attributes['name']]);
+                $role->syncPermissions($attributes['permissions'] ?? []);
+            }
 
             $after = $role->fresh()->permissions->pluck('name')->all();
             $granted = array_values(array_diff($after, $before));
             $revoked = array_values(array_diff($before, $after));
 
-            if ($granted || $revoked) {
+            if (($granted || $revoked) && $forLandlords) {
+                foreach (Landlord::query()->where('company_id', $role->company_id)->whereNotNull('password')->get() as $landlord) {
+                    $landlord->notify(new AccessChanged($granted, $revoked, [$role->name]));
+                }
+            } elseif ($granted || $revoked) {
                 foreach (User::query()->role($role->name)->where('company_id', $role->company_id)->get() as $user) {
                     $user->notify(new AccessChanged($granted, $revoked, $user->getRoleNames()->all()));
                 }
@@ -69,6 +82,9 @@ class RoleService
 
     public function delete(Role $role): bool
     {
+        // The Landlord role can be edited but never removed.
+        abort_if(LandlordAccess::isLandlordRole($role), 403);
+
         return PermissionsTeam::runAs($role->company_id, fn () => (bool) $role->delete());
     }
 }

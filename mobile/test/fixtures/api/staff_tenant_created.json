@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "6d74b6ad-d454-4924-8f0e-62d26e5bb0a6",
+        "uuid": "62602a01-6709-4e6d-95bc-54d9f6e93923",
         "name": "New Tenant",
         "type": "individual",
         "status": "active",
@@ -24,7 +24,7 @@
         },
         "notes": null,
         "photo_url": null,
-        "created_at": "2026-10-11T19:05:41+00:00",
-        "updated_at": "2026-10-11T19:05:41+00:00"
+        "created_at": "2026-10-12T08:27:39+00:00",
+        "updated_at": "2026-10-12T08:27:39+00:00"
     }
 }

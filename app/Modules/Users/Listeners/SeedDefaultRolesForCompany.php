@@ -13,11 +13,11 @@ class SeedDefaultRolesForCompany
     {
         PermissionsTeam::runAs($event->company->id, function (): void {
             $admin = Role::findOrCreate('Admin', 'web');
-            $admin->syncPermissions(Permission::all());
+            $admin->syncPermissions(Permission::query()->where('guard_name', 'web')->get());
 
             $staff = Role::findOrCreate('Staff', 'web');
             $staff->syncPermissions(
-                Permission::query()->where('name', 'like', '%.view%')->get()
+                Permission::query()->where('guard_name', 'web')->where('name', 'like', '%.view%')->get()
             );
         });
     }

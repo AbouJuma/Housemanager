@@ -12,7 +12,7 @@ class StatusChip extends StatelessWidget {
 
   static const _positive = {'active', 'paid', 'sent', 'completed', 'resolved'};
   static const _pending = {'pending', 'partially_paid', 'partial', 'draft', 'in_progress', 'open', 'reserved', 'unpaid', 'checked_in', 'low_stock', 'expiring_soon'};
-  static const _negative = {'overdue', 'suspended', 'cancelled', 'blacklisted', 'failed', 'terminated', 'expired', 'void'};
+  static const _negative = {'overdue', 'suspended', 'cancelled', 'blacklisted', 'failed', 'terminated', 'expired', 'void', 'voided'};
 
   /// The status's accent color - also used for list-card stripes and
   /// progress bars so a row's color matches its chip.

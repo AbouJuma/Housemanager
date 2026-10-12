@@ -1,10 +1,10 @@
 {
     "active_leases": [
         {
-            "uuid": "68629f37-8a67-494b-8a9f-e8e68ae50275",
+            "uuid": "053c718a-1553-4a7c-ad91-3f2b382b3efc",
             "status": "active",
-            "start_date": "2026-10-11",
-            "end_date": "2027-10-11",
+            "start_date": "2026-10-12",
+            "end_date": "2027-10-12",
             "billing_cycle": "monthly",
             "rent_amount": 450000,
             "deposit_amount": 450000,
@@ -12,39 +12,39 @@
             "termination_reason": null,
             "notes": null,
             "unit": {
-                "uuid": "f36e853b-c521-4fd4-92ed-7d1a96a9f1bc",
-                "unit_number": "697E4",
+                "uuid": "3bb150a0-7e00-4c7b-975b-4d3dc0c3c3b6",
+                "unit_number": "056R4",
                 "building": {
-                    "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
-                    "name": "Block sV",
+                    "uuid": "b71c908f-9690-4f74-ad14-f9f71c15f26d",
+                    "name": "Block aL",
                     "property": {
-                        "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
-                        "name": "Stella Square Complex"
+                        "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                        "name": "Goyette Mount Plaza"
                     }
                 }
             },
-            "created_at": "2026-10-11T19:05:41+00:00",
-            "updated_at": "2026-10-11T19:05:41+00:00"
+            "created_at": "2026-10-12T08:27:38+00:00",
+            "updated_at": "2026-10-12T08:27:38+00:00"
         }
     ],
     "outstanding_balance": 0,
     "outstanding_invoice_count": 0,
     "recent_maintenance_requests": [
         {
-            "uuid": "dead66b7-7394-4b94-88b5-8b058acd1dc7",
-            "title": "Power outlet not working",
-            "description": "Corrupti quibusdam autem dolorem enim ratione cupiditate quia magnam.",
-            "category": "other",
-            "priority": "medium",
+            "uuid": "764f676a-2c4e-4d38-944e-82f0baf0348f",
+            "title": "Broken window latch",
+            "description": "Iste eum natus cum modi sint minima et.",
+            "category": "plumbing",
+            "priority": "high",
             "status": "open",
-            "reported_date": "2026-09-13",
+            "reported_date": "2026-10-10",
             "scheduled_date": null,
             "completed_date": null,
             "estimated_cost": null,
             "actual_cost": null,
             "notes": null,
-            "created_at": "2026-10-11T19:05:41+00:00",
-            "updated_at": "2026-10-11T19:05:41+00:00"
+            "created_at": "2026-10-12T08:27:38+00:00",
+            "updated_at": "2026-10-12T08:27:38+00:00"
         }
     ]
 }

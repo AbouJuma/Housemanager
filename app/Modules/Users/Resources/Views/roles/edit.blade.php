@@ -15,9 +15,16 @@
 
                 <div class="mb-4" style="max-width: 360px;">
                     <label for="name" class="form-label">{{ __('Role Name') }}</label>
-                    <input id="name" type="text" name="name" value="{{ old('name', $role->name) }}" class="form-control @error('name') is-invalid @enderror" required autofocus>
+                    <input id="name" type="text" name="name" value="{{ old('name', $role->name) }}" class="form-control @error('name') is-invalid @enderror" required autofocus @readonly($forLandlords ?? false)>
                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
+
+                @if ($forLandlords ?? false)
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {{ __('This role applies to every landlord of your company. What you tick here is exactly what landlords can see and do in the landlord portal and the mobile app. Changes apply immediately.') }}
+                    </div>
+                @endif
 
                 @include('users::roles._permissions', ['assigned' => old('permissions', $assigned)])
 

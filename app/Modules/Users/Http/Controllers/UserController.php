@@ -97,6 +97,7 @@ class UserController extends Controller
     {
         return Role::query()
             ->where('company_id', $companyId)
+            ->where('guard_name', 'web')
             ->get(['id', 'name']);
     }
 }

@@ -17,6 +17,8 @@
         @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
+    {{-- Landlords adding their own property don't pick one. --}}
+    @unless ($forLandlord ?? false)
     <div class="col-md-6">
         <label class="form-label">{{ __('Landlord') }} <span class="text-secondary fw-normal">{{ __('(optional)') }}</span></label>
         <div class="d-flex gap-2">
@@ -34,6 +36,7 @@
         </div>
         @error('landlord_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
+    @endunless
 
     @if ($property)
         <div class="col-md-6">
@@ -137,7 +140,7 @@
     @endif
 </div>
 
-@can('create', \App\Modules\Landlords\Models\Landlord::class)
+@if (! ($forLandlord ?? false) && auth()->user()?->can('create', \App\Modules\Landlords\Models\Landlord::class))
     {{-- Pushed to the layout's 'modals' stack, not rendered in place - this
          partial is included inside the property <form>, and the modal's
          `required` inputs sitting (empty, hidden) inside that form made
@@ -271,7 +274,7 @@
         });
     </script>
     @endpush
-@endcan
+@endif
 
 @push('scripts')
 <script>

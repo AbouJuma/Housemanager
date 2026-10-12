@@ -16,6 +16,9 @@ import '../../features/landlord/presentation/landlord_expenses_screen.dart';
 import '../../features/landlord/presentation/landlord_maintenance_screen.dart';
 import '../../features/landlord/presentation/landlord_property_detail_screen.dart';
 import '../../features/landlord/presentation/landlord_properties_screen.dart';
+import '../../features/landlord/presentation/landlord_property_form_screen.dart';
+import '../../features/landlord/presentation/landlord_reports_screen.dart';
+import '../../features/landlord/presentation/landlord_tenants_screen.dart';
 import '../../features/more/presentation/more_screen.dart';
 import '../../features/more/presentation/profile_screen.dart';
 import '../../features/tenant/presentation/tenant_invoice_detail_screen.dart';
@@ -61,7 +64,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   // Staff tabs follow the person's permissions, so any role a company
   // creates (Accountant, Caretaker…) gets exactly the screens it may use.
   final staffPermissions = ref.watch(authProvider.select(
-    (s) => s.role == UserRole.staff ? (s.profile?.permissions ?? const <String>[]).join('|') : '',
+    (s) => s.role == UserRole.staff || s.role == UserRole.landlord ? (s.profile?.permissions ?? const <String>[]).join('|') : '',
   ));
   final refresh = _AuthRefresh(ref);
 
@@ -101,10 +104,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 StatefulShellRoute _shellForRole(UserRole role, Set<String> permissions) {
   final staff = staffLayoutFor(permissions);
+  final landlord = LandlordLayout(permissions);
 
   final branches = switch (role) {
     UserRole.tenant => _tenantBranches(),
-    UserRole.landlord => _landlordBranches(),
+    UserRole.landlord => _landlordBranches(landlord),
     UserRole.buyer => _buyerBranches(),
     UserRole.staff => _staffBranches(staff),
   };
@@ -117,12 +121,16 @@ StatefulShellRoute _shellForRole(UserRole role, Set<String> permissions) {
         NavigationDestination(icon: Icon(Icons.build_outlined), selectedIcon: Icon(Icons.build), label: 'Maintenance'),
         NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
       ],
-    UserRole.landlord => const [
-        NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
-        NavigationDestination(icon: Icon(Icons.apartment_outlined), selectedIcon: Icon(Icons.apartment), label: 'Properties'),
-        NavigationDestination(icon: Icon(Icons.receipt_outlined), selectedIcon: Icon(Icons.receipt), label: 'Expenses'),
-        NavigationDestination(icon: Icon(Icons.build_outlined), selectedIcon: Icon(Icons.build), label: 'Maintenance'),
-        NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+    // Landlords: what the company's Landlord role allows.
+    UserRole.landlord => [
+        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
+        if (landlord.properties)
+          const NavigationDestination(icon: Icon(Icons.apartment_outlined), selectedIcon: Icon(Icons.apartment), label: 'Properties'),
+        if (landlord.tenants)
+          const NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Tenants'),
+        if (landlord.reports)
+          const NavigationDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Reports'),
+        const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
       ],
     UserRole.buyer => const [
         NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
@@ -187,25 +195,78 @@ List<StatefulShellBranch> _tenantBranches() => [
       ]),
     ];
 
-List<StatefulShellBranch> _landlordBranches() => [
+/// Which landlord features the company's "Landlord" role allows
+/// (Settings -> Roles on the web).
+class LandlordLayout {
+  LandlordLayout(Set<String> permissions)
+      : properties = permissions.contains('properties.viewAny'),
+        tenants = permissions.contains('tenants.viewAny'),
+        reports = permissions.contains('reports.view') || permissions.contains('properties.viewAny'),
+        expenses = permissions.contains('expenses.viewAny'),
+        maintenance = permissions.contains('maintenance.viewAny'),
+        documents = permissions.contains('documents.viewAny');
+
+  final bool properties;
+  final bool tenants;
+  final bool reports;
+  final bool expenses;
+  final bool maintenance;
+  final bool documents;
+}
+
+List<StatefulShellBranch> _landlordBranches(LandlordLayout can) => [
       StatefulShellBranch(routes: [GoRoute(path: '/dashboard', builder: (c, s) => const DashboardScreen())]),
-      StatefulShellBranch(routes: [
-        GoRoute(
-          path: '/landlord/properties',
-          builder: (c, s) => const LandlordPropertiesScreen(),
-          routes: [
-            GoRoute(path: ':uuid', builder: (c, s) => LandlordPropertyDetailScreen(uuid: s.pathParameters['uuid']!)),
-          ],
-        ),
-      ]),
-      StatefulShellBranch(routes: [GoRoute(path: '/landlord/expenses', builder: (c, s) => const LandlordExpensesScreen())]),
-      StatefulShellBranch(routes: [GoRoute(path: '/landlord/maintenance', builder: (c, s) => const LandlordMaintenanceScreen())]),
+      if (can.properties)
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/landlord/properties',
+            builder: (c, s) => const LandlordPropertiesScreen(),
+            routes: [
+              GoRoute(path: 'new', builder: (c, s) => const LandlordPropertyFormScreen()),
+              GoRoute(
+                path: ':uuid',
+                builder: (c, s) => LandlordPropertyDetailScreen(uuid: s.pathParameters['uuid']!),
+                routes: [GoRoute(path: 'edit', builder: (c, s) => LandlordPropertyFormScreen(uuid: s.pathParameters['uuid']))],
+              ),
+            ],
+          ),
+        ]),
+      if (can.tenants)
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/landlord/tenants',
+            builder: (c, s) => const LandlordTenantsScreen(),
+            routes: [
+              GoRoute(path: 'new', builder: (c, s) => const LandlordTenantFormScreen()),
+              GoRoute(path: ':uuid', builder: (c, s) => LandlordTenantDetailScreen(uuid: s.pathParameters['uuid']!)),
+            ],
+          ),
+        ]),
+      if (can.reports)
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/landlord/reports',
+            builder: (c, s) => const LandlordReportsScreen(),
+            routes: [
+              GoRoute(path: 'profit-loss', builder: (c, s) => const LandlordProfitLossScreen()),
+              GoRoute(path: 'units', builder: (c, s) => const LandlordUnitsScreen()),
+            ],
+          ),
+        ]),
       StatefulShellBranch(routes: [
         GoRoute(
           path: '/landlord/more',
-          builder: (c, s) => const MoreScreen(documentsRoute: '/landlord/more/documents'),
+          builder: (c, s) => MoreScreen(
+            documentsRoute: can.documents ? '/landlord/more/documents' : null,
+            extraLinks: [
+              if (can.expenses) const MoreScreenLink(icon: Icons.receipt_outlined, label: 'Expenses', route: '/landlord/more/expenses'),
+              if (can.maintenance) const MoreScreenLink(icon: Icons.build_outlined, label: 'Maintenance', route: '/landlord/more/maintenance'),
+            ],
+          ),
           routes: [
-            GoRoute(path: 'documents', builder: (c, s) => const DocumentsScreen(role: 'landlord')),
+            if (can.documents) GoRoute(path: 'documents', builder: (c, s) => const DocumentsScreen(role: 'landlord')),
+            if (can.expenses) GoRoute(path: 'expenses', builder: (c, s) => const LandlordExpensesScreen()),
+            if (can.maintenance) GoRoute(path: 'maintenance', builder: (c, s) => const LandlordMaintenanceScreen()),
             GoRoute(path: 'profile', builder: (c, s) => const ProfileScreen()),
           ],
         ),

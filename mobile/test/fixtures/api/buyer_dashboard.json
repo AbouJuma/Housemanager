@@ -1,8 +1,8 @@
 {
     "sales": [
         {
-            "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
-            "sale_date": "2026-10-11",
+            "uuid": "94ca7d12-b778-4554-8386-7733e8452cf7",
+            "sale_date": "2026-10-12",
             "total_price": 30000000,
             "down_payment": 6000000,
             "installment_period": 4,
@@ -13,19 +13,19 @@
             "completion_percentage": 40,
             "notes": null,
             "unit": {
-                "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
-                "unit_number": "066W8",
+                "uuid": "2c0ce43f-fa6d-4fd4-9d37-32652ec117c2",
+                "unit_number": "200S7",
                 "building": {
-                    "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
-                    "name": "Block sV",
+                    "uuid": "b71c908f-9690-4f74-ad14-f9f71c15f26d",
+                    "name": "Block aL",
                     "property": {
-                        "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
-                        "name": "Stella Square Complex"
+                        "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                        "name": "Goyette Mount Plaza"
                     }
                 }
             },
-            "created_at": "2026-10-11T19:05:41+00:00",
-            "updated_at": "2026-10-11T19:05:41+00:00"
+            "created_at": "2026-10-12T08:27:38+00:00",
+            "updated_at": "2026-10-12T08:27:38+00:00"
         }
     ],
     "total_purchases": 1,

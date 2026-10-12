@@ -1,0 +1,22 @@
+{
+    "data": {
+        "uuid": "7d4ea309-84ef-4ddb-91aa-00807add291c",
+        "name": "Neema Mpangaji",
+        "username": "neema.mpangaji",
+        "type": "individual",
+        "status": "active",
+        "phone": "0716000555",
+        "email": null,
+        "added_by_you": true,
+        "leases_count": 0,
+        "current_lease": null,
+        "created_at": "2026-10-12T08:27:39+00:00",
+        "emergency_contact_name": null,
+        "emergency_contact_phone": null,
+        "leases": []
+    },
+    "login": {
+        "username": "neema.mpangaji",
+        "password": "0716000555"
+    }
+}

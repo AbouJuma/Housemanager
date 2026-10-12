@@ -18,7 +18,10 @@ Route::get('/', function () {
 // the first company has no SMS integration configured), not the old
 // standalone BeemsSmsService (removed - see the messaging
 // consolidation work).
+// Only a signed-in super admin can trigger it - it sends a real SMS/email.
 Route::get('/test-sms', function () {
+    abort_unless(auth()->user()?->isSaasOwner(), 404);
+
     $company = Company::query()->first();
 
     // Test SMS to user's phone
@@ -53,7 +56,7 @@ Route::get('/test-sms', function () {
         'email_sent' => $emailResult,
         'message' => 'Test completed. Check logs for details.',
     ]);
-});
+})->middleware('auth');
 
 // The real /dashboard route lives in App\Modules\Dashboard now.
 
@@ -66,6 +69,14 @@ Route::middleware('auth')->group(function (): void {
 });
 
 require __DIR__.'/auth.php';
+
+// The Android app: the newest uploaded APK, linked under every sign-in
+// page (public), and the super admin's page for publishing a new one.
+Route::get('/download/android', [\App\Http\Controllers\AppReleaseController::class, 'download'])->name('app.download');
+Route::middleware('auth')->group(function (): void {
+    Route::get('/mobile-app', [\App\Http\Controllers\AppReleaseController::class, 'index'])->name('app-releases.index');
+    Route::post('/mobile-app', [\App\Http\Controllers\AppReleaseController::class, 'store'])->name('app-releases.store');
+});
 
 // Live username availability for <x-username-field> on the staff,
 // tenant, landlord and buyer forms.

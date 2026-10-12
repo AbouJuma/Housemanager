@@ -8,6 +8,7 @@ use App\Modules\Companies\Support\BrandTheme;
 use App\Modules\LandlordPortal\Http\Requests\LandlordPortalLoginRequest;
 use App\Modules\Landlords\Http\Resources\LandlordResource;
 use App\Modules\Landlords\Models\Landlord;
+use App\Modules\LandlordPortal\Support\LandlordAccess;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -46,6 +47,8 @@ class AuthController extends Controller
         return response()->json([
             'token' => $landlord->createToken('mobile')->plainTextToken,
             'landlord' => LandlordResource::make($landlord),
+            // What the company's Landlord role allows - the app shows only these.
+            'permissions' => LandlordAccess::permissionsOf($landlord),
             'branding' => BrandTheme::forCompany($landlord->company)->toArray(),
         ]);
     }

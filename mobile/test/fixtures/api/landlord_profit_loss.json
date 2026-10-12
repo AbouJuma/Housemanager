@@ -1,0 +1,93 @@
+{
+    "data": {
+        "from": "2026-01-01",
+        "to": "2026-10-12",
+        "income": {
+            "rent": 0,
+            "sales": 0,
+            "total": 0
+        },
+        "expenses": {
+            "total": 377.04,
+            "by_category": [
+                {
+                    "category": "Cash",
+                    "amount": 377.04
+                }
+            ]
+        },
+        "net": -377.04,
+        "margin": null,
+        "by_property": [
+            {
+                "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                "name": "Goyette Mount Plaza",
+                "income": 0,
+                "expenses": 377.04,
+                "net": -377.04
+            }
+        ],
+        "monthly": [
+            {
+                "month": "2026-01",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-02",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-03",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-04",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-05",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-06",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-07",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-08",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            },
+            {
+                "month": "2026-09",
+                "income": 0,
+                "expenses": 377.04,
+                "net": -377.04
+            },
+            {
+                "month": "2026-10",
+                "income": 0,
+                "expenses": 0,
+                "net": 0
+            }
+        ]
+    }
+}

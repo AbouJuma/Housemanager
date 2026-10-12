@@ -46,7 +46,12 @@
                         <tbody>
                             @foreach ($roles as $role)
                                 <tr>
-                                    <td class="fw-semibold">{{ $role->name }}</td>
+                                    <td class="fw-semibold">
+                                        {{ $role->name }}
+                                        @if ($role->guard_name === 'landlord')
+                                            <span class="badge text-bg-info ms-1">{{ __('Landlord portal & app') }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $role->permissions->count() }}</td>
                                     <td class="text-end">
                                         @can('update', $role)

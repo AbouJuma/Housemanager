@@ -104,3 +104,17 @@ class ErrorView extends StatelessWidget {
     );
   }
 }
+
+/// The server's field-by-field validation messages (422), first message
+/// per field - for showing under the matching form field. Empty for any
+/// other kind of error.
+Map<String, String> validationErrors(Object error) {
+  if (error is! DioException) return const {};
+  final data = error.response?.data;
+  if (error.response?.statusCode != 422 || data is! Map || data['errors'] is! Map) return const {};
+
+  return {
+    for (final entry in (data['errors'] as Map).entries)
+      if (entry.value is List && (entry.value as List).isNotEmpty) '${entry.key}': '${(entry.value as List).first}',
+  };
+}

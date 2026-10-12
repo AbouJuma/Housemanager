@@ -1,7 +1,7 @@
 {
     "data": {
-        "uuid": "1b743db5-d888-47fe-aa89-d9d0d09a4280",
-        "sale_date": "2026-10-11",
+        "uuid": "94ca7d12-b778-4554-8386-7733e8452cf7",
+        "sale_date": "2026-10-12",
         "total_price": 30000000,
         "down_payment": 6000000,
         "installment_period": 4,
@@ -12,33 +12,33 @@
         "completion_percentage": 40,
         "notes": null,
         "unit": {
-            "uuid": "8bac0d79-e0eb-4369-9e4a-fd6c4224ff13",
-            "unit_number": "066W8",
+            "uuid": "2c0ce43f-fa6d-4fd4-9d37-32652ec117c2",
+            "unit_number": "200S7",
             "building": {
-                "uuid": "e534cd3b-da41-4cc4-9c51-9bbea565676d",
-                "name": "Block sV",
+                "uuid": "b71c908f-9690-4f74-ad14-f9f71c15f26d",
+                "name": "Block aL",
                 "property": {
-                    "uuid": "c88c1308-d876-4f3a-8163-4de6ebc41dc7",
-                    "name": "Stella Square Complex"
+                    "uuid": "9a1cb1bb-1bb8-4874-98b0-474fb267a3de",
+                    "name": "Goyette Mount Plaza"
                 }
             }
         },
         "installments": [
             {
-                "uuid": "4c89eb33-7afe-462e-bb56-d036051d3d0a",
+                "uuid": "19b76704-8e6e-49f5-841c-c53b6a9860ce",
                 "installment_number": 1,
-                "due_date": "2026-11-11",
+                "due_date": "2026-11-12",
                 "amount": 6000000,
                 "paid_amount": 6000000,
                 "remaining_amount": 0,
                 "status": "paid",
-                "paid_date": "2026-10-11",
+                "paid_date": "2026-10-12",
                 "notes": null
             },
             {
-                "uuid": "43e5b43a-f25b-4b96-accb-fc0a41838a4f",
+                "uuid": "58fbc921-2fed-4302-b0ac-81853cc30c71",
                 "installment_number": 2,
-                "due_date": "2026-12-11",
+                "due_date": "2026-12-12",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -47,9 +47,9 @@
                 "notes": null
             },
             {
-                "uuid": "8d05cfcc-b2b7-47ef-a5df-e35e947a6ad4",
+                "uuid": "853c34cf-c65e-404a-b69a-e01d212781b1",
                 "installment_number": 3,
-                "due_date": "2027-01-11",
+                "due_date": "2027-01-12",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -58,9 +58,9 @@
                 "notes": null
             },
             {
-                "uuid": "cbcc8e33-8a0f-454f-bcd8-bb88587f5227",
+                "uuid": "677bb47d-8523-479e-a4da-f39f42877998",
                 "installment_number": 4,
-                "due_date": "2027-02-11",
+                "due_date": "2027-02-12",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -69,7 +69,7 @@
                 "notes": null
             }
         ],
-        "created_at": "2026-10-11T19:05:41+00:00",
-        "updated_at": "2026-10-11T19:05:41+00:00"
+        "created_at": "2026-10-12T08:27:38+00:00",
+        "updated_at": "2026-10-12T08:27:38+00:00"
     }
 }

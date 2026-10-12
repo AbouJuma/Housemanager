@@ -80,6 +80,14 @@ class FixtureAdapter implements HttpClientAdapter {
     'GET /portal/landlord/expenses': 'landlord_expenses',
     'GET /portal/landlord/maintenance-requests': 'landlord_maintenance',
     'GET /portal/landlord/documents': 'landlord_documents',
+    'GET /portal/landlord/tenants': 'landlord_tenants',
+    'GET /portal/landlord/tenants/{id}': 'landlord_tenant',
+    'POST /portal/landlord/tenants': 'landlord_tenant_created',
+    'GET /portal/landlord/reports/profit-loss': 'landlord_profit_loss',
+    'GET /portal/landlord/reports/units': 'landlord_units',
+    'GET /portal/landlord/property-options': 'landlord_property_options',
+    'POST /portal/landlord/properties': 'landlord_property_created',
+    'PUT /portal/landlord/properties/{id}': 'landlord_property_created',
     'GET /portal/buyer/dashboard': 'buyer_dashboard',
     'GET /portal/buyer/sales': 'buyer_sales',
     'GET /portal/buyer/sales/{id}': 'buyer_sale',
@@ -165,7 +173,7 @@ class FakeAuth extends AuthNotifier {
   FakeAuth(this.role, {this.permissions});
   final UserRole role;
 
-  /// Staff permissions; defaults to the real ones from the captured login.
+  /// Staff/landlord permissions; default to the real ones from the captured login.
   final List<String>? permissions;
 
   @override
@@ -175,8 +183,8 @@ class FakeAuth extends AuthNotifier {
       name: 'Test Person',
       email: 'test@example.com',
       username: 'test.person',
-      permissions: role == UserRole.staff
-          ? (permissions ?? ((fixture('login_staff') as Map<String, dynamic>)['permissions'] as List).cast<String>())
+      permissions: role == UserRole.staff || role == UserRole.landlord
+          ? (permissions ?? ((fixture('login_${role.name}') as Map<String, dynamic>)['permissions'] as List).cast<String>())
           : const [],
     ),
   );
@@ -212,9 +220,17 @@ Map<UserRole, List<String>> locations() => {
     '/dashboard',
     '/landlord/properties',
     '/landlord/properties/${firstUuid('landlord_properties')}',
-    '/landlord/expenses',
-    '/landlord/maintenance',
+    '/landlord/properties/new',
+    '/landlord/properties/${firstUuid('landlord_properties')}/edit',
+    '/landlord/tenants',
+    '/landlord/tenants/new',
+    '/landlord/tenants/${firstUuid('landlord_tenants')}',
+    '/landlord/reports',
+    '/landlord/reports/profit-loss',
+    '/landlord/reports/units',
     '/landlord/more',
+    '/landlord/more/expenses',
+    '/landlord/more/maintenance',
     '/landlord/more/documents',
     '/landlord/more/profile',
     '/notifications',
@@ -540,5 +556,69 @@ void main() {
 
     expect(tabLabels(tester), ['Home', 'More']);
     expect(find.text('Your role has no app features yet.'), findsOneWidget);
+  });
+
+  // --- Landlords: what they see follows the company's "Landlord" role.
+
+  testWidgets('a landlord manages properties and tenants and sees their reports', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.landlord);
+
+    expect(tabLabels(tester), ['Home', 'Properties', 'Tenants', 'Reports', 'More']);
+
+    // Add a property.
+    await openPath(tester, router, '/landlord/properties');
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+    await openPath(tester, router, '/landlord/properties/new');
+    await tester.enterText(find.byType(TextFormField).first, 'Juma Towers');
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add property'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Add property'));
+    await tester.pumpAndSettle();
+    expect((adapter.sent['POST /portal/landlord/properties'] as Map)['name'], 'Juma Towers');
+
+    // Add a tenant - the login details are shown once.
+    await openPath(tester, router, '/landlord/tenants/new');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Neema Mpangaji');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Phone'), '0716000555');
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add tenant'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Add tenant'));
+    await tester.pumpAndSettle();
+    expect((adapter.sent['POST /portal/landlord/tenants'] as Map)['phone'], '0716000555');
+    expect(find.text('Tenant added'), findsOneWidget);
+    expect(find.textContaining('neema'), findsWidgets);
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    // Reports: profit & loss and rented / free units.
+    await openPath(tester, router, '/landlord/reports/profit-loss');
+    expect(find.text('Income received'), findsOneWidget);
+    await openPath(tester, router, '/landlord/reports/units');
+    expect(find.text('Rented'), findsWidgets);
+    expect(find.text('Free'), findsWidgets);
+    expect(adapter.unmatched, isEmpty);
+  });
+
+  testWidgets('a landlord role without tenants or reports hides them', (tester) async {
+    final (router, _) = await pumpApp(tester, UserRole.landlord, permissions: ['properties.viewAny']);
+
+    expect(tabLabels(tester), ['Home', 'Properties', 'Reports', 'More']);
+    expect(find.text('Tenants'), findsNothing);
+
+    await openPath(tester, router, '/landlord/properties');
+    expect(find.byType(FloatingActionButton), findsNothing, reason: 'no properties.create');
+
+    await openPath(tester, router, '/landlord/properties/${firstUuid('landlord_properties')}');
+    expect(find.byIcon(Icons.edit_outlined), findsNothing, reason: 'no properties.update');
+
+    await openPath(tester, router, '/landlord/reports');
+    expect(find.text('Units'), findsWidgets);
+    expect(find.text('Profit & Loss'), findsNothing, reason: 'no reports.view');
+
+    for (final blocked in ['/landlord/tenants', '/landlord/more/expenses', '/landlord/more/documents']) {
+      router.go(blocked);
+      await tester.pumpAndSettle();
+      expect(currentPath(router), isNot(blocked));
+    }
   });
 }

@@ -1083,6 +1083,82 @@ div.dt-container .dt-length select {
     margin: 0 auto;
 }
 
+/* "Download for Android" card under the sign-in forms. */
+.app-download-card {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .9rem 1rem;
+    border-radius: 1.1rem;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, rgb(var(--brand-rgb)) 0%, color-mix(in srgb, rgb(var(--brand-rgb)) 55%, #0b1b2b) 100%);
+    box-shadow: 0 10px 24px -12px rgba(var(--brand-rgb), .65);
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    &:hover,
+    &:focus-visible {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px -12px rgba(var(--brand-rgb), .8);
+    }
+}
+
+.app-download-icon {
+    flex: 0 0 auto;
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: .9rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, .18);
+}
+
+.app-download-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.app-download-eyebrow {
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .8;
+}
+
+.app-download-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.app-download-meta {
+    font-size: .78rem;
+    opacity: .85;
+}
+
+.app-download-arrow {
+    margin-left: auto;
+    flex: 0 0 auto;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    color: rgb(var(--brand-rgb));
+    font-size: 1.05rem;
+}
+
+.app-download-hint {
+    margin: .55rem .25rem 0;
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
 .auth-panel .auth-switches {
     position: absolute;
     top: 1.25rem;

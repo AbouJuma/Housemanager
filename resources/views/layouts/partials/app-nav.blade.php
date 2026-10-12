@@ -7,6 +7,7 @@
             ['Dashboard', 'dashboard', 'bi-grid-1x2', ['dashboard'], true],
             // Only the platform owner (super admin) manages companies.
             ['Companies', 'companies.index', 'bi-building', ['companies.*'], $user->isSaasOwner()],
+            ['Mobile App', 'app-releases.index', 'bi-phone', ['app-releases.*'], $user->isSaasOwner()],
             ['Subscription Plans', 'subscription-plans.index', 'bi-credit-card', ['subscription-plans.*'], $user->can('viewAny', App\Modules\Subscriptions\Models\SubscriptionPlan::class)],
             ['Billing', 'billing.index', 'bi-wallet2', ['billing.*'], ! $user->isSaasOwner()],
         ],

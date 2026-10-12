@@ -38,6 +38,8 @@ class PropertyResource extends JsonResource
             'cover_photo_url' => $this->coverPhotoUrl(),
             'buildings_count' => $this->whenCounted('buildings'),
             'units_count' => $this->whenCounted('units'),
+            'occupied_units_count' => $this->whenCounted('occupied_units'),
+            'vacant_units_count' => $this->whenCounted('vacant_units'),
             // Full unit-level detail (with each unit's current tenant, if
             // any) for a property detail screen - only present when the
             // controller explicitly eager-loads 'buildings.units', so
