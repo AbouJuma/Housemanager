@@ -22,6 +22,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _showPassword = false;
   UserRole _role = UserRole.tenant;
   bool _submitting = false;
   String? _error;
@@ -169,8 +170,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const SizedBox(height: 14),
                           TextFormField(
                             controller: _passwordController,
-                            decoration: InputDecoration(labelText: context.tr('Password'), prefixIcon: Icon(Icons.lock_outline)),
-                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: context.tr('Password'),
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              // Eye toggle to check what was typed.
+                              suffixIcon: IconButton(
+                                icon: Icon(_showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                                tooltip: context.tr(_showPassword ? 'Hide password' : 'Show password'),
+                                onPressed: () => setState(() => _showPassword = !_showPassword),
+                              ),
+                            ),
+                            obscureText: !_showPassword,
                             autofillHints: const [AutofillHints.password],
                             validator: (value) => (value == null || value.isEmpty) ? 'Enter your password' : null,
                             onFieldSubmitted: (_) => _submit(),

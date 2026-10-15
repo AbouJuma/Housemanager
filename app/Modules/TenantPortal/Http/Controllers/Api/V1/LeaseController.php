@@ -30,7 +30,7 @@ class LeaseController extends Controller
 
     public function show(Request $request, Lease $lease): LeaseResource
     {
-        abort_unless($lease->tenant_id === $request->user()->id, 403);
+        abort_unless(same_id($lease->tenant_id, $request->user()->id), 403);
 
         return LeaseResource::make($lease->load(['unit.building.property', 'invoices']));
     }

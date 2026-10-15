@@ -1,7 +1,7 @@
 {
-    "token": "3|q5DjIK4EKz0rKDHkuQZv7M0UHWHcogRlHCTqUTRC8bf7d8f4",
+    "token": "3|1AIEKSyuYpAC6EjfxcS5VspGnLCMNcsUCTEv7VSQ941a525e",
     "landlord": {
-        "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
+        "uuid": "b3d9312c-3b14-4dfa-af6b-82f37d70f975",
         "name": "Juma Landlord",
         "type": "individual",
         "status": "active",
@@ -26,8 +26,8 @@
         },
         "notes": null,
         "photo_url": null,
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:25+00:00",
+        "updated_at": "2026-10-15T11:33:25+00:00"
     },
     "permissions": [
         "buyers.update",
@@ -37,6 +37,7 @@
         "expenses.update",
         "expenses.viewAny",
         "invoices.viewAny",
+        "leases.create",
         "maintenance.viewAny",
         "properties.create",
         "properties.update",

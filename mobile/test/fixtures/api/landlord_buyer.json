@@ -1,22 +1,22 @@
 {
     "data": {
-        "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+        "uuid": "7eb53053-45ae-464e-b647-6b604233b5b6",
         "name": "Asha Buyer",
         "username": "asha.buyer",
         "phone": "0788000444",
-        "email": null,
-        "status": "active",
-        "address": "8020 Reynolds Walks\nMaciberg, MI 32116",
+        "email": "wtreutel@hotmail.com",
+        "status": "inactive",
+        "address": "253 Johnson Parkways\nPort Ford, NV 13617-3140",
         "id_number": null,
         "purchases": [
             {
-                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
                 "status": "active",
-                "sale_date": "2026-10-12",
-                "unit_number": "327J0",
+                "sale_date": "2026-10-15",
+                "unit_number": "696A6",
                 "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
                 },
                 "total_price": 30000000,
                 "total_paid": 12000000,

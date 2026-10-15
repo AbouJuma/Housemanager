@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/rent_periods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../../core/l10n/l10n.dart';
@@ -39,6 +40,8 @@ class _StaffLeaseFormScreenState extends ConsumerState<StaffLeaseFormScreen> {
   final _depositController = TextEditingController();
   final _notesController = TextEditingController();
   final _terminationReasonController = TextEditingController();
+  final _periodsController = TextEditingController(text: '1');
+  String? _rentHint;
 
   StaffTenant? _selectedTenant;
   PropertySummary? _selectedProperty;
@@ -75,6 +78,7 @@ class _StaffLeaseFormScreenState extends ConsumerState<StaffLeaseFormScreen> {
     _depositController.dispose();
     _notesController.dispose();
     _terminationReasonController.dispose();
+    _periodsController.dispose();
     super.dispose();
   }
 
@@ -142,10 +146,33 @@ class _StaffLeaseFormScreenState extends ConsumerState<StaffLeaseFormScreen> {
     setState(() {
       if (isStart) {
         _startDate = picked;
+        _applyEndDate();
       } else {
         _endDate = picked;
       }
     });
+  }
+
+  int get _periods => int.tryParse(_periodsController.text.trim()) ?? 1;
+
+  /// End date = start + N billing periods (new leases; still editable).
+  void _applyEndDate() {
+    if (_isEditing || _startDate == null) return;
+    _endDate = RentPeriods.endDate(_startDate!, _billingCycle, _periods);
+  }
+
+  /// Rent per billing period from the unit's own price.
+  void _applyRent() {
+    final unit = _selectedUnit;
+    if (_isEditing || unit?.rentAmount == null || unit!.rentAmount! <= 0) {
+      _rentHint = null;
+      return;
+    }
+    final perCycle = RentPeriods.convert(unit.rentAmount!, unit.rentPeriod, _billingCycle);
+    _rentController.text = formatMoneyInput(perCycle.toStringAsFixed(2)) ?? '';
+    _rentHint = unit.rentPeriod == _billingCycle
+        ? null
+        : '${formatMoney(unit.rentAmount!)} / ${context.tr(RentPeriods.perLabels[unit.rentPeriod]!)} → ${formatMoney(perCycle)} / ${context.tr(RentPeriods.perLabels[_billingCycle]!)}';
   }
 
   Future<void> _submit() async {
@@ -239,22 +266,44 @@ class _StaffLeaseFormScreenState extends ConsumerState<StaffLeaseFormScreen> {
                     ),
                     const SizedBox(height: 16),
                   ],
-                  _datePickerTile(label: 'End date', value: _endDate, onTap: () => _pickDate(isStart: false)),
-                  const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _billingCycle,
                     decoration: InputDecoration(labelText: context.tr('Billing cycle')),
-                    items: _billingCycles.map((c) => DropdownMenuItem(value: c, child: Text(c.replaceAll('_', ' ')))).toList(),
-                    onChanged: (value) => setState(() => _billingCycle = value!),
+                    items: _billingCycles.map((c) => DropdownMenuItem(value: c, child: Text(context.tr(RentPeriods.labels[c]!)))).toList(),
+                    onChanged: (value) => setState(() {
+                      _billingCycle = value!;
+                      _applyRent();
+                      _applyEndDate();
+                    }),
                   ),
+                  if (!_isEditing) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _periodsController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(labelText: context.tr('Number of periods'), helperText: context.tr('e.g. 12 monthly periods = 1 year')),
+                      onChanged: (_) => setState(_applyEndDate),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _rentController,
-                    decoration: InputDecoration(labelText: context.tr('Rent amount')),
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: context.tr('Rent per billing period'),
+                      helperText: [
+                        ?_rentHint,
+                        if (!_isEditing && (parseMoney(_rentController.text) ?? 0) > 0)
+                          '${context.tr('Total for the lease')}: ${formatMoney((parseMoney(_rentController.text) ?? 0) * _periods)}',
+                      ].join('\n'),
+                      helperMaxLines: 3,
+                    ),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [MoneyInputFormatter()],
                     validator: (value) => parseMoney(value) == null ? 'Enter a valid amount' : null,
                   ),
+                  const SizedBox(height: 16),
+                  _datePickerTile(label: 'End date', value: _endDate, onTap: () => _pickDate(isStart: false)),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _depositController,
@@ -336,10 +385,9 @@ class _StaffLeaseFormScreenState extends ConsumerState<StaffLeaseFormScreen> {
         items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u.unitNumber))).toList(),
         onChanged: (value) => setState(() {
           _selectedUnit = value;
-          // Start from the unit's own rate - still editable.
-          if (value?.rentAmount != null) {
-            _rentController.text = formatMoneyInput(value!.rentAmount!.toStringAsFixed(2)) ?? '';
-          }
+          // Start from the unit's own price, converted to the billing
+          // cycle - still editable.
+          _applyRent();
         }),
       );
 

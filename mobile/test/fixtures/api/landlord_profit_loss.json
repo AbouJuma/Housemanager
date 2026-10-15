@@ -2,30 +2,30 @@
     "data": {
         "period": "this_year",
         "from": "2026-01-01",
-        "to": "2026-10-12",
+        "to": "2026-10-15",
         "income": {
             "rent": 450000,
             "sales": 6000000,
             "total": 6450000
         },
         "expenses": {
-            "total": 450.99,
+            "total": 240.53,
             "by_category": [
                 {
-                    "category": "Maintenance Expense",
-                    "amount": 450.99
+                    "category": "Rental Income",
+                    "amount": 240.53
                 }
             ]
         },
-        "net": 6449549.01,
+        "net": 6449759.47,
         "margin": 100,
         "by_property": [
             {
-                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                "name": "Koepp Spring Residences",
+                "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                "name": "Hackett Alley Apartments",
                 "income": 6450000,
-                "expenses": 450.99,
-                "net": 6449549.01
+                "expenses": 240.53,
+                "net": 6449759.47
             }
         ],
         "group": "month",
@@ -90,15 +90,15 @@
                 "key": "2026-09",
                 "label": "Sep 2026",
                 "income": 0,
-                "expenses": 450.99,
-                "net": -450.99
+                "expenses": 0,
+                "net": 0
             },
             {
                 "key": "2026-10",
                 "label": "Oct 2026",
                 "income": 6450000,
-                "expenses": 0,
-                "net": 6450000
+                "expenses": 240.53,
+                "net": 6449759.47
             }
         ]
     }

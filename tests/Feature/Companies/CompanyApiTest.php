@@ -36,9 +36,11 @@ class CompanyApiTest extends TestCase
         $owner = User::factory()->create();
         Sanctum::actingAs($owner);
 
-        $response = $this->postJson('/api/v1/companies', ['name' => 'Acme Property Group']);
+        $response = $this->postJson('/api/v1/companies', ['name' => 'Acme Property Group', 'admin_name' => 'Neema Admin', 'admin_email' => 'neema@acme.test']);
 
-        $response->assertCreated()->assertJsonPath('data.name', 'Acme Property Group');
+        $response->assertCreated()->assertJsonPath('data.name', 'Acme Property Group')
+            ->assertJsonPath('admin.email', 'neema@acme.test');
+        $this->assertNotEmpty($response->json('admin.password'));
         $this->assertDatabaseHas('companies', ['name' => 'Acme Property Group']);
     }
 

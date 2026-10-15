@@ -8,6 +8,7 @@ use App\Modules\LandlordPortal\Http\Controllers\Api\V1\DashboardController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\DocumentController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\ExpenseController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\InvoiceController;
+use App\Modules\LandlordPortal\Http\Controllers\Api\V1\LeaseController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\MaintenanceRequestController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\PropertyController;
 use App\Modules\LandlordPortal\Http\Controllers\Api\V1\ReportController;
@@ -54,6 +55,9 @@ Route::prefix('portal/landlord')->name('api.v1.portal.landlord.')->middleware(['
     Route::get('buyers', [BuyerController::class, 'index'])->name('buyers.index')->middleware($can('buyers.viewAny'));
     Route::get('buyers/{buyer}', [BuyerController::class, 'show'])->name('buyers.show')->middleware($can('buyers.viewAny'));
     Route::put('buyers/{buyer}', [BuyerController::class, 'update'])->name('buyers.update')->middleware($can('buyers.update'));
+
+    Route::get('lease-options', [LeaseController::class, 'options'])->name('leases.options')->middleware($can('leases.create'));
+    Route::post('leases', [LeaseController::class, 'store'])->name('leases.store')->middleware($can('leases.create'));
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index')->middleware($can('invoices.viewAny'));
 

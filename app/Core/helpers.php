@@ -42,3 +42,16 @@ if (! function_exists('company_now')) {
         return now()->setTimezone(company_timezone());
     }
 }
+
+if (! function_exists('same_id')) {
+    /**
+     * Whether two database ids are the same record. Some MySQL drivers
+     * (e.g. libmysqlclient-based pdo_mysql on shared hosting) return
+     * foreign keys as strings while Eloquent casts primary keys to int,
+     * so `$lease->tenant_id === $tenant->id` would wrongly be false.
+     */
+    function same_id(mixed $a, mixed $b): bool
+    {
+        return $a !== null && $b !== null && (string) $a === (string) $b;
+    }
+}

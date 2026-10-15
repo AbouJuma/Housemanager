@@ -7,6 +7,7 @@ use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalDashboardControlle
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalDocumentController;
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalExpenseController;
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalInvoiceController;
+use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalLeaseController;
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalMaintenanceRequestController;
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalPropertyController;
 use App\Modules\LandlordPortal\Http\Controllers\LandlordPortalReportController;
@@ -53,6 +54,9 @@ Route::prefix('landlord-portal')->name('landlord-portal.')->middleware('web')->g
         Route::post('buildings/{building}/units', [LandlordPortalUnitController::class, 'storeUnit'])->name('units.store');
         Route::get('units/{unit}/edit', [LandlordPortalUnitController::class, 'editUnit'])->name('units.edit');
         Route::put('units/{unit}', [LandlordPortalUnitController::class, 'updateUnit'])->name('units.update');
+
+        Route::get('leases/create', [LandlordPortalLeaseController::class, 'create'])->name('leases.create');
+        Route::post('leases', [LandlordPortalLeaseController::class, 'store'])->name('leases.store');
 
         Route::get('tenants', [LandlordPortalTenantController::class, 'index'])->name('tenants.index');
         Route::get('tenants/create', [LandlordPortalTenantController::class, 'create'])->name('tenants.create');

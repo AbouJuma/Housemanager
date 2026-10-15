@@ -5,24 +5,24 @@
         "vacant": 2
     },
     "total_collected": 450000,
-    "total_expenses": 450.99,
-    "net_amount": 449549.01,
+    "total_expenses": 240.53,
+    "net_amount": 449759.47,
     "recent_maintenance_requests": [
         {
-            "uuid": "dd3d61d2-1570-4426-8066-f20afbb9f6b4",
-            "title": "Pest infestation",
-            "description": "Consequatur alias et sed corporis qui.",
-            "category": "electrical",
+            "uuid": "bcd4bd0b-b0d8-49a5-b916-58bf2560483d",
+            "title": "Water heater not working",
+            "description": "Autem quasi et numquam amet sunt minus.",
+            "category": "pest_control",
             "priority": "medium",
             "status": "open",
-            "reported_date": "2026-09-17",
+            "reported_date": "2026-10-11",
             "scheduled_date": null,
             "completed_date": null,
             "estimated_cost": null,
             "actual_cost": null,
             "notes": null,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         }
     ]
 }

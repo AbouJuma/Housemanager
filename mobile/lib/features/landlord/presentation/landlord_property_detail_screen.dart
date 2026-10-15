@@ -12,6 +12,7 @@ import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/formatters.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../data/landlord_providers.dart';
+import 'landlord_lease_form_screen.dart';
 import 'landlord_unit_form_screen.dart';
 
 class LandlordPropertyDetailScreen extends ConsumerWidget {
@@ -46,12 +47,40 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
           final sold = units.where((u) => u.sale != null).length;
           final canAdd = hasPermission(ref, 'units.create');
           final canEditUnits = hasPermission(ref, 'units.update');
+          final canLease = hasPermission(ref, 'leases.create');
           Future<void> openUnit(String buildingUuid, UnitDetail? unit) async {
             await Navigator.of(context).push(MaterialPageRoute<bool>(
               builder: (_) => LandlordUnitFormScreen(buildingUuid: buildingUuid, unit: unit),
             ));
             // Also after "Save & add another".
             ref.invalidate(landlordPropertyProvider(uuid));
+          }
+
+          // A free unit can be rented out (or edited); others just edited.
+          Future<void> onUnit(String buildingUuid, UnitDetail unit) async {
+            final free = unit.status == 'vacant';
+            if (free && canLease) {
+              final choice = await showModalBottomSheet<String>(
+                context: context,
+                showDragHandle: true,
+                builder: (sheet) => SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(leading: const Icon(Icons.key_outlined), title: Text(sheet.tr('Rent out')), onTap: () => Navigator.of(sheet).pop('lease')),
+                      if (canEditUnits) ListTile(leading: const Icon(Icons.edit_outlined), title: Text(sheet.tr('Edit unit')), onTap: () => Navigator.of(sheet).pop('edit')),
+                    ],
+                  ),
+                ),
+              );
+              if (choice == 'lease' && context.mounted) {
+                final created = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => LandlordLeaseFormScreen(unitUuid: unit.uuid)));
+                if (created == true) ref.invalidate(landlordPropertyProvider(uuid));
+                return;
+              }
+              if (choice != 'edit') return;
+            }
+            if (canEditUnits) await openUnit(buildingUuid, unit);
           }
 
           return ListView(
@@ -117,7 +146,7 @@ class LandlordPropertyDetailScreen extends ConsumerWidget {
                 ...buildings.map((building) => _BuildingSection(
                       building: building,
                       onAddUnit: canAdd ? () => openUnit(building.uuid, null) : null,
-                      onEditUnit: canEditUnits ? (unit) => openUnit(building.uuid, unit) : null,
+                      onEditUnit: canEditUnits || canLease ? (unit) => onUnit(building.uuid, unit) : null,
                     )),
             ],
           );

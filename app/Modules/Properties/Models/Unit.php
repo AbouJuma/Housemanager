@@ -35,6 +35,7 @@ class Unit extends Model
         'area',
         'area_unit',
         'rent_amount',
+        'rent_period',
         'description',
     ];
 

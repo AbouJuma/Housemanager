@@ -26,7 +26,7 @@ class PortalInvoiceController extends Controller
     public function show(Invoice $invoice): View
     {
         $tenant = Auth::guard('tenant')->user();
-        abort_unless($invoice->lease->tenant_id === $tenant->id, 403);
+        abort_unless(same_id($invoice->lease?->tenant_id, $tenant->id), 403);
 
         return view('tenant-portal::invoices.show', [
             'invoice' => $invoice->load(['lease.unit.building.property', 'items', 'payments', 'paymentAttempts']),

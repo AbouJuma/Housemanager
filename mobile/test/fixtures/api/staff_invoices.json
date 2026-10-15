@@ -1,137 +1,137 @@
 {
     "data": [
         {
-            "uuid": "4332fd2a-28ce-4ea3-aa8d-91f7fd6dd100",
+            "uuid": "840db0c8-8bc6-466b-be71-80682afbe4b5",
             "invoice_number": "INV-000001",
             "status": "paid",
-            "issue_date": "2026-10-12",
-            "due_date": "2026-10-12",
+            "issue_date": "2026-10-15",
+            "due_date": "2026-10-15",
             "total_amount": 450000,
             "amount_paid": 450000,
             "balance_due": 0,
             "notes": null,
             "lease": {
-                "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
+                "uuid": "5748d17c-c079-4e81-af5a-5d963e7478a6",
                 "tenant": {
-                    "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
+                    "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
                     "name": "Amina Tenant"
                 },
                 "unit": {
-                    "uuid": "42bec715-07a2-4ecc-b196-94f30bf515c9",
-                    "unit_number": "710B2"
+                    "uuid": "dc68c3dd-2ef2-4e89-8490-4bb30d276bb6",
+                    "unit_number": "495B5"
                 }
             },
             "sale": null,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         },
         {
-            "uuid": "46948da2-eff9-4890-9d9d-65c1dc5184cc",
+            "uuid": "828e3125-0ae4-4154-a0da-f6e9ea381243",
             "invoice_number": "INV-000002",
             "status": "paid",
-            "issue_date": "2026-10-12",
-            "due_date": "2026-11-12",
+            "issue_date": "2026-10-15",
+            "due_date": "2026-11-15",
             "total_amount": 6000000,
             "amount_paid": 6000000,
             "balance_due": 0,
             "notes": null,
             "lease": null,
             "sale": {
-                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
                 "unit": {
-                    "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                    "unit_number": "327J0",
+                    "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                    "unit_number": "696A6",
                     "building": {
-                        "name": "Block cS",
+                        "name": "Block dJ",
                         "property": {
-                            "name": "Koepp Spring Residences"
+                            "name": "Hackett Alley Apartments"
                         }
                     }
                 }
             },
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         },
         {
-            "uuid": "27e360a8-789e-4d3f-96a9-ee283cf3f0a7",
+            "uuid": "fdd51a9e-cf55-48bc-8550-faab79769fd2",
             "invoice_number": "INV-000003",
             "status": "sent",
-            "issue_date": "2026-10-12",
-            "due_date": "2026-12-12",
+            "issue_date": "2026-10-15",
+            "due_date": "2026-12-15",
             "total_amount": 6000000,
             "amount_paid": 0,
             "balance_due": 6000000,
             "notes": null,
             "lease": null,
             "sale": {
-                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
                 "unit": {
-                    "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                    "unit_number": "327J0",
+                    "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                    "unit_number": "696A6",
                     "building": {
-                        "name": "Block cS",
+                        "name": "Block dJ",
                         "property": {
-                            "name": "Koepp Spring Residences"
+                            "name": "Hackett Alley Apartments"
                         }
                     }
                 }
             },
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         },
         {
-            "uuid": "fc3aba1b-11ac-46fa-8ec7-1c8211375f7a",
+            "uuid": "c60f6345-f31a-4fdc-9f10-a284bad275cf",
             "invoice_number": "INV-000004",
             "status": "sent",
-            "issue_date": "2026-10-12",
-            "due_date": "2027-01-12",
+            "issue_date": "2026-10-15",
+            "due_date": "2027-01-15",
             "total_amount": 6000000,
             "amount_paid": 0,
             "balance_due": 6000000,
             "notes": null,
             "lease": null,
             "sale": {
-                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
                 "unit": {
-                    "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                    "unit_number": "327J0",
+                    "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                    "unit_number": "696A6",
                     "building": {
-                        "name": "Block cS",
+                        "name": "Block dJ",
                         "property": {
-                            "name": "Koepp Spring Residences"
+                            "name": "Hackett Alley Apartments"
                         }
                     }
                 }
             },
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         },
         {
-            "uuid": "af583b4a-d7a3-4111-a8bc-4c1ad49d11d7",
+            "uuid": "106cbd5f-48bb-4b25-9d4a-1e7f818e9bea",
             "invoice_number": "INV-000005",
             "status": "sent",
-            "issue_date": "2026-10-12",
-            "due_date": "2027-02-12",
+            "issue_date": "2026-10-15",
+            "due_date": "2027-02-15",
             "total_amount": 6000000,
             "amount_paid": 0,
             "balance_due": 6000000,
             "notes": null,
             "lease": null,
             "sale": {
-                "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+                "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
                 "unit": {
-                    "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                    "unit_number": "327J0",
+                    "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                    "unit_number": "696A6",
                     "building": {
-                        "name": "Block cS",
+                        "name": "Block dJ",
                         "property": {
-                            "name": "Koepp Spring Residences"
+                            "name": "Hackett Alley Apartments"
                         }
                     }
                 }
             },
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         }
     ],
     "links": {

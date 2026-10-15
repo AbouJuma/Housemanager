@@ -45,7 +45,7 @@ class BuyerPortalController extends Controller
 
     public function purchase(Sale $sale): View
     {
-        abort_unless($sale->new_buyer_id === Auth::guard('buyer')->id(), 403);
+        abort_unless(same_id($sale->new_buyer_id, Auth::guard('buyer')->id()), 403);
 
         return view('buyer-portal::purchases.show', [
             'sale' => $sale->load(['unit.building.property', 'installments' => fn ($q) => $q->orderBy('installment_number')]),
@@ -70,7 +70,7 @@ class BuyerPortalController extends Controller
 
     public function invoice(Invoice $invoice): View
     {
-        abort_unless($invoice->sale?->new_buyer_id === Auth::guard('buyer')->id(), 403);
+        abort_unless(same_id($invoice->sale?->new_buyer_id, Auth::guard('buyer')->id()), 403);
 
         return view('buyer-portal::invoices.show', ['invoice' => $invoice->load(['sale.unit.building.property', 'items', 'payments'])]);
     }

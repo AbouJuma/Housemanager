@@ -1,25 +1,29 @@
 {
     "data": {
-        "uuid": "e5942832-b137-4393-a647-0e314ce03c48",
+        "uuid": "337a4e32-8a56-416b-af4d-cc121ebe7b62",
         "status": "active",
-        "start_date": "2026-10-12",
-        "end_date": "2027-10-12",
+        "start_date": "2026-10-15",
+        "end_date": "2027-10-15",
         "billing_cycle": "monthly",
         "rent_amount": 500000,
+        "periods": 13,
+        "contract_value": 6500000,
+        "amount_paid": 500000,
+        "balance": 6000000,
         "deposit_amount": 500000,
         "terminated_at": null,
         "termination_reason": null,
         "notes": null,
         "tenant": {
-            "uuid": "9130d2aa-8d81-44c6-8d9e-0ef93cce51ef",
+            "uuid": "c3546f7b-536d-4439-ba8c-f81b92106016",
             "name": "New Tenant Renamed"
         },
         "unit": {
-            "uuid": "6c4fef4b-b307-4dcc-86a4-00373ab0a964",
-            "unit_number": "159A1",
+            "uuid": "75d121db-6212-4ed5-acc0-a8f36b6fc3ac",
+            "unit_number": "816H2",
             "building": null
         },
-        "created_at": "2026-10-12T10:14:52+00:00",
-        "updated_at": "2026-10-12T10:14:52+00:00"
+        "created_at": "2026-10-15T11:33:28+00:00",
+        "updated_at": "2026-10-15T11:33:28+00:00"
     }
 }

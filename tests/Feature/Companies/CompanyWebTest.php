@@ -8,6 +8,9 @@ use App\Modules\Integrations\Models\Integration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Core\Tenancy\PermissionsTeam;
+use App\Modules\Users\Notifications\StaffWelcome;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class CompanyWebTest extends TestCase
@@ -35,8 +38,12 @@ class CompanyWebTest extends TestCase
     {
         $owner = User::factory()->create();
 
+        Notification::fake();
         $response = $this->actingAs($owner)->post(route('companies.store'), [
             'name' => 'Acme Property Group',
+            'admin_name' => 'Neema Admin',
+            'admin_email' => 'neema@acme.test',
+            'admin_phone' => '0713 222 111',
         ]);
 
         $this->assertDatabaseHas('companies', [
@@ -45,7 +52,25 @@ class CompanyWebTest extends TestCase
         ]);
 
         $company = Company::where('slug', 'acme-property-group')->firstOrFail();
-        $response->assertRedirect(route('companies.show', $company));
+        $response->assertRedirect(route('companies.show', $company))->assertSessionHas('success');
+
+        // Its admin: Admin role, phone-number password, welcome sent.
+        $admin = User::where('email', 'neema@acme.test')->firstOrFail();
+        $this->assertSame($company->id, (int) $admin->company_id);
+        $this->assertTrue(PermissionsTeam::runAs($company->id, fn () => $admin->hasRole('Admin')));
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('0713222111', $admin->password));
+        Notification::assertSentTo($admin, StaffWelcome::class);
+    }
+
+    public function test_a_company_needs_an_admin_with_a_unique_email(): void
+    {
+        $owner = User::factory()->create();
+        User::factory()->create(['email' => 'taken@acme.test']);
+
+        $this->actingAs($owner)->post(route('companies.store'), ['name' => 'No Admin Co'])->assertSessionHasErrors(['admin_name', 'admin_email']);
+        $this->actingAs($owner)->post(route('companies.store'), ['name' => 'Dup Co', 'admin_name' => 'X', 'admin_email' => 'taken@acme.test'])->assertSessionHasErrors('admin_email');
+        $this->assertDatabaseMissing('companies', ['name' => 'No Admin Co']);
+        $this->assertDatabaseMissing('companies', ['name' => 'Dup Co']);
     }
 
     public function test_a_company_user_cannot_create_a_company(): void

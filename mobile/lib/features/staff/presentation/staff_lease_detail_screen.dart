@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/widgets/error_view.dart';
@@ -53,7 +54,13 @@ class StaffLeaseDetailScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     _row('Tenant', lease.tenantName ?? 'Unassigned'),
-                    _row('Rent', '${formatMoney(lease.rentAmount)} / ${lease.billingCycle}'),
+                    _row('Rent', '${formatMoney(lease.rentAmount)} / '.toString() + context.tr(const {'monthly': 'month', 'quarterly': 'quarter', 'semi_annual': 'half year', 'annual': 'year'}[lease.billingCycle] ?? 'month')),
+                    if (lease.contractValue != null) ...[
+                      const Divider(height: 24),
+                      _row('Total for the lease', '${lease.periods ?? 1} × ${formatMoney(lease.rentAmount)} = ${formatMoney(lease.contractValue!)}'),
+                      _row('Paid so far', formatMoney(lease.amountPaid ?? 0)),
+                      _row('Balance', formatMoney((lease.balance ?? 0) < 0 ? 0 : lease.balance!)),
+                    ],
                     _row('Deposit', lease.depositAmount != null ? formatMoney(lease.depositAmount!) : '—'),
                     _row('Start date', formatDate(lease.startDate)),
                     _row('End date', formatDate(lease.endDate)),

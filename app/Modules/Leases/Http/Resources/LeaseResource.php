@@ -19,6 +19,11 @@ class LeaseResource extends JsonResource
             'end_date' => $this->end_date?->toDateString(),
             'billing_cycle' => $this->billing_cycle,
             'rent_amount' => (float) $this->rent_amount,
+            // The whole lease: periods x rent, paid so far, and what's left.
+            'periods' => $this->periodsCount(),
+            'contract_value' => $this->contractValue(),
+            'amount_paid' => $paid = $this->amountPaid(),
+            'balance' => round($this->contractValue() - $paid, 2),
             'deposit_amount' => $this->deposit_amount !== null ? (float) $this->deposit_amount : null,
             'terminated_at' => $this->terminated_at?->toDateString(),
             'termination_reason' => $this->termination_reason,

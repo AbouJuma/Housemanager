@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+        "uuid": "02925235-5ff8-4bca-a178-fbfbbd774185",
         "name": "Juma Towers",
         "type": "residential",
         "status": "active",
@@ -21,7 +21,7 @@
         "cover_photo_url": null,
         "buildings_count": 0,
         "units_count": 0,
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:27+00:00",
+        "updated_at": "2026-10-15T11:33:27+00:00"
     }
 }

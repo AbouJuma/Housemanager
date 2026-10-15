@@ -1,41 +1,12 @@
 {
     "data": [
         {
-            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-            "name": "Koepp Spring Residences",
-            "type": "hostel",
-            "status": "active",
-            "landlord": {
-                "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
-                "name": "Juma Landlord"
-            },
-            "description": null,
-            "address": {
-                "line1": "15560 Sanford Ramp",
-                "line2": null,
-                "city": "Kinondoni",
-                "area": "Masaki",
-                "state": "Dar es Salaam",
-                "postal_code": "07903",
-                "country_code": "VI"
-            },
-            "latitude": null,
-            "longitude": null,
-            "total_area": "9686.46",
-            "area_unit": "sqm",
-            "cover_photo_url": null,
-            "buildings_count": 1,
-            "units_count": 3,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
-        },
-        {
-            "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+            "uuid": "02925235-5ff8-4bca-a178-fbfbbd774185",
             "name": "Juma Towers",
             "type": "residential",
             "status": "active",
             "landlord": {
-                "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
+                "uuid": "b3d9312c-3b14-4dfa-af6b-82f37d70f975",
                 "name": "Juma Landlord"
             },
             "description": "Near the beach",
@@ -54,9 +25,38 @@
             "area_unit": "sqm",
             "cover_photo_url": null,
             "buildings_count": 1,
-            "units_count": 1,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "units_count": 2,
+            "created_at": "2026-10-15T11:33:27+00:00",
+            "updated_at": "2026-10-15T11:33:27+00:00"
+        },
+        {
+            "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+            "name": "Hackett Alley Apartments",
+            "type": "land",
+            "status": "active",
+            "landlord": {
+                "uuid": "b3d9312c-3b14-4dfa-af6b-82f37d70f975",
+                "name": "Juma Landlord"
+            },
+            "description": null,
+            "address": {
+                "line1": "13710 Kurtis Mission",
+                "line2": null,
+                "city": "Kinondoni",
+                "area": "Masaki",
+                "state": "Dar es Salaam",
+                "postal_code": "85660",
+                "country_code": "TJ"
+            },
+            "latitude": null,
+            "longitude": null,
+            "total_area": "3051.14",
+            "area_unit": "sqm",
+            "cover_photo_url": null,
+            "buildings_count": 1,
+            "units_count": 3,
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         }
     ],
     "links": {

@@ -89,6 +89,15 @@
                                 <input type="number" step="0.01" min="0" name="units[__INDEX__][rent_amount]" class="form-control">
                             </div>
                             <div class="col-md-3">
+                                <label class="form-label">{{ __('Rent is per') }}</label>
+                                <select name="units[__INDEX__][rent_period]" class="form-select">
+                                    <option value="monthly">{{ __('Month') }}</option>
+                                    <option value="quarterly">{{ __('Quarter (3 months)') }}</option>
+                                    <option value="semi_annual">{{ __('Half year (6 months)') }}</option>
+                                    <option value="annual">{{ __('Year') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <label class="form-label">{{ __('Status') }}</label>
                                 <select name="units[__INDEX__][status]" class="form-select">
                                     <option value="vacant">{{ __('Vacant') }}</option>

@@ -1,0 +1,22 @@
+{
+    "token": "5|KVT89gKHd6hPf4EQwwodtQZqq2NC97q3a8XFnOtQc603e869",
+    "user": {
+        "uuid": "aab99b28-bff2-4aaa-bb6b-43ef0e7ca8d3",
+        "name": "Abel Buckridge DVM",
+        "username": "platform.owner",
+        "email": "howell.medhurst@example.com",
+        "phone": null,
+        "is_saas_owner": true
+    },
+    "permissions": [
+        "companies.viewAny",
+        "companies.create",
+        "companies.update"
+    ],
+    "branding": {
+        "company_name": null,
+        "logo_url": null,
+        "primary_color": "#1F5A94",
+        "accent_color": "#5EEAD4"
+    }
+}

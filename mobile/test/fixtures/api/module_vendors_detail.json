@@ -1,22 +1,22 @@
 {
     "data": {
-        "uuid": "2f2eb6f0-0130-46b1-afe5-90e621947de5",
-        "name": "Farrell-Doyle",
+        "uuid": "8ef389cd-191d-42bd-9e64-da5300d92fba",
+        "name": "Hartmann-Rowe",
         "type": "company",
-        "category": "security",
+        "category": "general_contractor",
         "status": "active",
-        "email": "creynolds@example.org",
-        "phone": "(931) 888-4792",
+        "email": "gutkowski.alessandro@example.org",
+        "phone": "1-323-650-7190",
         "secondary_phone": null,
         "address": {
             "line1": null,
             "line2": null,
-            "city": "Faheyberg",
+            "city": "South Una",
             "state": null,
             "postal_code": null,
-            "country_code": "KE"
+            "country_code": "PY"
         },
-        "tax_id": "TIN-41426502",
+        "tax_id": "TIN-06063451",
         "bank_details": {
             "bank_name": null,
             "account_name": null,
@@ -27,7 +27,7 @@
         "notes": null,
         "photo_url": null,
         "expenses_count": 0,
-        "created_at": "2026-10-12T10:14:52+00:00",
-        "updated_at": "2026-10-12T10:14:52+00:00"
+        "created_at": "2026-10-15T11:33:28+00:00",
+        "updated_at": "2026-10-15T11:33:28+00:00"
     }
 }

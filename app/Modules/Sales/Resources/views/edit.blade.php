@@ -24,7 +24,7 @@
                         <select name="unit_id" class="form-select @error('unit_id') is-invalid @enderror">
                             <option value="">&mdash; Select a unit &mdash;</option>
                             @foreach ($units as $unit)
-                                <option value="{{ $unit->id }}" @selected(old('unit_id', $sale->unit_id) === $unit->id)>{{ $unit->unit_number }} · {{ $unit->building->property->name }} · {{ $unit->building->name }}</option>
+                                <option value="{{ $unit->id }}" @selected(same_id(old('unit_id', $sale->unit_id), $unit->id))>{{ $unit->unit_number }} · {{ $unit->building->property->name }} · {{ $unit->building->name }}</option>
                             @endforeach
                         </select>
                         @error('unit_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -34,7 +34,7 @@
                         <select name="new_buyer_id" id="buyerSelect" class="form-select @error('new_buyer_id') is-invalid @enderror">
                             <option value="">{{ __('Select a buyer (optional)') }}</option>
                             @foreach ($buyers as $buyer)
-                                <option value="{{ $buyer->id }}" @selected(old('new_buyer_id', $sale->new_buyer_id) === $buyer->id)>{{ $buyer->name }} ({{ $buyer->phone }})</option>
+                                <option value="{{ $buyer->id }}" @selected(same_id(old('new_buyer_id', $sale->new_buyer_id), $buyer->id))>{{ $buyer->name }} ({{ $buyer->phone }})</option>
                             @endforeach
                         </select>
                         @error('new_buyer_id') <div class="invalid-feedback">{{ $message }}</div> @enderror

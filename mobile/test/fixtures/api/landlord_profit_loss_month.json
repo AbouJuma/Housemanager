@@ -2,37 +2,41 @@
     "data": {
         "period": "this_month",
         "from": "2026-10-01",
-        "to": "2026-10-12",
+        "to": "2026-10-15",
         "income": {
             "rent": 450000,
             "sales": 6000000,
             "total": 6450000
         },
         "expenses": {
-            "total": 150000,
+            "total": 150240.53,
             "by_category": [
                 {
                     "category": "Repairs",
                     "amount": 150000
+                },
+                {
+                    "category": "Rental Income",
+                    "amount": 240.53
                 }
             ]
         },
-        "net": 6300000,
+        "net": 6299759.47,
         "margin": 97.7,
         "by_property": [
             {
-                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                "name": "Koepp Spring Residences",
+                "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                "name": "Hackett Alley Apartments",
                 "income": 6450000,
-                "expenses": 0,
-                "net": 6450000
+                "expenses": 150240.53,
+                "net": 6299759.47
             },
             {
-                "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
+                "uuid": "02925235-5ff8-4bca-a178-fbfbbd774185",
                 "name": "Juma Towers",
                 "income": 0,
-                "expenses": 150000,
-                "net": -150000
+                "expenses": 0,
+                "net": 0
             }
         ],
         "group": "week",
@@ -55,8 +59,8 @@
                 "key": "2026-10-12",
                 "label": "Week of 12 Oct",
                 "income": 6450000,
-                "expenses": 150000,
-                "net": 6300000
+                "expenses": 150240.53,
+                "net": 6299759.47
             }
         ]
     }

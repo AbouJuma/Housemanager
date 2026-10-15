@@ -1,0 +1,30 @@
+{
+    "data": {
+        "uuid": "6b81afcd-cff3-4663-84fa-d965d93b8755",
+        "name": "Kilimanjaro Homes",
+        "slug": "kilimanjaro-homes",
+        "email": null,
+        "phone": null,
+        "website": null,
+        "address": {
+            "line1": null,
+            "line2": null,
+            "city": null,
+            "state": null,
+            "postal_code": null,
+            "country_code": null
+        },
+        "timezone": "Africa/Dar_es_Salaam",
+        "locale": "en",
+        "currency_code": "USD",
+        "branding": {
+            "logo_url": null,
+            "primary_color": null,
+            "secondary_color": null
+        },
+        "status": "trial",
+        "trial_ends_at": "2026-10-29T11:33:28+00:00",
+        "created_at": "2026-10-15T11:33:28+00:00",
+        "updated_at": "2026-10-15T11:33:28+00:00"
+    }
+}

@@ -231,6 +231,19 @@ class LandlordRepository {
     return _page(body, page);
   }
 
+  // --- Leases (renting out a unit) ---
+
+  /// Free units (with price and what it's per) and the landlord's tenants.
+  Future<Map<String, dynamic>> leaseOptions() async {
+    final response = await _apiClient.dio.get('/portal/landlord/lease-options');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> createLease(Map<String, dynamic> data) async {
+    final response = await _apiClient.dio.post('/portal/landlord/leases', data: data);
+    return unwrapObject(response.data);
+  }
+
   PageResult<Map<String, dynamic>> _page(Map<String, dynamic> body, int page) {
     final meta = body['meta'] as Map<String, dynamic>?;
     return PageResult(

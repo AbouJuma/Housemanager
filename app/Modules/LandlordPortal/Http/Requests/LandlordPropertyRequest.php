@@ -22,7 +22,7 @@ class LandlordPropertyRequest extends FormRequest
         $property = $this->route('property');
 
         if ($property) {
-            return $property->landlord_id === $this->user()?->id
+            return same_id($property->landlord_id, $this->user()?->id)
                 && LandlordAccess::can($this->user(), 'properties.update');
         }
 

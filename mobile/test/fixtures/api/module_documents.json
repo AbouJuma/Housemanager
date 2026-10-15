@@ -1,42 +1,42 @@
 {
     "data": [
         {
-            "uuid": "c3c45fba-1dd8-4946-80c6-ceca21171012",
-            "title": "Signed Lease Agreement",
-            "category": "other",
-            "description": "Voluptatem dolorem enim non nihil quis.",
+            "uuid": "668234df-c08a-4a91-93a7-c786d76f715a",
+            "title": "Insurance Certificate",
+            "category": "contract",
+            "description": "Repudiandae est aut provident est.",
             "expiry_date": null,
-            "is_expired": false,
-            "is_expiring_soon": false,
-            "documentable_type": "tenant",
-            "documentable": {
-                "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
-                "name": "Amina Tenant"
-            },
-            "file_url": null,
-            "file_name": null,
-            "uploaded_by": null,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
-        },
-        {
-            "uuid": "0104b9b6-a564-42af-84b3-e07e8b4b7647",
-            "title": "Property Deed",
-            "category": "other",
-            "description": "Quo debitis enim ut dolor.",
-            "expiry_date": "2028-04-12",
             "is_expired": false,
             "is_expiring_soon": false,
             "documentable_type": "landlord",
             "documentable": {
-                "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
+                "uuid": "b3d9312c-3b14-4dfa-af6b-82f37d70f975",
                 "name": "Juma Landlord"
             },
             "file_url": null,
             "file_name": null,
             "uploaded_by": null,
-            "created_at": "2026-10-12T10:14:51+00:00",
-            "updated_at": "2026-10-12T10:14:51+00:00"
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
+        },
+        {
+            "uuid": "56fead06-7902-4672-ac82-ae3fab624da3",
+            "title": "Signed Lease Agreement",
+            "category": "invoice",
+            "description": "Rerum quam sed doloribus illo.",
+            "expiry_date": "2027-08-15",
+            "is_expired": false,
+            "is_expiring_soon": false,
+            "documentable_type": "tenant",
+            "documentable": {
+                "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
+                "name": "Amina Tenant"
+            },
+            "file_url": null,
+            "file_name": null,
+            "uploaded_by": null,
+            "created_at": "2026-10-15T11:33:25+00:00",
+            "updated_at": "2026-10-15T11:33:25+00:00"
         }
     ],
     "links": {

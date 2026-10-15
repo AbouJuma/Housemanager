@@ -1,31 +1,31 @@
 {
     "data": {
-        "uuid": "46948da2-eff9-4890-9d9d-65c1dc5184cc",
+        "uuid": "828e3125-0ae4-4154-a0da-f6e9ea381243",
         "invoice_number": "INV-000002",
         "status": "paid",
-        "issue_date": "2026-10-12",
-        "due_date": "2026-11-12",
+        "issue_date": "2026-10-15",
+        "due_date": "2026-11-15",
         "total_amount": 6000000,
         "amount_paid": 6000000,
         "balance_due": 0,
         "notes": null,
         "sale": {
-            "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
+            "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
             "unit": {
-                "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                "unit_number": "327J0",
+                "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                "unit_number": "696A6",
                 "building": {
-                    "name": "Block cS",
+                    "name": "Block dJ",
                     "property": {
-                        "name": "Koepp Spring Residences"
+                        "name": "Hackett Alley Apartments"
                     }
                 }
             }
         },
         "items": [
             {
-                "uuid": "f44c6b5e-9e52-4af0-8548-72479429e91c",
-                "description": "Installment #1 - Unit 327J0",
+                "uuid": "222e1018-85b8-46c1-ac14-1a7908943d6f",
+                "description": "Installment #1 - Unit 696A6",
                 "quantity": 1,
                 "unit_price": 6000000,
                 "amount": 6000000
@@ -33,16 +33,16 @@
         ],
         "payments": [
             {
-                "uuid": "2c8ed268-c005-4354-8d85-66c043cb60a5",
+                "uuid": "da7755d0-9868-47d5-bad7-b44d87a8ccac",
                 "amount": 6000000,
-                "paid_on": "2026-10-12",
+                "paid_on": "2026-10-15",
                 "method": "cash",
                 "reference": null,
                 "notes": null
             }
         ],
         "payment_attempts": [],
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:25+00:00",
+        "updated_at": "2026-10-15T11:33:25+00:00"
     }
 }

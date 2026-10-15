@@ -1,32 +1,36 @@
 {
     "data": {
-        "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
+        "uuid": "5748d17c-c079-4e81-af5a-5d963e7478a6",
         "status": "active",
-        "start_date": "2026-10-12",
-        "end_date": "2027-10-12",
+        "start_date": "2026-10-15",
+        "end_date": "2027-10-15",
         "billing_cycle": "monthly",
         "rent_amount": 450000,
+        "periods": 13,
+        "contract_value": 5850000,
+        "amount_paid": 450000,
+        "balance": 5400000,
         "deposit_amount": 450000,
         "terminated_at": null,
         "termination_reason": null,
         "notes": null,
         "tenant": {
-            "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
+            "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
             "name": "Amina Tenant"
         },
         "unit": {
-            "uuid": "42bec715-07a2-4ecc-b196-94f30bf515c9",
-            "unit_number": "710B2",
+            "uuid": "dc68c3dd-2ef2-4e89-8490-4bb30d276bb6",
+            "unit_number": "495B5",
             "building": {
-                "uuid": "6708054a-93cb-4681-8bd6-e22c8f26351d",
-                "name": "Block cS",
+                "uuid": "e43f897a-ffbc-4594-9e89-b529dfc326cd",
+                "name": "Block dJ",
                 "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
                 }
             }
         },
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:25+00:00",
+        "updated_at": "2026-10-15T11:33:25+00:00"
     }
 }

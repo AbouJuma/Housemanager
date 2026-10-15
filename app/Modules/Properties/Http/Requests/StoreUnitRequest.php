@@ -27,6 +27,7 @@ class StoreUnitRequest extends FormRequest
             'area' => ['nullable', 'numeric', 'min:0'],
             'area_unit' => ['nullable', 'string', 'max:10'],
             'rent_amount' => ['nullable', 'numeric', 'min:0'],
+            'rent_period' => ['nullable', Rule::in(array_keys(\App\Modules\Leases\Support\RentPeriods::MONTHS))],
             'description' => ['nullable', 'string'],
         ];
     }

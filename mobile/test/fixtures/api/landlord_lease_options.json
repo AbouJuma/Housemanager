@@ -1,0 +1,46 @@
+{
+    "units": [
+        {
+            "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+            "unit_number": "696A6",
+            "building": "Block dJ",
+            "property": "Hackett Alley Apartments",
+            "rent_amount": 300000,
+            "rent_period": "monthly"
+        },
+        {
+            "uuid": "75d121db-6212-4ed5-acc0-a8f36b6fc3ac",
+            "unit_number": "816H2",
+            "building": "Block dJ",
+            "property": "Hackett Alley Apartments",
+            "rent_amount": 500000,
+            "rent_period": "monthly"
+        },
+        {
+            "uuid": "7f5d1acb-9a83-4291-a827-22ef6e74673e",
+            "unit_number": "A2",
+            "building": "Block A",
+            "property": "Juma Towers",
+            "rent_amount": 500000,
+            "rent_period": "monthly"
+        }
+    ],
+    "tenants": [
+        {
+            "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
+            "name": "Amina Tenant",
+            "phone": "0712000333"
+        },
+        {
+            "uuid": "1b131a00-3d0b-4fa4-a5cb-da76882c9b3d",
+            "name": "Neema M.",
+            "phone": "0716000555"
+        }
+    ],
+    "billing_cycles": [
+        "monthly",
+        "quarterly",
+        "semi_annual",
+        "annual"
+    ]
+}

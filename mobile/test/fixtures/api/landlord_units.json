@@ -11,53 +11,53 @@
         },
         "units": [
             {
-                "uuid": "6c4fef4b-b307-4dcc-86a4-00373ab0a964",
-                "unit_number": "159A1",
-                "type": "shop",
-                "status": "vacant",
-                "is_rented": false,
-                "rent_amount": 500000,
-                "building": "Block cS",
-                "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
-                },
-                "tenant": null,
-                "lease_end": null
-            },
-            {
-                "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-                "unit_number": "327J0",
-                "type": "office",
-                "status": "vacant",
-                "is_rented": false,
-                "rent_amount": 300000,
-                "building": "Block cS",
-                "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
-                },
-                "tenant": null,
-                "lease_end": null
-            },
-            {
-                "uuid": "42bec715-07a2-4ecc-b196-94f30bf515c9",
-                "unit_number": "710B2",
-                "type": "apartment",
+                "uuid": "dc68c3dd-2ef2-4e89-8490-4bb30d276bb6",
+                "unit_number": "495B5",
+                "type": "studio",
                 "status": "occupied",
                 "is_rented": true,
                 "rent_amount": 450000,
-                "building": "Block cS",
+                "building": "Block dJ",
                 "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
                 },
                 "tenant": {
-                    "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
+                    "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
                     "name": "Amina Tenant",
                     "phone": "0712000333"
                 },
-                "lease_end": "2027-10-12"
+                "lease_end": "2027-10-15"
+            },
+            {
+                "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+                "unit_number": "696A6",
+                "type": "studio",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 300000,
+                "building": "Block dJ",
+                "property": {
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
+                },
+                "tenant": null,
+                "lease_end": null
+            },
+            {
+                "uuid": "75d121db-6212-4ed5-acc0-a8f36b6fc3ac",
+                "unit_number": "816H2",
+                "type": "studio",
+                "status": "vacant",
+                "is_rented": false,
+                "rent_amount": 500000,
+                "building": "Block dJ",
+                "property": {
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
+                },
+                "tenant": null,
+                "lease_end": null
             }
         ]
     }

@@ -28,7 +28,7 @@ class SaleController extends Controller
 
     public function show(Request $request, Sale $sale): SaleResource
     {
-        abort_unless($sale->new_buyer_id === $request->user()->id, 403);
+        abort_unless(same_id($sale->new_buyer_id, $request->user()->id), 403);
 
         return SaleResource::make($sale->load(['unit.building.property', 'installments']));
     }

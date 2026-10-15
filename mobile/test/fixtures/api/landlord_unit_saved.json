@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "ff2e30c2-298e-4319-8ec5-b148f2a60883",
+        "uuid": "3c37b17f-9f9c-4267-b558-43d31cb4415c",
         "unit_number": "A1",
         "type": "apartment",
         "status": "vacant",
@@ -9,10 +9,11 @@
         "area": null,
         "area_unit": null,
         "rent_amount": "450000.00",
+        "rent_period": "monthly",
         "description": null,
         "tenant": null,
         "sale": null,
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:27+00:00",
+        "updated_at": "2026-10-15T11:33:27+00:00"
     }
 }

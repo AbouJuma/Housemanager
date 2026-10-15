@@ -174,6 +174,7 @@ class AppContractTest extends TestCase
         $newTenant = $this->api('landlord')->postJson('/api/v1/portal/landlord/tenants', ['name' => 'Neema Mpangaji', 'type' => 'individual', 'phone' => '0716000555']);
         $this->assertSame(201, $newTenant->status(), 'POST landlord tenants: '.$newTenant->getContent());
         $this->saveFixture('landlord_tenant_created', $newTenant->json());
+
         $this->assertSame(200, $this->api('landlord')->putJson('/api/v1/portal/landlord/tenants/'.$newTenant->json('data.uuid'), ['name' => 'Neema M.', 'phone' => '0716000555'])->status());
         $block = $this->api('landlord')->postJson('/api/v1/portal/landlord/properties/'.$newProperty->json('data.uuid').'/buildings', ['name' => 'Block A']);
         $this->assertSame(201, $block->status(), 'POST buildings: '.$block->getContent());
@@ -191,6 +192,34 @@ class AppContractTest extends TestCase
         $this->assertSame(200, $this->api('landlord')->putJson('/api/v1/portal/landlord/expenses/'.$newExpense->json('data.uuid'), ['property_id' => $options['properties'][0]['id'], 'description' => 'Main gate repair'])->status());
         $this->saveFixture('landlord_expenses_today', $this->api('landlord')->getJson('/api/v1/portal/landlord/expenses?period=today')->json());
         $this->saveFixture('landlord_profit_loss_month', $this->api('landlord')->getJson('/api/v1/portal/landlord/reports/profit-loss?period=this_month&group=week')->json());
+
+        // --- A landlord renting out a free unit (app lease form) - a unit of
+        // its own, so the vacant units checked further down stay vacant.
+        $leaseUnit = $this->api('landlord')->postJson('/api/v1/portal/landlord/buildings/'.$block->json('data.uuid').'/units', ['unit_number' => 'A2', 'type' => 'apartment', 'rent_amount' => 500000, 'rent_period' => 'monthly']);
+        $this->assertSame(201, $leaseUnit->status(), 'POST lease unit: '.$leaseUnit->getContent());
+        $leaseOptions = $this->api('landlord')->getJson('/api/v1/portal/landlord/lease-options');
+        $this->assertSame(200, $leaseOptions->status(), 'GET lease-options: '.$leaseOptions->getContent());
+        $this->saveFixture('landlord_lease_options', $leaseOptions->json());
+        $this->assertContains($leaseUnit->json('data.uuid'), collect($leaseOptions->json('units'))->pluck('uuid')->all());
+        if (true) {
+            $landlordLease = $this->api('landlord')->postJson('/api/v1/portal/landlord/leases', [
+                'unit_id' => $leaseUnit->json('data.uuid'), 'tenant_id' => $newTenant->json('data.uuid'),
+                'billing_cycle' => 'quarterly', 'start_date' => now()->toDateString(), 'periods' => 4,
+            ]);
+            $this->assertSame(201, $landlordLease->status(), 'POST landlord leases: '.$landlordLease->getContent());
+            $this->saveFixture('landlord_lease_created', $landlordLease->json());
+        }
+
+        // --- The super admin in the app: companies, created with their admin.
+        $owner = User::factory()->create(['username' => 'platform.owner', 'password' => 'Owner#2026']);
+        $owner->forceFill(['company_id' => null])->save();
+        $this->tokens['superadmin'] = $this->login('/auth/login', 'platform.owner', 'Owner#2026', 'superadmin');
+        $newCompany = $this->api('superadmin')->postJson('/api/v1/companies', ['name' => 'Kilimanjaro Homes', 'admin_name' => 'Asha Admin', 'admin_email' => 'asha@kili.test']);
+        $this->assertSame(201, $newCompany->status(), 'POST companies: '.$newCompany->getContent());
+        $this->saveFixture('platform_company_created', $newCompany->json());
+        $this->saveFixture('platform_companies', $this->api('superadmin')->getJson('/api/v1/companies')->json());
+        $this->saveFixture('platform_company', $this->api('superadmin')->getJson('/api/v1/companies/'.$newCompany->json('data.uuid'))->json());
+        $this->saveFixture('superadmin_account', $this->api('superadmin')->getJson('/api/v1/auth/me')->json());
 
         // --- Every create/update the app sends, with the app's exact payloads
         $newTenant = $this->api('staff')->postJson('/api/v1/tenants', ['name' => 'New Tenant', 'type' => 'individual', 'status' => 'active', 'phone' => '0713000555']);
@@ -352,12 +381,12 @@ class AppContractTest extends TestCase
         }
     }
 
-    protected function login(string $path, string $identifier, string $password): string
+    protected function login(string $path, string $identifier, string $password, ?string $fixture = null): string
     {
         $response = $this->postJson('/api/v1'.$path, ['email' => $identifier, 'password' => $password]);
         $this->assertSame(200, $response->status(), "Login {$path} as {$identifier}: ".$response->getContent());
         // /auth/login -> login_staff, /portal/tenant/login -> login_tenant ...
-        $role = $path === '/auth/login' ? 'staff' : explode('/', trim($path, '/'))[1];
+        $role = $fixture ?? ($path === '/auth/login' ? 'staff' : explode('/', trim($path, '/'))[1]);
         $this->saveFixture("login_{$role}", $response->json());
 
         return $response->json('token');
@@ -367,6 +396,9 @@ class AppContractTest extends TestCase
     {
         // A fresh guard per request - Sanctum caches the resolved user.
         $this->app['auth']->forgetGuards();
+        // ...and no company carried over from the previous request (a real
+        // request starts without one; the super admin has none).
+        app(\App\Core\Tenancy\CompanyContext::class)->clear();
 
         return $this->withHeader('Authorization', 'Bearer '.$this->tokens[$role]);
     }

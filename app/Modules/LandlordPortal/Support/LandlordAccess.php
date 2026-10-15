@@ -47,6 +47,9 @@ class LandlordAccess
             'buyers.viewAny' => 'See the buyers of their units',
             'buyers.update' => 'Edit their buyers\' details',
         ],
+        'leases' => [
+            'leases.create' => 'Rent out their units (create leases)',
+        ],
         'invoices' => [
             'invoices.viewAny' => 'See invoices for their units (who still owes)',
         ],

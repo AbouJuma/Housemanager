@@ -61,6 +61,16 @@
         <input type="number" step="0.01" min="0" name="rent_amount" value="{{ old('rent_amount', $unit?->rent_amount) }}" class="form-control @error('rent_amount') is-invalid @enderror">
         @error('rent_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
+    {{-- What the rent amount is per; leases convert it to their billing cycle. --}}
+    <div class="col-md-4">
+        <label class="form-label">{{ __('Rent is per') }}</label>
+        <select name="rent_period" class="form-select @error('rent_period') is-invalid @enderror">
+            @foreach (['monthly' => __('Month'), 'quarterly' => __('Quarter (3 months)'), 'semi_annual' => __('Half year (6 months)'), 'annual' => __('Year')] as $value => $label)
+                <option value="{{ $value }}" @selected(old('rent_period', $unit?->rent_period ?? 'monthly') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+        @error('rent_period') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
 
     <div class="col-12">
         <label class="form-label">{{ __('Description') }}</label>

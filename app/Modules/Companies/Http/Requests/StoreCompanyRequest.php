@@ -2,7 +2,10 @@
 
 namespace App\Modules\Companies\Http\Requests;
 
+use App\Core\Auth\UsernameRules;
+use App\Models\User;
 use App\Modules\Companies\Models\Company;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +34,14 @@ class StoreCompanyRequest extends FormRequest
             'locale' => ['nullable', 'string', 'max:10'],
             'currency_code' => ['nullable', 'string', 'size:3'],
             'status' => ['nullable', Rule::in(['trial', 'active', 'suspended', 'cancelled'])],
+
+            // The company's first user - gets the Admin role and their
+            // sign-in details by email/SMS.
+            'admin_name' => ['required', 'string', 'max:255'],
+            'admin_username' => UsernameRules::for(User::class, null),
+            'admin_email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'admin_phone' => ['nullable', 'string', 'max:20'],
+            'admin_password' => ['nullable', Password::defaults()],
         ];
     }
 }

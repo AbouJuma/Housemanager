@@ -127,13 +127,13 @@ class AuthTest extends TestCase
      * AuthController::login(). Failing clearly at login is much better
      * UX than a token that then 403s everywhere it's used.
      */
-    public function test_saas_owner_login_is_rejected(): void
+    public function test_the_super_admin_can_sign_in_and_gets_the_platform_features(): void
     {
         $owner = \App\Models\User::factory()->create(['company_id' => null, 'password' => Hash::make('password123')]);
 
         $response = $this->postJson('/api/v1/auth/login', ['email' => $owner->email, 'password' => 'password123']);
 
-        $response->assertUnprocessable();
-        $response->assertJsonPath('errors.email.0', 'This app is for company staff accounts. Super Admin/platform accounts are not supported here.');
+        $response->assertOk()->assertJsonPath('user.is_saas_owner', true);
+        $this->assertSame(['companies.viewAny', 'companies.create', 'companies.update'], $response->json('permissions'));
     }
 }

@@ -98,7 +98,7 @@
                                     <th>{{ __('Rent') }}</th>
                                     <th>{{ __('Tenant') }}</th>
                                     <th>{{ __('Buyer / Payment') }}</th>
-                                    @if ($canEditUnits)<th></th>@endif
+                                    @if ($canEditUnits || $canLease)<th></th>@endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -135,8 +135,15 @@
                                                 <span class="text-secondary">&mdash;</span>
                                             @endif
                                         </td>
-                                        @if ($canEditUnits)
-                                            <td class="text-end"><a href="{{ route('landlord-portal.units.edit', $unit) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('Edit') }}"><i class="bi bi-pencil"></i></a></td>
+                                        @if ($canEditUnits || $canLease)
+                                            <td class="text-end text-nowrap">
+                                                @if ($canLease && $unit->isVacant())
+                                                    <a href="{{ route('landlord-portal.leases.create', ['unit' => $unit->uuid]) }}" class="btn btn-sm btn-primary"><i class="bi bi-key me-1"></i>{{ __('Rent out') }}</a>
+                                                @endif
+                                                @if ($canEditUnits)
+                                                    <a href="{{ route('landlord-portal.units.edit', $unit) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('Edit') }}"><i class="bi bi-pencil"></i></a>
+                                                @endif
+                                            </td>
                                         @endif
                                     </tr>
                                 @endforeach

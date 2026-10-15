@@ -1,6 +1,6 @@
 {
     "profile": {
-        "uuid": "10547da6-73bf-4ae5-9055-90dfb323909e",
+        "uuid": "b3d9312c-3b14-4dfa-af6b-82f37d70f975",
         "name": "Juma Landlord",
         "username": "juma.landlord",
         "email": null,
@@ -20,6 +20,7 @@
         "expenses.update",
         "expenses.viewAny",
         "invoices.viewAny",
+        "leases.create",
         "maintenance.viewAny",
         "properties.create",
         "properties.update",

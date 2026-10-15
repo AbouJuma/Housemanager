@@ -1,12 +1,12 @@
 {
     "data": [
         {
-            "uuid": "7b82a888-03b6-4636-a28d-f1eae94c2993",
+            "uuid": "01ce44ec-808a-4752-9021-8864fed29a14",
             "description": "Main gate repair",
             "vendor_name": null,
             "vendor_display_name": null,
             "amount": 150000,
-            "expense_date": "2026-10-12",
+            "expense_date": "2026-10-15",
             "payment_status": "unpaid",
             "payment_method": null,
             "paid_on": null,
@@ -14,17 +14,17 @@
             "notes": null,
             "status": "active",
             "account": {
-                "uuid": "bb020f36-a678-4cd6-9f6f-46d80c049bb2",
-                "code": "9340",
+                "uuid": "49931cc1-c2fd-48af-86a4-28e1d2ea647e",
+                "code": "9235",
                 "name": "Repairs"
             },
             "property": {
-                "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
-                "name": "Juma Towers"
+                "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                "name": "Hackett Alley Apartments"
             },
             "vendor": null,
-            "created_at": "2026-10-12T10:14:52+00:00",
-            "updated_at": "2026-10-12T10:14:52+00:00"
+            "created_at": "2026-10-15T11:33:27+00:00",
+            "updated_at": "2026-10-15T11:33:27+00:00"
         }
     ],
     "links": {

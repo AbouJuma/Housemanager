@@ -52,21 +52,9 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['email' => __('These credentials do not match our records.')]);
         }
 
-        // A SaaS owner (company_id === null - see User::isSaasOwner()) has
-        // no company for the every-endpoint-is-company-scoped policies
-        // (TenantPolicy et al.'s "no-SaaS-owner-bypass" pattern,
-        // ARCHITECTURE.md §10a/§10b) and EnsureCompanyIsActive to check
-        // against - every single company-scoped screen would 403 for
-        // them despite a "successful" login. Reject it here with one
-        // clear message instead of handing back a token that then fails
-        // silently and confusingly on every subsequent request.
-        if ($user->isSaasOwner()) {
-            RateLimiter::hit($throttleKey);
-
-            throw ValidationException::withMessages([
-                'email' => 'This app is for company staff accounts. Super Admin/platform accounts are not supported here.',
-            ]);
-        }
+        // A SaaS owner (super admin, company_id === null) signs in too:
+        // they get the platform features (companies) instead of a
+        // company's - see AccountController::permissionsOf().
 
         RateLimiter::clear($throttleKey);
 

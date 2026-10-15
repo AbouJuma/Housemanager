@@ -3,6 +3,8 @@
 namespace App\Modules\Companies\Services;
 
 use App\Core\Services\BaseService;
+use App\Models\User;
+use App\Modules\Users\Services\UserService;
 use App\Modules\Companies\Events\CompanyCreated;
 use App\Modules\Companies\Models\Company;
 use App\Modules\Companies\Repositories\CompanyRepositoryInterface;
@@ -40,6 +42,38 @@ class CompanyService extends BaseService
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
+    }
+
+    /**
+     * A new company together with its first user, who gets the Admin role
+     * and is sent their username, password and login link (StaffWelcome).
+     *
+     * @param  array<string, mixed>  $attributes  company fields plus admin_name, admin_email,
+     *                                            admin_username?, admin_phone?, admin_password?
+     * @return array{0: Company, 1: User, 2: ?string} the company, its admin and the admin's first password
+     */
+    public function createWithAdmin(array $attributes): array
+    {
+        $admin = collect($attributes)->filter(fn ($value, $key) => str_starts_with($key, 'admin_'))
+            ->mapWithKeys(fn ($value, $key) => [substr($key, 6) => $value])->all();
+        $companyAttributes = collect($attributes)->reject(fn ($value, $key) => str_starts_with($key, 'admin_'))->all();
+
+        return DB::transaction(function () use ($companyAttributes, $admin) {
+            $company = $this->create($companyAttributes);
+
+            $users = app(UserService::class);
+            $user = $users->create([
+                'name' => $admin['name'],
+                'username' => $admin['username'] ?? null,
+                'email' => $admin['email'],
+                'phone' => $admin['phone'] ?? null,
+                'password' => $admin['password'] ?? null,
+                'company_id' => $company->id,
+                'roles' => ['Admin'],
+            ]);
+
+            return [$company, $user, $users->issuedPassword()];
+        });
     }
 
     public function create(array $attributes): Company

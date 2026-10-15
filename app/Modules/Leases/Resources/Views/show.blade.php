@@ -64,6 +64,25 @@
                             <div>{{ $lease->deposit_amount !== null ? number_format($lease->deposit_amount, 2) : '—' }}</div>
                         </div>
                     </div>
+                    @php
+                        $leaseTotal = $lease->contractValue();
+                        $leasePaid = $lease->amountPaid();
+                    @endphp
+                    <div class="row g-3 small mt-1 pt-3 border-top">
+                        <div class="col-md-4">
+                            <div class="text-secondary">{{ __('Total for the lease') }}</div>
+                            <div class="fw-semibold">{{ number_format($leaseTotal, 2) }}</div>
+                            <div class="text-secondary">{{ $lease->periodsCount() }} × {{ number_format($lease->rent_amount, 2) }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-secondary">{{ __('Paid so far') }}</div>
+                            <div class="fw-semibold text-success">{{ number_format($leasePaid, 2) }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-secondary">{{ __('Balance') }}</div>
+                            <div class="fw-semibold {{ $leaseTotal - $leasePaid > 0 ? 'text-danger' : 'text-success' }}">{{ number_format(max(0, $leaseTotal - $leasePaid), 2) }}</div>
+                        </div>
+                    </div>
                     @if ($lease->notes)
                         <hr>
                         <div class="text-secondary small mb-1">{{ __('Notes') }}</div>

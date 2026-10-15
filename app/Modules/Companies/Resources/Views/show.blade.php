@@ -175,7 +175,7 @@
                                 <select name="subscription_plan_id" class="form-select form-select-sm @error('subscription_plan_id') is-invalid @enderror" required>
                                     <option value="">Select a plan&hellip;</option>
                                     @foreach ($subscriptionPlans as $plan)
-                                        <option value="{{ $plan->id }}" {{ $subscription && $subscription->subscription_plan_id === $plan->id ? 'selected' : '' }}>
+                                        <option value="{{ $plan->id }}" {{ $subscription && same_id($subscription->subscription_plan_id, $plan->id) ? 'selected' : '' }}>
                                             {{ $plan->name }} ({{ ucfirst($plan->billing_cycle) }})
                                         </option>
                                     @endforeach

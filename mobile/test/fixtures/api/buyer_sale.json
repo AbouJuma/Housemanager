@@ -1,7 +1,7 @@
 {
     "data": {
-        "uuid": "95ae7e00-8bf4-453c-8840-f9b2d9206104",
-        "sale_date": "2026-10-12",
+        "uuid": "163b22cc-7de3-4359-97ed-6160fd99938e",
+        "sale_date": "2026-10-15",
         "total_price": 30000000,
         "down_payment": 6000000,
         "installment_period": 4,
@@ -12,33 +12,33 @@
         "completion_percentage": 40,
         "notes": null,
         "unit": {
-            "uuid": "3d5d1d17-3983-427d-a944-8b1c365c3d5f",
-            "unit_number": "327J0",
+            "uuid": "39a5abc3-9af7-4ecc-a0b2-40abe6da9d6b",
+            "unit_number": "696A6",
             "building": {
-                "uuid": "6708054a-93cb-4681-8bd6-e22c8f26351d",
-                "name": "Block cS",
+                "uuid": "e43f897a-ffbc-4594-9e89-b529dfc326cd",
+                "name": "Block dJ",
                 "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
                 }
             }
         },
         "installments": [
             {
-                "uuid": "372fdf77-0fda-431b-ba77-f7ef71230c4f",
+                "uuid": "a2557b1d-a215-4465-866d-f874d54a9c5e",
                 "installment_number": 1,
-                "due_date": "2026-11-12",
+                "due_date": "2026-11-15",
                 "amount": 6000000,
                 "paid_amount": 6000000,
                 "remaining_amount": 0,
                 "status": "paid",
-                "paid_date": "2026-10-12",
+                "paid_date": "2026-10-15",
                 "notes": null
             },
             {
-                "uuid": "7c2ecbe6-24d4-46f1-9702-e8ab6b64bb20",
+                "uuid": "9ebb819c-0248-4cd7-bf83-dcf38ede85d4",
                 "installment_number": 2,
-                "due_date": "2026-12-12",
+                "due_date": "2026-12-15",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -47,9 +47,9 @@
                 "notes": null
             },
             {
-                "uuid": "284b6c99-42d5-4c9d-9492-947e90fbcdb8",
+                "uuid": "677ea604-d6b4-4496-9ed9-07dc10060529",
                 "installment_number": 3,
-                "due_date": "2027-01-12",
+                "due_date": "2027-01-15",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -58,9 +58,9 @@
                 "notes": null
             },
             {
-                "uuid": "39202f7d-7461-4eb0-9f67-27b15770d0f0",
+                "uuid": "243f3ce6-a6ae-458b-b127-f31187e148d5",
                 "installment_number": 4,
-                "due_date": "2027-02-12",
+                "due_date": "2027-02-15",
                 "amount": 6000000,
                 "paid_amount": 0,
                 "remaining_amount": 6000000,
@@ -69,7 +69,7 @@
                 "notes": null
             }
         ],
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "created_at": "2026-10-15T11:33:25+00:00",
+        "updated_at": "2026-10-15T11:33:25+00:00"
     }
 }

@@ -19,7 +19,7 @@ class CompanyPolicy
 
     public function view(User $user, Company $company): bool
     {
-        return $user->isSaasOwner() || $user->company_id === $company->id;
+        return $user->isSaasOwner() || same_id($user->company_id, $company->id);
     }
 
     public function create(User $user): bool
@@ -29,7 +29,7 @@ class CompanyPolicy
 
     public function update(User $user, Company $company): bool
     {
-        return $user->isSaasOwner() || $user->company_id === $company->id;
+        return $user->isSaasOwner() || same_id($user->company_id, $company->id);
     }
 
     public function delete(User $user, Company $company): bool

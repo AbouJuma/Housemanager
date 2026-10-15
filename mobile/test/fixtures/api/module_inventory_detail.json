@@ -1,24 +1,24 @@
 {
     "data": {
-        "uuid": "9a22e4ae-8fca-46fa-a9d4-042761d05b7a",
-        "name": "LED Light Bulb",
-        "sku": "SKU-0527QG",
-        "category": "cleaning_supply",
-        "unit_of_measure": "piece",
+        "uuid": "f34aced3-14a7-45fb-9b42-86cb896847d1",
+        "name": "Work Gloves",
+        "sku": "SKU-0680OB",
+        "category": "hardware",
+        "unit_of_measure": "meter",
         "quantity_on_hand": 0,
-        "reorder_level": null,
-        "unit_cost": 73.81,
-        "is_low_stock": false,
+        "reorder_level": 4.7,
+        "unit_cost": 107.34,
+        "is_low_stock": true,
         "status": "active",
         "notes": null,
         "property": {
-            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-            "name": "Koepp Spring Residences"
+            "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+            "name": "Hackett Alley Apartments"
         },
         "vendor": null,
         "transactions_count": 0,
         "recent_transactions": [],
-        "created_at": "2026-10-12T10:14:52+00:00",
-        "updated_at": "2026-10-12T10:14:52+00:00"
+        "created_at": "2026-10-15T11:33:28+00:00",
+        "updated_at": "2026-10-15T11:33:28+00:00"
     }
 }

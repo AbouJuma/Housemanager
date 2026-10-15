@@ -38,9 +38,14 @@ class CompanyController extends Controller
 
     public function store(StoreCompanyRequest $request): RedirectResponse
     {
-        $company = $this->service->create($request->validated());
+        [$company, $admin, $password] = $this->service->createWithAdmin($request->validated());
 
-        return redirect()->route('companies.show', $company)->with('success', "Company \"{$company->name}\" created.");
+        return redirect()->route('companies.show', $company)->with('success', __('Company ":name" created. Admin login - username: :username, password: :password (also sent to :email).', [
+            'name' => $company->name,
+            'username' => $admin->username,
+            'password' => $password,
+            'email' => $admin->email,
+        ]));
     }
 
     public function show(Company $company): View

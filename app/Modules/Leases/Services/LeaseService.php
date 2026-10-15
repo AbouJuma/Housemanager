@@ -190,7 +190,8 @@ class LeaseService extends BaseService
             'paid_on' => now()->toDateString(),
             'method' => 'cash',
             'notes' => 'Deposit received at lease signing.',
-            'recorded_by_id' => Auth::id(),
+            // Only staff are recorded here (a landlord's id isn't a user id).
+            'recorded_by_id' => Auth::user() instanceof \App\Models\User ? Auth::id() : null,
         ]);
     }
 }

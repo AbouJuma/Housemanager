@@ -81,6 +81,8 @@ StaffFeature _moduleFeature(String id, String subtitle, IconData icon, IconData 
 /// they are always tabs when allowed (their screens link to their own
 /// fixed `/staff/<id>` paths).
 final staffFeatures = <StaffFeature>[
+  // The super admin's platform tab (companies and their admins).
+  _moduleFeature('companies', 'Clients & their admins', Icons.domain_outlined, Icons.domain),
   StaffFeature(
     id: 'tenants',
     label: 'Tenants',

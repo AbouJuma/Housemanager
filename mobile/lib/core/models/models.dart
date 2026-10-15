@@ -36,6 +36,12 @@ class Lease {
   final String billingCycle;
   final double rentAmount;
   final double? depositAmount;
+
+  /// The whole lease: periods x rent, paid so far and what's left.
+  final int? periods;
+  final double? contractValue;
+  final double? amountPaid;
+  final double? balance;
   final String? terminationReason;
   final String? notes;
   final UnitRef? unit;
@@ -50,6 +56,10 @@ class Lease {
     this.billingCycle = 'monthly',
     required this.rentAmount,
     this.depositAmount,
+    this.periods,
+    this.contractValue,
+    this.amountPaid,
+    this.balance,
     this.terminationReason,
     this.notes,
     this.unit,
@@ -67,6 +77,10 @@ class Lease {
       endDate: json['end_date'] as String?,
       billingCycle: json['billing_cycle'] as String? ?? 'monthly',
       rentAmount: asDouble(json['rent_amount']),
+      periods: asIntOrNull(json['periods']),
+      contractValue: asDoubleOrNull(json['contract_value']),
+      amountPaid: asDoubleOrNull(json['amount_paid']),
+      balance: asDoubleOrNull(json['balance']),
       depositAmount: asDoubleOrNull(json['deposit_amount']),
       terminationReason: json['termination_reason'] as String?,
       notes: json['notes'] as String?,
@@ -196,6 +210,7 @@ class UnitDetail {
   final String type;
   final String status;
   final double rentAmount;
+  final String rentPeriod;
   final int? bedrooms;
   final int? bathrooms;
   final String? tenantName;
@@ -209,6 +224,7 @@ class UnitDetail {
     required this.type,
     required this.status,
     required this.rentAmount,
+    this.rentPeriod = 'monthly',
     this.bedrooms,
     this.bathrooms,
     this.tenantName,
@@ -226,6 +242,7 @@ class UnitDetail {
       type: json['type'] as String,
       status: json['status'] as String,
       rentAmount: asDouble(json['rent_amount']),
+      rentPeriod: json['rent_period'] as String? ?? 'monthly',
       bedrooms: asIntOrNull(json['bedrooms']),
       bathrooms: asIntOrNull(json['bathrooms']),
       tenantName: tenant?['name'] as String?,
@@ -442,10 +459,12 @@ class UnitSummary {
   final String unitNumber;
   final String status;
 
-  /// The unit's own monthly rate - prefills a new lease's rent.
+  /// The unit's own rate - prefills a new lease's rent - and what it's
+  /// per (monthly / quarterly / semi_annual / annual).
   final double? rentAmount;
+  final String rentPeriod;
 
-  UnitSummary({required this.uuid, required this.unitNumber, required this.status, this.rentAmount});
+  UnitSummary({required this.uuid, required this.unitNumber, required this.status, this.rentAmount, this.rentPeriod = 'monthly'});
 
   factory UnitSummary.fromJson(Map<String, dynamic> json) => UnitSummary(
         uuid: json['uuid'] as String,
@@ -453,6 +472,7 @@ class UnitSummary {
         status: json['status'] as String,
         // decimal columns arrive as strings ("500.00") from Laravel.
         rentAmount: double.tryParse('${json['rent_amount'] ?? ''}'),
+        rentPeriod: json['rent_period'] as String? ?? 'monthly',
       );
 }
 

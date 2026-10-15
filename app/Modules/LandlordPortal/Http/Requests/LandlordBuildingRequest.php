@@ -11,7 +11,7 @@ class LandlordBuildingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->route('property')?->landlord_id === $this->user()?->id
+        return same_id($this->route('property')?->landlord_id, $this->user()?->id)
             && LandlordAccess::can($this->user(), 'units.create');
     }
 

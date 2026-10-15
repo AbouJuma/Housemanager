@@ -26,7 +26,7 @@ class RentCollectionController extends Controller
     public function verify(Invoice $invoice, InvoicePaymentAttempt $attempt): RedirectResponse
     {
         $this->authorize('update', $invoice);
-        abort_unless($attempt->invoice_id === $invoice->id, 404);
+        abort_unless(same_id($attempt->invoice_id, $invoice->id), 404);
 
         $this->service->verifyAttempt($attempt);
 

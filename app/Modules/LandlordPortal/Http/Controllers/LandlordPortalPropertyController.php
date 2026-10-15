@@ -49,7 +49,7 @@ class LandlordPortalPropertyController extends Controller
     public function show(Property $property): View
     {
         $landlord = Auth::guard('landlord')->user();
-        abort_unless($property->landlord_id === $landlord->id, 403);
+        abort_unless(same_id($property->landlord_id, $landlord->id), 403);
         LandlordAccess::authorize($landlord, 'properties.viewAny');
 
         return view('landlord-portal::properties.show', [
@@ -57,13 +57,14 @@ class LandlordPortalPropertyController extends Controller
             'canUpdate' => LandlordAccess::can($landlord, 'properties.update'),
             'canAddUnits' => LandlordAccess::can($landlord, 'units.create'),
             'canEditUnits' => LandlordAccess::can($landlord, 'units.update'),
+            'canLease' => LandlordAccess::can($landlord, 'leases.create'),
         ]);
     }
 
     public function edit(Property $property): View
     {
         $landlord = Auth::guard('landlord')->user();
-        abort_unless($property->landlord_id === $landlord->id, 403);
+        abort_unless(same_id($property->landlord_id, $landlord->id), 403);
         LandlordAccess::authorize($landlord, 'properties.update');
 
         return view('landlord-portal::properties.edit', compact('property'));

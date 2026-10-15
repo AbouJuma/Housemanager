@@ -75,6 +75,6 @@ class LandlordPortalUnitController extends Controller
 
     protected function own(?Property $property): void
     {
-        abort_unless($property && $property->landlord_id === Auth::guard('landlord')->id(), 403);
+        abort_unless($property && same_id($property->landlord_id, Auth::guard('landlord')->id()), 403);
     }
 }

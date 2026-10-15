@@ -21,7 +21,7 @@ class LandlordUnitRequest extends FormRequest
         $unit = $this->route('unit');
         $building = $unit?->building ?? $this->route('building');
 
-        return $building?->property?->landlord_id === $this->user()?->id
+        return same_id($building?->property?->landlord_id, $this->user()?->id)
             && LandlordAccess::can($this->user(), $unit ? 'units.update' : 'units.create');
     }
 
@@ -40,6 +40,7 @@ class LandlordUnitRequest extends FormRequest
             'area' => ['nullable', 'numeric', 'min:0'],
             'area_unit' => ['nullable', 'string', 'max:10'],
             'rent_amount' => ['nullable', 'numeric', 'min:0'],
+            'rent_period' => ['nullable', Rule::in(array_keys(\App\Modules\Leases\Support\RentPeriods::MONTHS))],
             'description' => ['nullable', 'string', 'max:5000'],
         ];
     }

@@ -41,3 +41,5 @@ final landlordExpenseOptionsProvider = FutureProvider.autoDispose((ref) => ref.w
 final landlordBuyerProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>(
   (ref, uuid) => ref.watch(landlordRepositoryProvider).buyer(uuid),
 );
+
+final landlordLeaseOptionsProvider = FutureProvider.autoDispose((ref) => ref.watch(landlordRepositoryProvider).leaseOptions());

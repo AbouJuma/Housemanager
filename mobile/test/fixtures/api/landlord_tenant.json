@@ -1,6 +1,6 @@
 {
     "data": {
-        "uuid": "9fb4dc68-aef3-4179-b82d-99f2d408757b",
+        "uuid": "91ee731a-fd44-45b3-9dac-1d8f1bf58574",
         "name": "Amina Tenant",
         "username": "amina.tenant",
         "type": "individual",
@@ -10,33 +10,33 @@
         "added_by_you": false,
         "leases_count": 1,
         "current_lease": {
-            "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
+            "uuid": "5748d17c-c079-4e81-af5a-5d963e7478a6",
             "status": "active",
-            "start_date": "2026-10-12",
-            "end_date": "2027-10-12",
+            "start_date": "2026-10-15",
+            "end_date": "2027-10-15",
             "rent_amount": 450000,
-            "unit_number": "710B2",
-            "building": "Block cS",
+            "unit_number": "495B5",
+            "building": "Block dJ",
             "property": {
-                "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                "name": "Koepp Spring Residences"
+                "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                "name": "Hackett Alley Apartments"
             }
         },
-        "created_at": "2026-10-12T10:14:51+00:00",
+        "created_at": "2026-10-15T11:33:25+00:00",
         "emergency_contact_name": null,
         "emergency_contact_phone": null,
         "leases": [
             {
-                "uuid": "d5dba4af-e02d-40e6-8849-81444caac525",
+                "uuid": "5748d17c-c079-4e81-af5a-5d963e7478a6",
                 "status": "active",
-                "start_date": "2026-10-12",
-                "end_date": "2027-10-12",
+                "start_date": "2026-10-15",
+                "end_date": "2027-10-15",
                 "rent_amount": 450000,
-                "unit_number": "710B2",
-                "building": "Block cS",
+                "unit_number": "495B5",
+                "building": "Block dJ",
                 "property": {
-                    "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-                    "name": "Koepp Spring Residences"
+                    "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+                    "name": "Hackett Alley Apartments"
                 }
             }
         ]

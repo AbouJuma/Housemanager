@@ -16,6 +16,7 @@ import '../../../core/widgets/paginated_list_view.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../core/widgets/toast.dart';
 import '../../auth/providers/auth_provider.dart';
+import 'company_form_screen.dart';
 import 'vendor_form_screen.dart';
 
 typedef Json = Map<String, dynamic>;
@@ -171,6 +172,28 @@ const maintenanceStatuses = ['open', 'in_progress', 'completed', 'cancelled'];
 const expensePaymentMethods = ['cash', 'bank_transfer', 'mobile_money', 'cheque', 'other'];
 
 final staffModules = <String, StaffModule>{
+  // Super admin (platform owner) only.
+  'companies': StaffModule(
+    id: 'companies',
+    title: 'Companies',
+    recordTitle: 'Company',
+    endpoint: '/companies',
+    emptyLabel: 'No companies yet.',
+    heading: (r) => _str(r['name']) ?? '—',
+    subtitle: (r) => _join([_str(r['email']), _str(r['phone'])]),
+    status: (r) => _str(r['status']),
+    fields: [
+      ModuleField('Email', (r) => _str(r['email'])),
+      ModuleField('Phone', (r) => _str(r['phone'])),
+      ModuleField('Website', (r) => _str(r['website'])),
+      ModuleField('City', (r) => r['address'] is Map ? _str(r['address']['city']) : null),
+      ModuleField('Currency', (r) => _str(r['currency_code'])),
+      ModuleField('Timezone', (r) => _str(r['timezone'])),
+      ModuleField('Trial ends', (r) => _date(r['trial_ends_at'])),
+      ModuleField('Created', (r) => _date(r['created_at'])),
+    ],
+    form: (record) => CompanyFormScreen(company: record),
+  ),
   'maintenance': StaffModule(
     id: 'maintenance',
     title: 'Maintenance',

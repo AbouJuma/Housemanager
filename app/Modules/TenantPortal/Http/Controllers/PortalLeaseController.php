@@ -21,7 +21,7 @@ class PortalLeaseController extends Controller
     public function show(Lease $lease): View
     {
         $tenant = Auth::guard('tenant')->user();
-        abort_unless($lease->tenant_id === $tenant->id, 403);
+        abort_unless(same_id($lease->tenant_id, $tenant->id), 403);
 
         return view('tenant-portal::leases.show', [
             'lease' => $lease->load(['unit.building.property', 'invoices']),

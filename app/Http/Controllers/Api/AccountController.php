@@ -116,10 +116,13 @@ class AccountController extends Controller
     /**
      * @return array<int, string>
      */
+    /** What the super admin (platform owner) can do in the app. */
+    public const PLATFORM_PERMISSIONS = ['companies.viewAny', 'companies.create', 'companies.update'];
+
     public static function permissionsOf(User $user): array
     {
-        if (! $user->company_id) {
-            return [];
+        if ($user->isSaasOwner()) {
+            return self::PLATFORM_PERMISSIONS;
         }
 
         return PermissionsTeam::runAs(

@@ -43,7 +43,7 @@ class PropertyController extends Controller
 
     public function show(Request $request, Property $property): PropertyResource
     {
-        abort_unless($property->landlord_id === $request->user()->id, 403);
+        abort_unless(same_id($property->landlord_id, $request->user()->id), 403);
 
         return PropertyResource::make($property->load('buildings.units.leases.tenant', 'buildings.units.sales.buyer'));
     }

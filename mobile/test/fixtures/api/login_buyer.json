@@ -1,17 +1,17 @@
 {
-    "token": "4|1O7AM0Wmblz4z7FVj2TJGz9VNkeEWGJNKAYhsGrLf78f59f8",
+    "token": "4|kQegz5CW2swGwHz6Hj4McJtbQrgmC33fqqKTv62L7ffbd117",
     "buyer": {
-        "uuid": "81beb1d7-cd59-4096-8fc0-9acd5c3772ec",
+        "uuid": "7eb53053-45ae-464e-b647-6b604233b5b6",
         "name": "Asha Buyer",
-        "email": null,
+        "email": "wtreutel@hotmail.com",
         "phone": "0788000444",
         "control_number": null,
-        "address": "8020 Reynolds Walks\nMaciberg, MI 32116",
+        "address": "253 Johnson Parkways\nPort Ford, NV 13617-3140",
         "id_number": null,
-        "status": "active",
-        "notes": null,
-        "created_at": "2026-10-12T10:14:51+00:00",
-        "updated_at": "2026-10-12T10:14:51+00:00"
+        "status": "inactive",
+        "notes": "Nam ea sit provident tenetur optio rem. Rerum error et dolor magni beatae. Et odit est veniam dolorum sit. Et impedit ut aliquid dolor velit.",
+        "created_at": "2026-10-15T11:33:25+00:00",
+        "updated_at": "2026-10-15T11:33:25+00:00"
     },
     "branding": {
         "company_name": "Contract Homes",

@@ -39,14 +39,14 @@ class InvoiceController extends Controller
 
     public function show(Request $request, Invoice $invoice): InvoiceResource
     {
-        abort_unless($invoice->sale?->new_buyer_id === $request->user()->id, 403);
+        abort_unless(same_id($invoice->sale?->new_buyer_id, $request->user()->id), 403);
 
         return InvoiceResource::make($invoice->load(['sale.unit.building.property', 'items', 'payments', 'paymentAttempts']));
     }
 
     public function pay(Request $request, Invoice $invoice): JsonResponse
     {
-        abort_unless($invoice->sale?->new_buyer_id === $request->user()->id, 403);
+        abort_unless(same_id($invoice->sale?->new_buyer_id, $request->user()->id), 403);
 
         $validated = $request->validate(['amount' => ['required', 'numeric', 'min:0.01']]);
 

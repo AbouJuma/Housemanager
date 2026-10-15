@@ -2,12 +2,12 @@
     "unread_count": 1,
     "data": [
         {
-            "id": "632232cb-7d63-4e23-875d-cab1efaa05c2",
+            "id": "abdc58e2-d91d-4488-b2d5-df31d42d213c",
             "kind": "general",
             "title": "Welcome message sent",
             "message": "Welcome message sent to Asha Buyer.",
             "read": false,
-            "created_at": "2026-10-12T10:14:52+00:00",
+            "created_at": "2026-10-15T11:33:29+00:00",
             "created_ago": "0 seconds ago"
         }
     ],

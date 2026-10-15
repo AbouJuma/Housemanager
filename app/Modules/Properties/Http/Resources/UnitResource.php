@@ -23,6 +23,8 @@ class UnitResource extends JsonResource
             'area' => $this->area,
             'area_unit' => $this->area_unit,
             'rent_amount' => $this->rent_amount,
+            // What rent_amount is per: monthly / quarterly / semi_annual / annual.
+            'rent_period' => $this->rent_period ?? 'monthly',
             'description' => $this->description,
             // Only meaningful when status isn't 'vacant' - who's actually
             // renting this unit right now. See Unit::currentTenant()'s

@@ -69,7 +69,7 @@ class LandlordPortalExpenseController extends Controller
     public function edit(Expense $expense): View
     {
         $landlord = Auth::guard('landlord')->user();
-        abort_unless($expense->property?->landlord_id === $landlord->id && $expense->status !== 'voided', 403);
+        abort_unless(same_id($expense->property?->landlord_id, $landlord->id) && $expense->status !== 'voided', 403);
         LandlordAccess::authorize($landlord, 'expenses.update');
 
         return view('landlord-portal::expenses.form', $this->formData($landlord) + ['expense' => $expense]);

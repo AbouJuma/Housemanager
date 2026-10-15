@@ -1,20 +1,20 @@
 {
     "properties": [
         {
-            "id": 2,
-            "uuid": "53fd26e3-0234-4385-a420-4be288d6948c",
-            "name": "Juma Towers"
+            "id": 1,
+            "uuid": "42561232-5c3f-43b8-b6e3-f45ea2befea2",
+            "name": "Hackett Alley Apartments"
         },
         {
-            "id": 1,
-            "uuid": "90639d44-8d70-46db-866e-be16df385b92",
-            "name": "Koepp Spring Residences"
+            "id": 2,
+            "uuid": "02925235-5ff8-4bca-a178-fbfbbd774185",
+            "name": "Juma Towers"
         }
     ],
     "categories": [
         {
             "id": 2,
-            "code": "9340",
+            "code": "9235",
             "name": "Repairs"
         }
     ],

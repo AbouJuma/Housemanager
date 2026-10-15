@@ -20,7 +20,7 @@ class LandlordExpenseRequest extends FormRequest
         $expense = $this->route('expense');
 
         if ($expense) {
-            return $expense->property?->landlord_id === $this->user()?->id
+            return same_id($expense->property?->landlord_id, $this->user()?->id)
                 && $expense->status !== 'voided'
                 && LandlordAccess::can($this->user(), 'expenses.update');
         }

@@ -81,6 +81,12 @@ class FixtureAdapter implements HttpClientAdapter {
     'GET /portal/landlord/maintenance-requests': 'landlord_maintenance',
     'GET /portal/landlord/documents': 'landlord_documents',
     'GET /portal/landlord/tenants': 'landlord_tenants',
+    'GET /portal/landlord/lease-options': 'landlord_lease_options',
+    'POST /portal/landlord/leases': 'landlord_lease_created',
+    'GET /companies': 'platform_companies',
+    'GET /companies/{id}': 'platform_company',
+    'POST /companies': 'platform_company_created',
+    'PUT /companies/{id}': 'platform_company',
     'PUT /portal/landlord/tenants/{id}': 'landlord_tenant',
     'GET /portal/landlord/invoices': 'landlord_invoices',
     'GET /portal/landlord/expense-options': 'landlord_expense_options',
@@ -758,5 +764,89 @@ void main() {
     await tester.tap(find.text('This month'));
     await tester.pumpAndSettle();
     expect(adapter.calls.where((c) => c == 'GET /portal/tenant/invoices').length, greaterThan(1), reason: 'reloaded with the period');
+  });
+
+  // --- Super admin, rent periods / leases, and the tidier home screen.
+
+  testWidgets('the super admin signs in to the app and adds a company with its admin', (tester) async {
+    final permissions = ((fixture('login_superadmin') as Map<String, dynamic>)['permissions'] as List).cast<String>();
+    final (router, adapter) = await pumpApp(tester, UserRole.staff, permissions: permissions);
+
+    expect(tabLabels(tester), ['Home', 'Companies', 'More']);
+
+    await openPath(tester, router, '/staff/companies');
+    expect(find.text('Kilimanjaro Homes'), findsOneWidget);
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Company name'), 'Serengeti Estates');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Juma Admin');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Email'), 'juma@serengeti.test');
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add company'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Add company'));
+    await tester.pumpAndSettle();
+    final sent = adapter.sent['POST /companies'] as Map;
+    expect(sent['admin_email'], 'juma@serengeti.test');
+    expect(find.text('Company created'), findsOneWidget, reason: 'admin login shown once');
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    await openPath(tester, router, '/staff/companies/${firstUuid('platform_companies')}');
+    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+    expect(adapter.unmatched, isEmpty);
+  });
+
+  testWidgets('a landlord rents out a unit and the rent and end date are worked out', (tester) async {
+    final (router, adapter) = await pumpApp(tester, UserRole.landlord);
+
+    await openPath(tester, router, '/landlord/properties/${firstUuid('landlord_properties')}');
+    // A free unit offers "Rent out".
+    await tester.tap(find.text('Free').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rent out'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(DropdownButtonFormField<String>, 'Unit'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('A2').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Unit price'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(DropdownButtonFormField<String>, 'Tenant'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Neema M.').last);
+    await tester.pumpAndSettle();
+
+    // Quarterly: 500,000 a month -> 1,500,000 a quarter.
+    await tester.tap(find.text('Quarterly'));
+    await tester.pumpAndSettle();
+    expect(find.text('1,500,000.00'), findsWidgets);
+
+    await tester.tap(find.text('Start date'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'Periods'), '4');
+    await tester.pumpAndSettle();
+    expect(find.text('6,000,000.00'), findsOneWidget, reason: '4 quarters x 1,500,000');
+
+    await tester.scrollUntilVisible(find.widgetWithText(FilledButton, 'Create lease'), 200, scrollable: find.descendant(of: find.byType(Form), matching: find.byType(Scrollable)).first);
+    await tester.tap(find.widgetWithText(FilledButton, 'Create lease'));
+    await tester.pumpAndSettle();
+    final sent = adapter.sent['POST /portal/landlord/leases'] as Map;
+    expect(sent['billing_cycle'], 'quarterly');
+    expect(sent['rent_amount'], 1500000);
+    expect(sent['periods'], 4);
+    expect(sent['end_date'], isNotNull);
+    expect(adapter.unmatched, isEmpty);
+  });
+
+  testWidgets('the landlord home shows four main tiles and small shortcuts', (tester) async {
+    await pumpApp(tester, UserRole.landlord);
+
+    expect(find.text('Properties'), findsWidgets);
+    expect(find.text('Who rents from you'), findsOneWidget, reason: 'main tile subtitle');
+    // Fifth feature onwards: a small shortcut (label only, no subtitle).
+    expect(find.text('Rented & free'), findsNothing);
+    expect(find.text('Units'), findsWidgets);
   });
 }

@@ -3,12 +3,14 @@
 namespace App\Modules\Leases\Http\Requests;
 
 use App\Core\Http\Concerns\ResolvesUuidReferences;
+use App\Modules\Leases\Http\Requests\Concerns\FillsLeaseTerms;
 use App\Modules\Leases\Models\Lease;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreLeaseRequest extends FormRequest
 {
+    use FillsLeaseTerms;
     use ResolvesUuidReferences;
 
     public function authorize(): bool
@@ -29,7 +31,10 @@ class StoreLeaseRequest extends FormRequest
         $this->merge([
             'tenant_id' => $this->resolveUuidReference('tenants', $this->input('tenant_id')),
             'unit_id' => $this->resolveUuidReference('units', $this->input('unit_id')),
+            'billing_cycle' => $this->input('billing_cycle') ?: 'monthly',
         ]);
+
+        $this->fillFromUnitAndPeriods();
     }
 
     public function rules(): array
@@ -49,6 +54,8 @@ class StoreLeaseRequest extends FormRequest
             )],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after:start_date'],
+            // Lease length in billing periods - used to work out end_date.
+            'periods' => ['nullable', 'integer', 'min:1', 'max:120'],
             'billing_cycle' => ['nullable', Rule::in(['monthly', 'quarterly', 'semi_annual', 'annual'])],
             'rent_amount' => ['required', 'numeric', 'min:0'],
             'deposit_amount' => ['nullable', 'numeric', 'min:0'],

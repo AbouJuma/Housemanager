@@ -303,27 +303,93 @@ class _StatBars extends StatelessWidget {
 }
 
 /// Solid-color shortcut tiles, two per row.
+/// The first four features as large tiles in the company's brand colour
+/// (two calm shades, not a rainbow); any others as small, uniform
+/// shortcuts underneath - so a role with many features still looks tidy.
 class _TileGrid extends StatelessWidget {
   const _TileGrid({required this.tiles});
 
   final List<_Tile> tiles;
 
-  // Coral, violet, teal, orange - the same four-color rhythm as the
-  // reference designs, readable with white text.
-  static const colors = [Color(0xFFE5534B), Color(0xFF6D3FD1), Color(0xFF13A89E), Color(0xFFF07F2D)];
+  static const mainCount = 4;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 14,
-      crossAxisSpacing: 14,
-      childAspectRatio: 1.08,
+    final primary = Theme.of(context).colorScheme.primary;
+    final shades = [primary, Color.lerp(primary, Colors.black, 0.28)!];
+    final main = tiles.take(mainCount).toList();
+    final more = tiles.skip(mainCount).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < tiles.length; i++) _TileCard(tile: tiles[i], color: colors[i % colors.length]),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 1.35,
+          children: [
+            // Diagonal pattern: dark / light / light / dark.
+            for (var i = 0; i < main.length; i++) _TileCard(tile: main[i], color: shades[(i ~/ 2 + i) % 2]),
+          ],
+        ),
+        if (more.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.15,
+            children: [for (final tile in more) _ShortcutCard(tile: tile)],
+          ),
+        ],
       ],
+    );
+  }
+}
+
+/// A small shortcut: tinted icon and label on a plain card.
+class _ShortcutCard extends StatelessWidget {
+  const _ShortcutCard({required this.tile});
+
+  final _Tile tile;
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.go(tile.route),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(color: primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
+                child: Icon(tile.icon, color: primary, size: 20),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.tr(tile.label),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

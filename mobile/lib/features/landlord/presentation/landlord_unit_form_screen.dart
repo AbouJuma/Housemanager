@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/rent_periods.dart';
 import '../../../core/models/models.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/error_view.dart';
@@ -124,6 +125,7 @@ class _LandlordUnitFormScreenState
   );
   late String? _type = widget.unit?.type;
   late String _status = widget.unit?.status ?? 'vacant';
+  late String _rentPeriod = widget.unit?.rentPeriod ?? 'monthly';
   bool _submitting = false;
   Map<String, String> _errors = const {};
 
@@ -149,6 +151,7 @@ class _LandlordUnitFormScreenState
       'type': _type,
       if (!_rented) 'status': _status,
       'rent_amount': parseMoney(_rent.text),
+      'rent_period': _rentPeriod,
       'bedrooms': int.tryParse(_bedrooms.text.trim()),
       'bathrooms': int.tryParse(_bathrooms.text.trim()),
     };
@@ -268,9 +271,29 @@ class _LandlordUnitFormScreenState
                   ),
                   inputFormatters: [MoneyInputFormatter()],
                   decoration: InputDecoration(
-                    labelText: context.tr('Monthly rent'),
+                    labelText: context.tr('Rent'),
                     errorText: _errors['rent_amount'],
                   ),
+                ),
+                // What the rent is per - leases convert it to their cycle.
+                const SizedBox(height: 12),
+                Text(context.tr('Rent is per'), style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    for (final p in RentPeriods.cycles)
+                      ChoiceChip(
+                        label: Text(context.tr(const {
+                          'monthly': 'Month',
+                          'quarterly': 'Quarter (3 months)',
+                          'semi_annual': 'Half year (6 months)',
+                          'annual': 'Year',
+                        }[p]!)),
+                        selected: _rentPeriod == p,
+                        onSelected: (_) => setState(() => _rentPeriod = p),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Row(

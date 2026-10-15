@@ -37,7 +37,7 @@ class MaintenanceRequestController extends Controller
 
     public function show(Request $request, MaintenanceRequest $maintenanceRequest): MaintenanceRequestResource
     {
-        abort_unless($maintenanceRequest->tenant_id === $request->user()->id, 403);
+        abort_unless(same_id($maintenanceRequest->tenant_id, $request->user()->id), 403);
 
         return MaintenanceRequestResource::make($maintenanceRequest->load('property', 'unit', 'vendor'));
     }

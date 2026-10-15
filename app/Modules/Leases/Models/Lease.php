@@ -4,6 +4,7 @@ namespace App\Modules\Leases\Models;
 
 use App\Core\Concerns\BelongsToCompany;
 use App\Core\Concerns\HasUuid;
+use App\Modules\Leases\Support\RentPeriods;
 use App\Modules\Documents\Models\Document;
 use App\Modules\Invoices\Models\Invoice;
 use App\Modules\Leases\Database\Factories\LeaseFactory;
@@ -86,6 +87,28 @@ class Lease extends Model
     public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    /** Billing periods the lease covers, start to end. */
+    public function periodsCount(): int
+    {
+        if (! $this->start_date || ! $this->end_date) {
+            return 1;
+        }
+
+        return RentPeriods::periodsBetween($this->start_date, $this->end_date, $this->billing_cycle);
+    }
+
+    /** Rent due over the whole lease (rent per period x periods). */
+    public function contractValue(): float
+    {
+        return round((float) $this->rent_amount * $this->periodsCount(), 2);
+    }
+
+    /** Rent paid so far on the lease's invoices. */
+    public function amountPaid(): float
+    {
+        return round((float) $this->invoices()->where('status', '!=', 'cancelled')->sum('amount_paid'), 2);
     }
 
     public function isActive(): bool

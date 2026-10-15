@@ -38,7 +38,7 @@ class LandlordTenantPresenter
             'status' => $tenant->status,
             'phone' => $tenant->phone,
             'email' => $tenant->email,
-            'added_by_you' => $tenant->landlord_id === $landlord->id,
+            'added_by_you' => same_id($tenant->landlord_id, $landlord->id),
             'leases_count' => $leases->count(),
             'current_lease' => $current ? self::lease($current) : null,
             'created_at' => $tenant->created_at?->toIso8601String(),
