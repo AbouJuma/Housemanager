@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/api/token_storage.dart';
 import '../auth/providers/auth_provider.dart';
@@ -82,13 +83,13 @@ StaffFeature _moduleFeature(String id, String subtitle, IconData icon, IconData 
 /// fixed `/staff/<id>` paths).
 final staffFeatures = <StaffFeature>[
   // The super admin's platform tab (companies and their admins).
-  _moduleFeature('companies', 'Clients & their admins', Icons.domain_outlined, Icons.domain),
+  _moduleFeature('companies', 'Clients & their admins', LucideIcons.landmark, LucideIcons.landmark),
   StaffFeature(
     id: 'tenants',
     label: 'Tenants',
     subtitle: 'Profiles & contacts',
-    icon: Icons.people_outline,
-    selectedIcon: Icons.people,
+    icon: LucideIcons.users,
+    selectedIcon: LucideIcons.users,
     permission: 'tenants.viewAny',
     screen: (_) => const StaffTenantsScreen(),
     routes: () => [
@@ -104,8 +105,8 @@ final staffFeatures = <StaffFeature>[
     id: 'leases',
     label: 'Leases',
     subtitle: 'Active & expiring',
-    icon: Icons.home_work_outlined,
-    selectedIcon: Icons.home_work,
+    icon: LucideIcons.keyRound,
+    selectedIcon: LucideIcons.keyRound,
     permission: 'leases.viewAny',
     screen: (_) => const StaffLeasesScreen(),
     routes: () => [
@@ -121,8 +122,8 @@ final staffFeatures = <StaffFeature>[
     id: 'invoices',
     label: 'Invoices',
     subtitle: 'Billing & payments',
-    icon: Icons.receipt_long_outlined,
-    selectedIcon: Icons.receipt_long,
+    icon: LucideIcons.receiptText,
+    selectedIcon: LucideIcons.receiptText,
     permission: 'invoices.viewAny',
     screen: (_) => const StaffInvoicesScreen(),
     routes: () => [
@@ -130,19 +131,19 @@ final staffFeatures = <StaffFeature>[
       GoRoute(path: ':uuid', builder: (c, s) => StaffInvoiceDetailScreen(uuid: s.pathParameters['uuid']!)),
     ],
   ),
-  _moduleFeature('maintenance', 'Repairs & job status', Icons.build_outlined, Icons.build),
-  _moduleFeature('expenses', 'Bills & payments out', Icons.payments_outlined, Icons.payments),
-  _moduleFeature('visitors', 'Gate log & check-out', Icons.badge_outlined, Icons.badge),
-  _moduleFeature('inventory', 'Stock & supplies', Icons.inventory_2_outlined, Icons.inventory_2),
-  _moduleFeature('properties', 'Buildings & units', Icons.apartment_outlined, Icons.apartment),
-  _moduleFeature('vendors', 'Suppliers & contractors', Icons.handyman_outlined, Icons.handyman),
-  _moduleFeature('documents', 'Contracts & files', Icons.folder_outlined, Icons.folder),
+  _moduleFeature('maintenance', 'Repairs & job status', LucideIcons.wrench, LucideIcons.wrench),
+  _moduleFeature('expenses', 'Bills & payments out', LucideIcons.banknote, LucideIcons.banknote),
+  _moduleFeature('visitors', 'Gate log & check-out', LucideIcons.idCard, LucideIcons.idCard),
+  _moduleFeature('inventory', 'Stock & supplies', LucideIcons.package, LucideIcons.package),
+  _moduleFeature('properties', 'Buildings & units', LucideIcons.building2, LucideIcons.building2),
+  _moduleFeature('vendors', 'Suppliers & contractors', LucideIcons.truck, LucideIcons.truck),
+  _moduleFeature('documents', 'Contracts & files', LucideIcons.folderOpen, LucideIcons.folderOpen),
   StaffFeature(
     id: 'reports',
     label: 'Reports',
     subtitle: 'Rent roll & occupancy',
-    icon: Icons.insights_outlined,
-    selectedIcon: Icons.insights,
+    icon: LucideIcons.chartColumn,
+    selectedIcon: LucideIcons.chartColumn,
     permission: 'reports.view',
     canBeTab: false,
     screen: (_) => const ReportsHubScreen(),

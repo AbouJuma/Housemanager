@@ -1,28 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../core/widgets/error_view.dart';
-import '../../../core/l10n/l10n.dart';
-import '../../auth/data/auth_repository.dart';
-import '../../notifications/notifications.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../core/api/json_helpers.dart';
 import '../../../core/api/token_storage.dart';
 import '../../../core/branding/branding.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/quick_actions.dart';
+import '../../../core/router/app_shell.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/brand_widgets.dart';
+import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/formatters.dart';
-import '../../../core/widgets/progress_ring.dart';
+import '../../../core/widgets/motion.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../buyer/data/buyer_providers.dart';
 import '../../landlord/data/landlord_providers.dart';
+import '../../notifications/notifications.dart';
 import '../../staff/staff_features.dart';
 import '../../tenant/data/tenant_providers.dart';
 
-/// Home tab for every role. Layout: greeting + date, a photo hero card
-/// with the role's headline number (ring where there's a ratio), stat
-/// bars where there are amounts to compare, then a grid of solid-color
-/// shortcut tiles. Tenants and staff also get a centre "+" quick action.
+/// Hide / show money on the home header (the eye button).
+class HideAmounts extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void toggle() => state = !state;
+}
+
+final hideAmountsProvider = NotifierProvider<HideAmounts, bool>(HideAmounts.new);
+
+/// Home tab for every role: a brand-gradient header with the role's key
+/// figure (counting up), round quick actions, small stat cards, then the
+/// role's features as tiles. Everything eases in on open.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -30,47 +42,28 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
 
-    // Checking/signedOut show briefly while _AuthRefresh's redirect
-    // takes effect (see core/router/app_router.dart) - avoids a flash
-    // of the wrong role's empty dashboard before that redirect fires.
+    // Checking/signedOut show briefly while the router redirects.
     if (auth.status != AuthStatus.signedIn) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final role = auth.role!;
-
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: switch (role) {
-        UserRole.tenant => _AddButton(
-            tooltip: context.tr('Report an issue'),
-            onPressed: () => context.push('/tenant/maintenance/new'),
-          ),
-        UserRole.staff when _staffCreateOptions(auth.profile).isNotEmpty =>
-          _AddButton(tooltip: context.tr('Create'), onPressed: () => _showStaffQuickCreate(context, auth.profile)),
-        _ => null,
-      },
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(tenantDashboardProvider);
-            ref.invalidate(landlordDashboardProvider);
-            ref.invalidate(buyerDashboardProvider);
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 110),
-            children: [
-              _Greeting(name: auth.profile?.name),
-              const SizedBox(height: 20),
-              switch (role) {
-                UserRole.tenant => const _TenantDashboard(),
-                UserRole.landlord => const _LandlordDashboard(),
-                UserRole.buyer => const _BuyerDashboard(),
-                UserRole.staff => const _StaffDashboard(),
-              },
-            ],
-          ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(tenantDashboardProvider);
+          ref.invalidate(landlordDashboardProvider);
+          ref.invalidate(buyerDashboardProvider);
+        },
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 24),
+          children: [
+            switch (auth.role!) {
+              UserRole.tenant => const _TenantDashboard(),
+              UserRole.landlord => const _LandlordDashboard(),
+              UserRole.buyer => const _BuyerDashboard(),
+              UserRole.staff => const _StaffDashboard(),
+            },
+          ],
         ),
       ),
     );
@@ -78,11 +71,105 @@ class DashboardScreen extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------
-// Header
+// Header (gradient panel)
 // ---------------------------------------------------------------------
 
-class _Greeting extends ConsumerWidget {
-  const _Greeting({this.name});
+class _Header extends ConsumerWidget {
+  const _Header({required this.label, required this.child, this.amount, this.pill, this.pillGood = true});
+
+  final String label;
+
+  /// The big figure (counts up); null when [child] carries the headline.
+  final double? amount;
+  final Widget? child;
+  final String? pill;
+  final bool pillGood;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final branding = ref.watch(brandingProvider);
+    final profile = ref.watch(authProvider).profile;
+    final hidden = ref.watch(hideAmountsProvider);
+    final actions = ref.watch(quickActionsProvider);
+    final top = MediaQuery.of(context).padding.top;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, top + 14, 20, 24),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.lerp(branding.primary, AppColors.ink, 0.25)!,
+            branding.primary,
+            Color.lerp(branding.primary, branding.accent, 0.55)!,
+          ],
+        ),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Soft light blobs for depth.
+          Positioned(right: -60, top: -40, child: _glow(180, Colors.white.withValues(alpha: 0.08))),
+          Positioned(left: -50, bottom: 40, child: _glow(140, AppColors.gold.withValues(alpha: 0.10))),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TopRow(name: profile?.name),
+              const SizedBox(height: 22),
+              Row(
+                children: [
+                  Text(context.tr(label), style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13, fontWeight: FontWeight.w500)),
+                  if (amount != null) ...[
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () => ref.read(hideAmountsProvider.notifier).toggle(),
+                      child: Icon(hidden ? LucideIcons.eyeOff : LucideIcons.eye, size: 16, color: Colors.white.withValues(alpha: 0.8)),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 6),
+              if (amount != null) _CountUp(value: amount!, hidden: hidden) else ?child,
+              if (pill != null) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: pillGood ? const Color(0xFFDCFCE7) : const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(pill!, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: pillGood ? const Color(0xFF166534) : const Color(0xFF92400E))),
+                ),
+              ],
+              if (actions.isNotEmpty) ...[
+                const SizedBox(height: 22),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    for (final (i, action) in actions.take(4).indexed)
+                      Expanded(
+                        child: RoundAction(action: action, onDark: true, onTap: () => context.push(action.route))
+                            .motion((a) => a.fadeIn(delay: (120 + 70 * i).ms, duration: 300.ms).moveY(begin: 12, end: 0)),
+                      ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    ).motion((a) => a.fadeIn(duration: 350.ms));
+  }
+
+  Widget _glow(double size, Color color) => IgnorePointer(
+        child: Container(width: size, height: size, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
+      );
+}
+
+class _TopRow extends ConsumerWidget {
+  const _TopRow({this.name});
 
   final String? name;
 
@@ -92,28 +179,9 @@ class _Greeting extends ConsumerWidget {
     final greeting = hour < 12 ? 'Good morning' : (hour < 17 ? 'Good afternoon' : 'Good evening');
     final parts = (name ?? '').trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     final initials = parts.isEmpty ? '?' : (parts.first[0] + (parts.length > 1 ? parts.last[0] : '')).toUpperCase();
-    final scheme = Theme.of(context).colorScheme;
 
     return Row(
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat('EEEE, d MMM', context.languageCode).format(DateTime.now()),
-                style: TextStyle(color: context.mutedText, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                parts.isEmpty ? context.tr(greeting) : context.tr('$greeting, :name', {'name': parts.first}),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
-              ),
-            ],
-          ),
-        ),
-        const NotificationBell(),
-        const SizedBox(width: 4),
         PopupMenuButton<String>(
           tooltip: context.tr('Account'),
           position: PopupMenuPosition.under,
@@ -121,275 +189,230 @@ class _Greeting extends ConsumerWidget {
             if (value == 'logout') ref.read(authProvider.notifier).logout();
           },
           itemBuilder: (context) => [
-            PopupMenuItem(value: 'logout', child: ListTile(leading: const Icon(Icons.logout), title: Text(context.tr('Sign out')))),
+            PopupMenuItem(value: 'logout', child: ListTile(leading: const Icon(LucideIcons.logOut), title: Text(context.tr('Sign out')))),
           ],
-          child: CircleAvatar(
-            radius: 22,
-            backgroundColor: scheme.primary,
-            foregroundColor: scheme.onPrimary,
-            child: Text(initials, style: const TextStyle(fontWeight: FontWeight.w700)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------
-// Hero card - brand gradient over a property photo, with corner bubbles
-// ---------------------------------------------------------------------
-
-class _HeroCard extends ConsumerWidget {
-  const _HeroCard({required this.image, required this.child});
-
-  final String image;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final primary = ref.watch(brandingProvider).primary;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: Stack(
-        children: [
-          Positioned.fill(child: Image.asset('assets/images/$image.jpg', fit: BoxFit.cover)),
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.lerp(primary, AppColors.ink, 0.35)!.withValues(alpha: 0.96),
-                    primary.withValues(alpha: 0.86),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(right: -40, bottom: -60, child: _bubble(170, 0.10)),
-          Positioned(left: -30, top: -50, child: _bubble(120, 0.07)),
-          Padding(padding: const EdgeInsets.all(22), child: child),
-        ],
-      ),
-    );
-  }
-
-  Widget _bubble(double size, double opacity) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: opacity)),
-      );
-}
-
-class _HeroText extends StatelessWidget {
-  const _HeroText({required this.eyebrow, required this.value, this.pill});
-
-  final String eyebrow;
-  final String value;
-  final String? pill;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.secondary;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(width: 16, height: 3, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                context.tr(eyebrow).toUpperCase(),
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.2),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(value, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.8)),
-        ),
-        if (pill != null) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Container(
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(colors: [Color(0xFFF2C14E), AppColors.goldDeep]),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 2),
             ),
-            child: Text(context.tr(pill!), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+            alignment: Alignment.center,
+            child: Text(initials, style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1A1405))),
           ),
-        ],
-      ],
-    );
-  }
-}
-
-class _HeroRing extends StatelessWidget {
-  const _HeroRing({required this.value});
-
-  final double value;
-
-  @override
-  Widget build(BuildContext context) => ProgressRing(
-        value: value,
-        size: 104,
-        strokeWidth: 11,
-        color: Theme.of(context).colorScheme.secondary,
-        trackColor: Colors.white.withValues(alpha: 0.16),
-        center: Text(
-          '${(value * 100).round()}%',
-          style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
         ),
-      );
-}
-
-// ---------------------------------------------------------------------
-// Stat bars and shortcut tiles
-// ---------------------------------------------------------------------
-
-class _StatBars extends StatelessWidget {
-  const _StatBars({required this.rows});
-
-  /// (label, amount, color)
-  final List<(String, double, Color)> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final max = rows.map((r) => r.$2.abs()).fold<double>(0, (a, b) => a > b ? a : b);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 8),
-        child: Column(
-          children: [
-            for (final (label, amount, color) in rows)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(context.tr(label), style: TextStyle(color: context.mutedText, fontWeight: FontWeight.w600, fontSize: 13)),
-                        const Spacer(),
-                        Text(formatMoney(amount), style: const TextStyle(fontWeight: FontWeight.w700)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: LinearProgressIndicator(
-                        value: max == 0 ? 0 : amount.abs() / max,
-                        minHeight: 8,
-                        color: color,
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Solid-color shortcut tiles, two per row.
-/// The first four features as large tiles in the company's brand colour
-/// (two calm shades, not a rainbow); any others as small, uniform
-/// shortcuts underneath - so a role with many features still looks tidy.
-class _TileGrid extends StatelessWidget {
-  const _TileGrid({required this.tiles});
-
-  final List<_Tile> tiles;
-
-  static const mainCount = 4;
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final shades = [primary, Color.lerp(primary, Colors.black, 0.28)!];
-    final main = tiles.take(mainCount).toList();
-    final more = tiles.skip(mainCount).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 1.35,
-          children: [
-            // Diagonal pattern: dark / light / light / dark.
-            for (var i = 0; i < main.length; i++) _TileCard(tile: main[i], color: shades[(i ~/ 2 + i) % 2]),
-          ],
-        ),
-        if (more.isNotEmpty) ...[
-          const SizedBox(height: 14),
-          GridView.count(
-            crossAxisCount: 3,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 1.15,
-            children: [for (final tile in more) _ShortcutCard(tile: tile)],
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-/// A small shortcut: tinted icon and label on a plain card.
-class _ShortcutCard extends StatelessWidget {
-  const _ShortcutCard({required this.tile});
-
-  final _Tile tile;
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => context.go(tile.route),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        const SizedBox(width: 12),
+        Expanded(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(color: primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)),
-                child: Icon(tile.icon, color: primary, size: 20),
-              ),
-              const SizedBox(height: 8),
               Text(
-                context.tr(tile.label),
-                textAlign: TextAlign.center,
-                maxLines: 2,
+                DateFormat('EEEE, d MMM', context.languageCode).format(DateTime.now()),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                parts.isEmpty ? context.tr(greeting) : context.tr('$greeting, :name', {'name': parts.first}),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.3),
               ),
             ],
           ),
         ),
+        Container(
+          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.16)),
+          child: Theme(
+            data: Theme.of(context).copyWith(iconTheme: const IconThemeData(color: Colors.white)),
+            child: const IconTheme(data: IconThemeData(color: Colors.white), child: NotificationBell()),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The headline amount: counts up on open, cents a little lighter.
+class _CountUp extends StatelessWidget {
+  const _CountUp({required this.value, required this.hidden});
+
+  final double value;
+  final bool hidden;
+
+  @override
+  Widget build(BuildContext context) {
+    if (hidden) {
+      return const Text('••••••', style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: 2));
+    }
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: value),
+      duration: const Duration(milliseconds: 900),
+      curve: Curves.easeOutCubic,
+      builder: (context, v, _) {
+        final text = formatMoney(v);
+        final dot = text.lastIndexOf('.');
+        final whole = dot < 0 ? text : text.substring(0, dot);
+        final cents = dot < 0 ? '' : text.substring(dot);
+
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text.rich(
+            TextSpan(children: [
+              TextSpan(text: whole),
+              TextSpan(text: cents, style: TextStyle(color: Colors.white.withValues(alpha: 0.55))),
+            ]),
+            style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800, letterSpacing: -1.2),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------
+// Stat cards, chart, tiles
+// ---------------------------------------------------------------------
+
+class _Stat {
+  const _Stat(this.icon, this.label, this.value, this.color);
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+}
+
+class _StatRow extends StatelessWidget {
+  const _StatRow(this.stats);
+
+  final List<_Stat> stats;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+      child: Row(
+        children: [
+          for (final (i, stat) in stats.indexed) ...[
+            if (i > 0) const SizedBox(width: 10),
+            Expanded(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(color: stat.color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
+                        child: Icon(stat.icon, size: 18, color: stat.color),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(context.tr(stat.label), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.mutedText, fontSize: 11.5)),
+                      const SizedBox(height: 2),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(stat.value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                      ),
+                    ],
+                  ),
+                ),
+              ).motion((a) => a.fadeIn(delay: (200 + 80 * i).ms, duration: 350.ms).moveY(begin: 16, end: 0, curve: Curves.easeOutCubic)),
+            ),
+          ],
+        ],
       ),
+    );
+  }
+}
+
+/// Landlord: income by month this year - bars grow on open.
+class _IncomeChart extends ConsumerWidget {
+  const _IncomeChart();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final report = ref.watch(landlordProfitLossProvider(('this_year', 'month')));
+    final data = report.value;
+    if (data == null) return const SizedBox.shrink();
+
+    final rows = (data['breakdown'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final values = rows.map((r) => asDouble(r['income'])).toList();
+    final peak = values.fold<double>(0, (a, b) => a > b ? a : b);
+    final scheme = Theme.of(context).colorScheme;
+    final lastIndex = values.lastIndexWhere((v) => v > 0);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () => context.go('/landlord/reports/profit-loss'),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Text(context.tr('Monthly income'), style: Theme.of(context).textTheme.titleMedium)),
+                    Text(formatMoney(asDouble((data['income'] as Map)['total'])), style: TextStyle(fontWeight: FontWeight.w800, color: scheme.primary)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 110,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      for (final (i, v) in values.indexed)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0, end: peak == 0 ? 0 : v / peak),
+                                  duration: Duration(milliseconds: 500 + 40 * i),
+                                  curve: Curves.easeOutCubic,
+                                  builder: (context, f, _) => Container(
+                                    height: 6 + 80 * f,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                        colors: i == lastIndex
+                                            ? const [AppColors.goldDeep, Color(0xFFF2C14E)]
+                                            : [scheme.primary.withValues(alpha: 0.35), scheme.primary],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  (rows[i]['label'] as String? ?? '').split(' ').first,
+                                  maxLines: 1,
+                                  style: TextStyle(fontSize: 9.5, color: context.mutedText),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ).motion((a) => a.fadeIn(delay: 300.ms, duration: 400.ms)),
     );
   }
 }
@@ -403,60 +426,146 @@ class _Tile {
   final String route;
 }
 
-class _TileCard extends StatelessWidget {
-  const _TileCard({required this.tile, required this.color});
+/// The first four features as large cards, any others as small round
+/// shortcuts - so a role with many features still looks calm.
+class _TileGrid extends StatelessWidget {
+  const _TileGrid({required this.tiles});
 
-  final _Tile tile;
-  final Color color;
+  final List<_Tile> tiles;
+
+  static const mainCount = 4;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color,
-      borderRadius: BorderRadius.circular(22),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        // go(), not push() - these routes are each their own bottom-nav
-        // tab/branch root, so this switches tabs rather than stacking a
-        // duplicate screen on top of Dashboard within its own tab.
-        onTap: () => context.go(tile.route),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final main = tiles.take(mainCount).toList();
+    final more = tiles.skip(mainCount).toList();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.32,
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(13)),
-                child: Icon(tile.icon, color: Colors.white),
-              ),
-              const Spacer(),
-              Text(context.tr(tile.label), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.tr(tile.subtitle),
-                      style: TextStyle(color: Colors.white.withValues(alpha: 0.82), fontSize: 12),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Container(
-                    width: 22,
-                    height: 22,
-                    decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.7), width: 1.5)),
-                    child: const Icon(Icons.arrow_forward, size: 13, color: Colors.white),
-                  ),
-                ],
-              ),
+              for (final (i, tile) in main.indexed)
+                _TileCard(tile: tile, highlight: i == 0)
+                    .motion((a) => a.fadeIn(delay: (250 + 70 * i).ms, duration: 350.ms).scale(begin: const Offset(0.94, 0.94), curve: Curves.easeOutBack)),
             ],
           ),
+          if (more.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  runSpacing: 14,
+                  children: [
+                    for (final tile in more)
+                      SizedBox(
+                        width: 78,
+                        child: RoundAction(action: QuickAction(tile.icon, tile.label, tile.route), onTap: () => context.go(tile.route)),
+                      ),
+                  ],
+                ),
+              ),
+            ).motion((a) => a.fadeIn(delay: 450.ms, duration: 350.ms)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TileCard extends StatelessWidget {
+  const _TileCard({required this.tile, this.highlight = false});
+
+  final _Tile tile;
+
+  /// The first tile is the brand-gradient one; the rest are plain cards.
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final onCard = highlight ? Colors.white : scheme.onSurface;
+
+    return _Pressable(
+      onTap: () => context.go(tile.route),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: highlight ? null : scheme.surface,
+          gradient: highlight
+              ? LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [scheme.primary, Color.lerp(scheme.primary, scheme.secondary, 0.6)!])
+              : null,
+          border: highlight || !context.isDark ? null : Border.all(color: AppColors.darkBorder),
+          boxShadow: context.isDark ? null : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6))],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: highlight ? Colors.white.withValues(alpha: 0.18) : scheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Icon(tile.icon, size: 20, color: highlight ? Colors.white : scheme.primary),
+                ),
+                const Spacer(),
+                Icon(LucideIcons.arrowUpRight, size: 18, color: onCard.withValues(alpha: 0.55)),
+              ],
+            ),
+            const Spacer(),
+            Text(context.tr(tile.label), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: onCard, fontSize: 15, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 2),
+            Text(
+              context.tr(tile.subtitle),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: highlight ? Colors.white.withValues(alpha: 0.8) : context.mutedText, fontSize: 12),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+/// Shrinks a little while pressed - a tactile feel for tiles.
+class _Pressable extends StatefulWidget {
+  const _Pressable({required this.child, required this.onTap});
+
+  final Widget child;
+  final VoidCallback onTap;
+
+  @override
+  State<_Pressable> createState() => _PressableState();
+}
+
+class _PressableState extends State<_Pressable> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTapDown: (_) => setState(() => _down = true),
+        onTapCancel: () => setState(() => _down = false),
+        onTapUp: (_) => setState(() => _down = false),
+        onTap: widget.onTap,
+        child: AnimatedScale(scale: _down ? 0.96 : 1, duration: const Duration(milliseconds: 120), child: widget.child),
+      );
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -466,80 +575,17 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 24, bottom: 12),
-        child: Text(context.tr(text), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+        child: Text(context.tr(text), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
       );
-}
-
-class _AddButton extends StatelessWidget {
-  const _AddButton({required this.tooltip, required this.onPressed});
-
-  final String tooltip;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) => FloatingActionButton(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        shape: const CircleBorder(),
-        elevation: 6,
-        child: const Icon(Icons.add, size: 30),
-      );
-}
-
-/// The reference "Add task / Add group / Add project" sheet, for staff.
-/// What this staff member's role lets them create from the + sheet.
-List<(IconData, String, String, String, int)> _staffCreateOptions(AuthenticatedProfile? profile) => [
-      if (profile?.can('tenants.create') ?? false)
-        (Icons.person_add_alt_1, 'New tenant', 'Add a tenant and their contact details.', '/staff/tenants/new', 2),
-      if (profile?.can('leases.create') ?? false)
-        (Icons.description_outlined, 'New lease', 'Rent a vacant unit to a tenant.', '/staff/leases/new', 1),
-      if (profile?.can('invoices.create') ?? false)
-        (Icons.receipt_long, 'New invoice', 'Bill a tenant for rent or other charges.', '/staff/invoices/new', 4),
-    ];
-
-void _showStaffQuickCreate(BuildContext context, AuthenticatedProfile? profile) {
-  final options = _staffCreateOptions(profile);
-
-  showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
-    builder: (sheetContext) => SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final (icon, title, subtitle, route, color) in options)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Card(
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    leading: IconTile(icon, paletteIndex: color, size: 44),
-                    title: Text(sheetContext.tr(title), style: const TextStyle(fontWeight: FontWeight.w700)),
-                    subtitle: Text(sheetContext.tr(subtitle), style: TextStyle(color: sheetContext.mutedText)),
-                    onTap: () {
-                      Navigator.of(sheetContext).pop();
-                      context.push(route);
-                    },
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
 
 Widget _asyncError(Object error, VoidCallback onRetry) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.fromLTRB(20, 60, 20, 24),
       child: ErrorView(error: error, onRetry: onRetry),
     );
 
-const _loading = Padding(padding: EdgeInsets.symmetric(vertical: 60), child: Center(child: CircularProgressIndicator()));
+Widget get _loading => const Padding(padding: EdgeInsets.symmetric(vertical: 120), child: Center(child: CircularProgressIndicator()));
 
 // ---------------------------------------------------------------------
 // Per-role dashboards
@@ -555,44 +601,37 @@ class _TenantDashboard extends ConsumerWidget {
     return dashboard.when(
       loading: () => _loading,
       error: (error, _) => _asyncError(error, () => ref.invalidate(tenantDashboardProvider)),
-      data: (data) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _HeroCard(
-            image: 'interior',
-            child: Row(
-              children: [
-                Expanded(
-                  child: _HeroText(
-                    eyebrow: 'Outstanding balance',
-                    value: formatMoney(data.outstandingBalance),
-                    pill: data.outstandingInvoiceCount == 0
-                        ? 'All paid up'
-                        : context.tr(data.outstandingInvoiceCount == 1 ? ':count unpaid invoice' : ':count unpaid invoices', {'count': data.outstandingInvoiceCount}),
-                  ),
-                ),
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.14)),
-                  child: Icon(
-                    data.outstandingInvoiceCount == 0 ? Icons.verified_outlined : Icons.account_balance_wallet_outlined,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-              ],
+      data: (data) {
+        final lease = data.activeLeases.isEmpty ? null : data.activeLeases.first;
+        final paidUp = data.outstandingInvoiceCount == 0;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Header(
+              label: 'Outstanding balance',
+              amount: data.outstandingBalance,
+              pillGood: paidUp,
+              pill: paidUp
+                  ? context.tr('All paid up')
+                  : context.tr(data.outstandingInvoiceCount == 1 ? ':count unpaid invoice' : ':count unpaid invoices', {'count': data.outstandingInvoiceCount}),
+              child: null,
             ),
-          ),
-          const _SectionTitle('Quick access'),
-          const _TileGrid(tiles: [
-            _Tile(Icons.home_work_outlined, 'My Leases', 'Your home', '/tenant/leases'),
-            _Tile(Icons.receipt_long_outlined, 'Invoices', 'Bills & receipts', '/tenant/invoices'),
-            _Tile(Icons.build_outlined, 'Maintenance', 'Report & track', '/tenant/maintenance'),
-            _Tile(Icons.folder_open_outlined, 'Documents', 'Your files', '/tenant/more/documents'),
-          ]),
-        ],
-      ),
+            _StatRow([
+              _Stat(LucideIcons.house, 'Rent', lease == null ? '—' : formatMoney(lease.rentAmount), Theme.of(context).colorScheme.primary),
+              _Stat(LucideIcons.receiptText, 'Unpaid', '${data.outstandingInvoiceCount}', AppColors.goldDeep),
+              _Stat(LucideIcons.calendarDays, 'Lease ends', lease?.endDate == null ? '—' : formatDate(lease!.endDate), const Color(0xFF0F766E)),
+            ]),
+            const _SectionTitle('Quick access'),
+            const _TileGrid(tiles: [
+              _Tile(LucideIcons.keyRound, 'My Leases', 'Your home', '/tenant/leases'),
+              _Tile(LucideIcons.receiptText, 'Invoices', 'Bills & receipts', '/tenant/invoices'),
+              _Tile(LucideIcons.wrench, 'Maintenance', 'Report & track', '/tenant/maintenance'),
+              _Tile(LucideIcons.folderOpen, 'Documents', 'Your files', '/tenant/more/documents'),
+            ]),
+          ],
+        );
+      },
     );
   }
 }
@@ -616,42 +655,34 @@ class _LandlordDashboard extends ConsumerWidget {
 
         // Only what the company's Landlord role allows.
         final tiles = [
-          if (can('properties.viewAny')) const _Tile(Icons.apartment_outlined, 'Properties', 'Units & tenants', '/landlord/properties'),
-          if (can('tenants.viewAny')) const _Tile(Icons.people_outline, 'Tenants', 'Who rents from you', '/landlord/tenants'),
-          if (can('invoices.viewAny')) const _Tile(Icons.receipt_long_outlined, 'Invoices', 'Who still owes', '/landlord/more/invoices'),
-          if (can('reports.view')) const _Tile(Icons.trending_up, 'Profit & Loss', 'Income vs expenses', '/landlord/reports/profit-loss'),
-          if (can('properties.viewAny')) const _Tile(Icons.meeting_room_outlined, 'Units', 'Rented & free', '/landlord/reports/units'),
-          if (can('buyers.viewAny')) const _Tile(Icons.house_outlined, 'Buyers', 'Unit purchases', '/landlord/more/buyers'),
-          if (can('expenses.viewAny')) const _Tile(Icons.trending_down, 'Expenses', 'Where it went', '/landlord/more/expenses'),
-          if (can('maintenance.viewAny')) const _Tile(Icons.build_outlined, 'Maintenance', 'Open requests', '/landlord/more/maintenance'),
-          if (can('documents.viewAny')) const _Tile(Icons.folder_open_outlined, 'Documents', 'Contracts & files', '/landlord/more/documents'),
+          if (can('properties.viewAny')) const _Tile(LucideIcons.building2, 'Properties', 'Units & tenants', '/landlord/properties'),
+          if (can('tenants.viewAny')) const _Tile(LucideIcons.users, 'Tenants', 'Who rents from you', '/landlord/tenants'),
+          if (can('invoices.viewAny')) const _Tile(LucideIcons.receiptText, 'Invoices', 'Who still owes', '/landlord/more/invoices'),
+          if (can('reports.view')) const _Tile(LucideIcons.chartLine, 'Profit & Loss', 'Income vs expenses', '/landlord/reports/profit-loss'),
+          if (can('properties.viewAny')) const _Tile(LucideIcons.doorOpen, 'Units', 'Rented & free', '/landlord/reports/units'),
+          if (can('buyers.viewAny')) const _Tile(LucideIcons.handCoins, 'Buyers', 'Unit purchases', '/landlord/more/buyers'),
+          if (can('expenses.viewAny')) const _Tile(LucideIcons.banknote, 'Expenses', 'Where it went', '/landlord/more/expenses'),
+          if (can('maintenance.viewAny')) const _Tile(LucideIcons.wrench, 'Maintenance', 'Open requests', '/landlord/more/maintenance'),
+          if (can('documents.viewAny')) const _Tile(LucideIcons.folderOpen, 'Documents', 'Contracts & files', '/landlord/more/documents'),
         ];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _HeroCard(
-              image: 'apartments',
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _HeroText(
-                      eyebrow: 'Occupancy',
-                      value: context.tr(':occupied of :total units', {'occupied': occupied, 'total': total}),
-                      pill: context.tr(':count vacant', {'count': vacant}),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  _HeroRing(value: total == 0 ? 0 : occupied / total),
-                ],
-              ),
+            _Header(
+              label: 'Net income',
+              amount: data.netAmount,
+              pillGood: vacant == 0,
+              pill: context.tr(':occupied of :total units', {'occupied': occupied, 'total': total}) +
+                  (vacant > 0 ? ' · ${context.tr(':count vacant', {'count': vacant})}' : ''),
+              child: null,
             ),
-            const _SectionTitle('This period'),
-            _StatBars(rows: [
-              ('Rent collected', data.totalCollected, const Color(0xFF13A89E)),
-              ('Expenses', data.totalExpenses, const Color(0xFFE5534B)),
-              ('Net', data.netAmount, Theme.of(context).colorScheme.primary),
+            _StatRow([
+              _Stat(LucideIcons.trendingUp, 'Rent collected', formatMoney(data.totalCollected), const Color(0xFF16A34A)),
+              _Stat(LucideIcons.trendingDown, 'Expenses', formatMoney(data.totalExpenses), const Color(0xFFDC2626)),
+              _Stat(LucideIcons.doorOpen, 'Occupancy', total == 0 ? '—' : '${(occupied / total * 100).round()}%', AppColors.goldDeep),
             ]),
+            if (can('reports.view')) const _IncomeChart(),
             if (tiles.isNotEmpty) ...[
               const _SectionTitle('Quick access'),
               _TileGrid(tiles: tiles),
@@ -679,26 +710,22 @@ class _BuyerDashboard extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _HeroCard(
-              image: 'land',
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _HeroText(
-                      eyebrow: 'Paid so far',
-                      value: formatMoney(data.totalSpent),
-                      pill: context.tr(':amount remaining', {'amount': formatMoney(data.outstandingBalance)}),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  _HeroRing(value: owed == 0 ? 0 : data.totalSpent / owed),
-                ],
-              ),
+            _Header(
+              label: 'Paid so far',
+              amount: data.totalSpent,
+              pillGood: data.outstandingBalance <= 0,
+              pill: context.tr(':amount remaining', {'amount': formatMoney(data.outstandingBalance)}),
+              child: null,
             ),
+            _StatRow([
+              _Stat(LucideIcons.house, 'Properties', '${data.totalPurchases}', Theme.of(context).colorScheme.primary),
+              _Stat(LucideIcons.receiptText, 'Unpaid', '${data.outstandingInvoiceCount}', AppColors.goldDeep),
+              _Stat(LucideIcons.circleCheck, 'Progress', owed == 0 ? '—' : '${(data.totalSpent / owed * 100).round()}%', const Color(0xFF16A34A)),
+            ]),
             const _SectionTitle('Quick access'),
             _TileGrid(tiles: [
-              _Tile(Icons.home_work_outlined, 'My Purchases', context.tr(data.totalPurchases == 1 ? ':count property' : ':count properties', {'count': data.totalPurchases}), '/buyer/sales'),
-              _Tile(Icons.receipt_long_outlined, 'Invoices', context.tr(':count unpaid', {'count': data.outstandingInvoiceCount}), '/buyer/invoices'),
+              _Tile(LucideIcons.building, 'My Purchases', context.tr(data.totalPurchases == 1 ? ':count property' : ':count properties', {'count': data.totalPurchases}), '/buyer/sales'),
+              _Tile(LucideIcons.receiptText, 'Invoices', context.tr(':count unpaid', {'count': data.outstandingInvoiceCount}), '/buyer/invoices'),
             ]),
           ],
         );
@@ -713,32 +740,23 @@ class _StaffDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final companyName = ref.watch(brandingProvider).companyName;
-    final profile = ref.watch(authProvider).profile;
     final layout = ref.watch(staffLayoutProvider);
 
     // Tiles for what this role can open - any role, including custom ones.
     final tiles = [
       for (final feature in layout.all) _Tile(feature.icon, feature.label, feature.subtitle, layout.routeOf(feature)),
     ];
-    final canCreate = _staffCreateOptions(profile).isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _HeroCard(
-          image: 'office',
-          child: Row(
-            children: [
-              Expanded(
-                child: _HeroText(
-                  eyebrow: 'Back office',
-                  value: companyName ?? 'Your workspace',
-                  pill: canCreate ? 'Tap + to create a record' : null,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const BrandLogo(size: 64),
-            ],
+        _Header(
+          label: 'Back office',
+          child: Text(
+            companyName ?? context.tr('Your workspace'),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.8),
           ),
         ),
         if (tiles.isNotEmpty) ...[
@@ -746,10 +764,10 @@ class _StaffDashboard extends ConsumerWidget {
           _TileGrid(tiles: tiles),
         ] else
           Padding(
-            padding: const EdgeInsets.only(top: 24),
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
             child: Card(
               child: ListTile(
-                leading: const Icon(Icons.info_outline),
+                leading: const Icon(LucideIcons.info),
                 title: Text(context.tr('Your role has no app features yet.')),
                 subtitle: Text(context.tr('Ask an administrator to give your role the permissions it needs.')),
               ),

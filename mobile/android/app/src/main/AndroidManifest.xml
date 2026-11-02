@@ -3,14 +3,12 @@
          every API call fails with "couldn't reach the server". -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <!-- usesCleartextTraffic: the backend is often reached over plain
-         http:// on a local network (php artisan serve); Android blocks
-         that by default. Serve the API over https:// in production. -->
+    <!-- Release builds use https only; plain http for a local backend is
+         allowed in debug builds (src/debug/AndroidManifest.xml). -->
     <application
         android:label="House Managers"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
-        android:usesCleartextTraffic="true">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../features/notifications/notifications.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
@@ -15,6 +16,7 @@ import '../../features/documents/presentation/documents_screen.dart';
 import '../../features/landlord/presentation/landlord_expenses_screen.dart';
 import '../../features/landlord/presentation/landlord_maintenance_screen.dart';
 import '../../features/landlord/presentation/landlord_property_detail_screen.dart';
+import '../../features/landlord/presentation/landlord_lease_form_screen.dart';
 import '../../features/landlord/presentation/landlord_people_screens.dart';
 import '../../features/landlord/presentation/landlord_properties_screen.dart';
 import '../../features/landlord/presentation/landlord_property_form_screen.dart';
@@ -116,35 +118,35 @@ StatefulShellRoute _shellForRole(UserRole role, Set<String> permissions) {
 
   final destinations = switch (role) {
     UserRole.tenant => const [
-        NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
-        NavigationDestination(icon: Icon(Icons.home_work_outlined), selectedIcon: Icon(Icons.home_work), label: 'Leases'),
-        NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Invoices'),
-        NavigationDestination(icon: Icon(Icons.build_outlined), selectedIcon: Icon(Icons.build), label: 'Maintenance'),
-        NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+        NavigationDestination(icon: Icon(LucideIcons.house), selectedIcon: Icon(LucideIcons.house), label: 'Home'),
+        NavigationDestination(icon: Icon(LucideIcons.keyRound), selectedIcon: Icon(LucideIcons.keyRound), label: 'Leases'),
+        NavigationDestination(icon: Icon(LucideIcons.receiptText), selectedIcon: Icon(LucideIcons.receiptText), label: 'Invoices'),
+        NavigationDestination(icon: Icon(LucideIcons.wrench), selectedIcon: Icon(LucideIcons.wrench), label: 'Maintenance'),
+        NavigationDestination(icon: Icon(LucideIcons.layoutGrid), label: 'More'),
       ],
     // Landlords: what the company's Landlord role allows.
     UserRole.landlord => [
-        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
+        const NavigationDestination(icon: Icon(LucideIcons.house), selectedIcon: Icon(LucideIcons.house), label: 'Home'),
         if (landlord.properties)
-          const NavigationDestination(icon: Icon(Icons.apartment_outlined), selectedIcon: Icon(Icons.apartment), label: 'Properties'),
+          const NavigationDestination(icon: Icon(LucideIcons.building2), selectedIcon: Icon(LucideIcons.building2), label: 'Properties'),
         if (landlord.tenants)
-          const NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Tenants'),
+          const NavigationDestination(icon: Icon(LucideIcons.users), selectedIcon: Icon(LucideIcons.users), label: 'Tenants'),
         if (landlord.reports)
-          const NavigationDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Reports'),
-        const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+          const NavigationDestination(icon: Icon(LucideIcons.chartColumn), selectedIcon: Icon(LucideIcons.chartColumn), label: 'Reports'),
+        const NavigationDestination(icon: Icon(LucideIcons.layoutGrid), label: 'More'),
       ],
     UserRole.buyer => const [
-        NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
-        NavigationDestination(icon: Icon(Icons.home_work_outlined), selectedIcon: Icon(Icons.home_work), label: 'Purchases'),
-        NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Invoices'),
-        NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+        NavigationDestination(icon: Icon(LucideIcons.house), selectedIcon: Icon(LucideIcons.house), label: 'Home'),
+        NavigationDestination(icon: Icon(LucideIcons.building), selectedIcon: Icon(LucideIcons.building), label: 'Purchases'),
+        NavigationDestination(icon: Icon(LucideIcons.receiptText), selectedIcon: Icon(LucideIcons.receiptText), label: 'Invoices'),
+        NavigationDestination(icon: Icon(LucideIcons.layoutGrid), label: 'More'),
       ],
     // Home and More always; between them the role's top features.
     UserRole.staff => [
-        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
+        const NavigationDestination(icon: Icon(LucideIcons.house), selectedIcon: Icon(LucideIcons.house), label: 'Home'),
         for (final feature in staff.tabs)
           NavigationDestination(icon: Icon(feature.icon), selectedIcon: Icon(feature.selectedIcon), label: feature.label),
-        const NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
+        const NavigationDestination(icon: Icon(LucideIcons.layoutGrid), label: 'More'),
       ],
   };
 
@@ -272,7 +274,13 @@ List<StatefulShellBranch> _landlordBranches(LandlordLayout can) => [
           ),
           routes: [
             if (can.documents) GoRoute(path: 'documents', builder: (c, s) => const DocumentsScreen(role: 'landlord')),
-            if (can.expenses) GoRoute(path: 'expenses', builder: (c, s) => const LandlordExpensesScreen()),
+            if (can.expenses)
+              GoRoute(
+                path: 'expenses',
+                builder: (c, s) => const LandlordExpensesScreen(),
+                routes: [GoRoute(path: 'new', builder: (c, s) => const LandlordExpenseFormScreen())],
+              ),
+            GoRoute(path: 'leases/new', builder: (c, s) => const LandlordLeaseFormScreen()),
             if (can.invoices) GoRoute(path: 'invoices', builder: (c, s) => const LandlordInvoicesScreen()),
             if (can.buyers)
               GoRoute(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'core/widgets/motion.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,6 +52,11 @@ class HouseManagersApp extends ConsumerWidget {
       supportedLocales: supportedLocales,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       routerConfig: ref.watch(routerProvider),
+      // Honour the phone's "reduce motion" setting for the app's animations.
+      builder: (context, child) {
+        Motion.enabled = !MediaQuery.disableAnimationsOf(context);
+        return child ?? const SizedBox.shrink();
+      },
     );
   }
 }

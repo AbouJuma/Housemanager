@@ -620,4 +620,15 @@ const swahili = <String, String>{
   'Total for the lease': 'Jumla ya mkataba',
   'You have no free units right now.': 'Huna vyumba vilivyo wazi kwa sasa.',
   'Add the tenant first (Tenants tab).': 'Ongeza mpangaji kwanza (kichupo cha Wapangaji).',
+
+  // Redesign: home header, quick actions
+  'Quick actions': 'Vitendo vya haraka',
+  'Monthly income': 'Mapato ya kila mwezi',
+  'Net income': 'Mapato halisi',
+  'Lease ends': 'Mkataba unaisha',
+  'Progress': 'Maendeleo',
+  'Back': 'Rudi',
+  'Report issue': 'Ripoti tatizo',
+  'My invoices': 'Ankara zangu',
+  'My lease': 'Mkataba wangu',
 };

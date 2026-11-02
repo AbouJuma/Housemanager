@@ -24,6 +24,8 @@ import 'package:mobile/core/l10n/l10n.dart';
 import 'package:mobile/core/providers.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/core/router/app_shell.dart';
+import 'package:mobile/core/widgets/motion.dart';
 import 'package:mobile/core/widgets/error_view.dart';
 import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/features/auth/providers/auth_provider.dart';
@@ -355,14 +357,31 @@ Set<String> codeTargets() {
   };
 }
 
+/// Scrolls a form until its [label] button is built and on screen.
+Future<void> reveal(WidgetTester tester, String label) async {
+  await tester.scrollUntilVisible(
+    find.widgetWithText(FilledButton, label).hitTestable(),
+    120,
+    scrollable: find.descendant(of: find.byType(Form), matching: find.byType(Scrollable)).first,
+  );
+  await tester.pumpAndSettle();
+}
+
 String currentPath(GoRouter router) =>
     router.routerDelegate.currentConfiguration.uri.path;
 
 void main() {
   setUpAll(() async {
+    // Entrance animations off (as with the phone's "reduce motion").
+    Motion.enabled = false;
     FlutterSecureStorage.setMockInitialValues({});
     // Real fonts, so overflow checks reflect real text widths (the test
     // default font draws every glyph as a full square).
+    final jakarta = FontLoader('PlusJakartaSans');
+    for (final w in ['Regular', 'Medium', 'SemiBold', 'Bold', 'ExtraBold']) {
+      jakarta.addFont(Future.value(ByteData.view(File('assets/fonts/PlusJakartaSans-$w.ttf').readAsBytesSync().buffer)));
+    }
+    await jakarta.load();
     await loadFont('Roboto', [
       'roboto-regular.ttf',
       'roboto-medium.ttf',
@@ -408,6 +427,10 @@ void main() {
             problems.add('$location shows an error state');
           }
         }
+
+        // Let any last request started by the final page finish.
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         if (language == 'sw') {
           // The bottom bar's first tab, in Swahili.
@@ -470,7 +493,7 @@ void main() {
   }
 
   List<String> tabLabels(WidgetTester tester) => [
-        for (final d in tester.widgetList<NavigationDestination>(find.byType(NavigationDestination))) d.label,
+        for (final d in tester.widgetList<NavItem>(find.byType(NavItem))) if (!d.isAction) d.label,
       ];
 
   testWidgets('a cleaner/caretaker gets maintenance and can update a job', (tester) async {
@@ -593,7 +616,7 @@ void main() {
     expect(find.byType(FloatingActionButton), findsOneWidget);
     await openPath(tester, router, '/landlord/properties/new');
     await tester.enterText(find.byType(TextFormField).first, 'Juma Towers');
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add property'));
+    await reveal(tester, 'Add property');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Add property'));
     await tester.pumpAndSettle();
@@ -603,7 +626,7 @@ void main() {
     await openPath(tester, router, '/landlord/tenants/new');
     await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Neema Mpangaji');
     await tester.enterText(find.widgetWithText(TextFormField, 'Phone'), '0716000555');
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add tenant'));
+    await reveal(tester, 'Add tenant');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Add tenant'));
     await tester.pumpAndSettle();
@@ -659,7 +682,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Apartment').last);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add unit'));
+    await reveal(tester, 'Add unit');
     await tester.tap(find.widgetWithText(FilledButton, 'Add unit'));
     await tester.pumpAndSettle();
     expect((adapter.sent['POST /portal/landlord/buildings/{id}/units'] as Map)['unit_number'], 'Z9');
@@ -682,7 +705,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Repairs').last);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add expense'));
+    await reveal(tester, 'Add expense');
     await tester.tap(find.widgetWithText(FilledButton, 'Add expense'));
     await tester.pumpAndSettle();
     final sent = adapter.sent['POST /portal/landlord/expenses'] as Map;
@@ -703,7 +726,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.edit_outlined));
     await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Asha B.');
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Save changes'));
+    await reveal(tester, 'Save changes');
     await tester.tap(find.widgetWithText(FilledButton, 'Save changes'));
     await tester.pumpAndSettle();
     expect((adapter.sent['PUT /portal/landlord/buyers/{id}'] as Map)['name'], 'Asha B.');
@@ -735,7 +758,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Plumbing').last);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add vendor'));
+    await reveal(tester, 'Add vendor');
     await tester.tap(find.widgetWithText(FilledButton, 'Add vendor'));
     await tester.pumpAndSettle();
     expect((adapter.sent['POST /vendors'] as Map)['category'], 'plumbing');
@@ -743,7 +766,7 @@ void main() {
     await openPath(tester, router, '/staff/more/vendors/${firstUuid('module_vendors')}');
     await tester.tap(find.byIcon(Icons.edit_outlined));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Save changes'));
+    await reveal(tester, 'Save changes');
     await tester.tap(find.widgetWithText(FilledButton, 'Save changes'));
     await tester.pumpAndSettle();
     expect(adapter.calls, contains('PUT /vendors/{id}'));
@@ -781,7 +804,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextFormField, 'Company name'), 'Serengeti Estates');
     await tester.enterText(find.widgetWithText(TextFormField, 'Full name'), 'Juma Admin');
     await tester.enterText(find.widgetWithText(TextFormField, 'Email'), 'juma@serengeti.test');
-    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Add company'));
+    await reveal(tester, 'Add company');
     await tester.tap(find.widgetWithText(FilledButton, 'Add company'));
     await tester.pumpAndSettle();
     final sent = adapter.sent['POST /companies'] as Map;
@@ -829,7 +852,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('6,000,000.00'), findsOneWidget, reason: '4 quarters x 1,500,000');
 
-    await tester.scrollUntilVisible(find.widgetWithText(FilledButton, 'Create lease'), 200, scrollable: find.descendant(of: find.byType(Form), matching: find.byType(Scrollable)).first);
+    await reveal(tester, 'Create lease');
     await tester.tap(find.widgetWithText(FilledButton, 'Create lease'));
     await tester.pumpAndSettle();
     final sent = adapter.sent['POST /portal/landlord/leases'] as Map;
